@@ -1,41 +1,37 @@
 name: Deploy CO5085 site to GitHub Pages
-
 on:
   push:
     branches: ["main"]
     paths:
       - "docs/**"
+      - "report/CO5085_report.pdf"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
-
 jobs:
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload static site
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
         with:
-          path: "./docs"
-
-      - name: Deploy to GitHub Pages
-        id: deployment
+          enablement: true
+      - name: Stage site
+        run: |
+          mkdir -p _site/report
+          cp -R docs/. _site/
+          cp report/CO5085_report.pdf _site/report/CO5085_report.pdf
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./_site"
+      - id: deployment
         uses: actions/deploy-pages@v5
