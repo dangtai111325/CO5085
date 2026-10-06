@@ -1,0 +1,51 @@
+name: Build CO5085 report PDF
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "report/source_latex/**"
+      - "assets/**"
+      - ".github/workflows/report.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-report:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compile XeLaTeX report
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: main.tex
+          working_directory: report/source_latex
+          latexmk_use_xelatex: true
+
+      - name: Publish PDF into report/
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp report/source_latex/main.pdf report/CO5085_report.pdf
+          test -s report/CO5085_report.pdf
+
+      - name: Commit generated PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f report/CO5085_report.pdf
+          if git diff --cached --quiet; then
+            echo "Report PDF unchanged."
+          else
+            git commit -m "Build CO5085 report PDF"
+            git push origin HEAD:main
+          fi
