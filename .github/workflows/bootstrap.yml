@@ -1,0 +1,44 @@
+name: Bootstrap CO5085 repository scaffold
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".bootstrap/**"
+      - ".github/workflows/bootstrap.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Expand tested scaffold
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .bootstrap/scaffold.tar.gz.b64
+          base64 --decode .bootstrap/scaffold.tar.gz.b64 > /tmp/co5085-scaffold.tar.gz
+          tar -xzf /tmp/co5085-scaffold.tar.gz -C .
+          rm -rf .bootstrap
+
+      - name: Commit scaffold
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No scaffold changes to commit."
+          else
+            git commit -m "Bootstrap tested CO5085 coursework scaffold"
+            git push origin HEAD:main
+          fi
