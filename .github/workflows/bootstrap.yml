@@ -31,7 +31,7 @@ jobs:
             exit 0
           fi
           source .bootstrap/manifest.txt
-          actual="$(find .bootstrap -maxdepth 1 -type f -name 'xz-*' | wc -l | tr -d ' ')"
+          actual="$(find .bootstrap -maxdepth 1 -type f -name 'xz-???' | wc -l | tr -d ' ')"
           if [ "$actual" != "$chunks" ]; then
             echo "Expected $chunks chunks but found $actual; waiting."
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -45,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           source .bootstrap/manifest.txt
-          cat $(find .bootstrap -maxdepth 1 -type f -name 'xz-*' | sort) | base64 --decode > /tmp/co5085-scaffold.tar.xz
+          cat $(find .bootstrap -maxdepth 1 -type f -name 'xz-???' | sort) | base64 --decode > /tmp/co5085-scaffold.tar.xz
           echo "$sha256  /tmp/co5085-scaffold.tar.xz" | sha256sum -c -
           tar -xJf /tmp/co5085-scaffold.tar.xz -C .
           rm -rf .bootstrap
