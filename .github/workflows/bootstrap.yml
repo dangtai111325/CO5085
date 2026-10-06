@@ -1,18 +1,17 @@
-name: Bootstrap CO5085 repository scaffold
+name: Bootstrap final CO5085 repository
 
 on:
   push:
     branches: ["main"]
     paths:
-      - ".bootstrap/manifest.txt"
-      - ".github/workflows/bootstrap.yml"
+      - ".bootstrap2/manifest.txt"
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   bootstrap:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,48 +19,31 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check whether archive is complete
-        id: ready
+      - name: Verify complete archive
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -f .bootstrap/manifest.txt ]; then
-            echo "Archive manifest not uploaded yet; waiting for remaining chunks."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          source .bootstrap/manifest.txt
-          actual="$(find .bootstrap -maxdepth 1 -type f -name 'sc-???' | wc -l | tr -d ' ')"
-          if [ "$actual" != "$chunks" ]; then
-            echo "Expected $chunks chunks but found $actual; waiting."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "ready=true" >> "$GITHUB_OUTPUT"
+          test -f .bootstrap2/manifest.txt
+          source .bootstrap2/manifest.txt
+          actual="$(find .bootstrap2 -maxdepth 1 -type f -name 'xz-*' | wc -l | tr -d ' ')"
+          test "$actual" = "$chunks"
+          cat $(find .bootstrap2 -maxdepth 1 -type f -name 'xz-*' | sort) | base64 --decode > /tmp/co5085-final.tar.xz
+          echo "$sha256  /tmp/co5085-final.tar.xz" | sha256sum -c -
 
-      - name: Expand verified scaffold
-        if: steps.ready.outputs.ready == 'true'
+      - name: Expand tested scaffold
         shell: bash
         run: |
           set -euo pipefail
-          source .bootstrap/manifest.txt
-          cat $(find .bootstrap -maxdepth 1 -type f -name 'sc-???' | sort) | base64 --decode > /tmp/co5085-scaffold.tar.xz
-          echo "$sha256  /tmp/co5085-scaffold.tar.xz" | sha256sum -c -
-          tar -xJf /tmp/co5085-scaffold.tar.xz -C .
-          rm -rf .bootstrap
+          tar -xJf /tmp/co5085-final.tar.xz -C .
+          rm -rf .bootstrap .bootstrap2
           rm -f .github/workflows/bootstrap.yml
 
-      - name: Commit scaffold
-        if: steps.ready.outputs.ready == 'true'
+      - name: Commit final scaffold
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          if git diff --cached --quiet; then
-            echo "No scaffold changes to commit."
-          else
-            git commit -m "Bootstrap tested CO5085 coursework scaffold"
-            git push origin HEAD:main
-          fi
+          git commit -m "Install tested CO5085 coursework scaffold"
+          git push origin HEAD:main
