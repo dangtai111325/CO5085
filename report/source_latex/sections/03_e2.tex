@@ -1,0 +1,62 @@
+\section{E2 - Transformer: Multi-Head Self-Attention và tokenization}
+
+\subsection{Mục tiêu và nguyên tắc hiện thực}
+E2 dùng cùng Fashion-MNIST/split với E1. Có hai implementation attention: bản manual là implementation chính; bản \code{nn.MultiheadAttention} chỉ dùng đối chiếu. Không dùng \code{nn.TransformerEncoder} cho bản manual.
+
+\subsection{Multi-Head Self-Attention tự viết}
+Với token matrix $X\in\mathbb{R}^{T\times d}$, các projection được học riêng:
+\begin{equation}
+Q=XW_Q,\quad K=XW_K,\quad V=XW_V,
+\end{equation}
+\begin{equation}
+\mathrm{Attention}(Q,K,V)=\mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V.
+\end{equation}
+Mỗi head được tính độc lập, sau đó concat và đi qua output projection. Báo cáo cần đối chiếu tensor shape của $Q,K,V$, attention weights và output với implementation PyTorch.
+
+\subsection{Ba cách tokenization}
+\begin{table}[H]\centering
+\caption{Tokenization dùng trong E2.}
+\begin{tabularx}{0.94\textwidth}{@{}lXXX@{}}
+\toprule
+Cách & Số token & Feature/token & Ý nghĩa \\
+\midrule
+Row & 28 & 28 pixel & Mỗi hàng ảnh là một token \\
+Patch $4\times4$ & 49 & 16 pixel & ViT-like non-overlapping patches \\
+CNN-stem & 49 & $d_{model}$ & CNN rút feature map $7\times7$, mỗi vị trí spatial là token \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\safeimage{e2/e2_tokenization.png}{Minh họa ba cách tokenization trên cùng một ảnh Fashion-MNIST.}
+
+\subsection{Classifier và ma trận thí nghiệm}
+Classifier gồm tokenizer, CLS token, hai encoder block nông, LayerNorm và classification head. Để tăng độ sâu so sánh nhưng vẫn bám đề, thực hiện sáu run chính (2 MSA $\times$ 3 tokenizers) và ba run ablation số head 2/4/8 trên tokenizer tốt nhất.
+
+\begin{table}[H]\centering
+\caption{Kế hoạch thí nghiệm E2.}
+\begin{tabular}{@{}lllrr@{}}
+\toprule
+Nhóm & MSA & Tokenizer & Heads & Mục đích \\
+\midrule
+E2-A1--A3 & Manual & Row/Patch/CNN-stem & 4 & So sánh tokenization \\
+E2-B1--B3 & PyTorch & Row/Patch/CNN-stem & 4 & Manual vs reference \\
+E2-C1--C3 & Manual & Best tokenizer & 2/4/8 & Ablation số head \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Kết quả và attention visualization}
+\begin{table}[H]\centering
+\caption{Kết quả E2.}
+\begin{tabular}{@{}llllrrr@{}}
+\toprule
+ID & MSA & Tokenizer & Heads & Val Acc & Test Acc & Time/epoch \\
+\midrule
+\multicolumn{7}{c}{\textcolor{TodoRed}{CHƯA CÓ KẾT QUẢ - SẼ ĐƯỢC NOTEBOOK XUẤT TỪ RUN THẬT}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\safeimage{e2/e2_comparison.png}{So sánh accuracy và thời gian giữa manual/PyTorch MSA và các tokenizer.}
+\safeimage{e2/e2_attention_maps.png}{Attention heatmap của một số mẫu Fashion-MNIST.}
+
+\subsection{Thảo luận E2}
+\TODO{PHÂN TÍCH: sequence length ảnh hưởng compute ra sao; tokenizer nào tốt; manual và PyTorch có xu hướng tương đồng không; số head giúp/hại thế nào; attention map có hợp lý về mặt thị giác không.}

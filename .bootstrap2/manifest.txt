@@ -1,3 +1,0 @@
-chunks=5
-sha256=3fafec28dec62be01b7962f63d4edaf39b69817cc5bbb643cee5fb7605b8662e
-# retry=2

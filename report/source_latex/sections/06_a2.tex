@@ -1,0 +1,111 @@
+\section{A2 - Object Detection và phân tích paper}
+
+\subsection{Bài toán, dataset và A2.1 protocol}
+Chủ đề đã chọn là \textbf{Object Detection}. Dataset đề xuất hiện tại là BDD100K detection vì có road scenes, nhiều class và object ở nhiều scale. Trước A2.1 cần chốt dataset/subset, class mapping, split, metric và paper citation.
+
+\TODO{XÁC NHẬN DATASET A2, QUY MÔ SUBSET VÀ PAPER CUỐI CÙNG TRƯỚC 02/11/2026.}
+\safeimage{a2/a2_eda.png}{EDA A2: số box theo lớp, số object/ảnh, phân bố diện tích/aspect ratio và sample annotations.}
+
+\subsection{Dataset, DataLoader và augmentation}
+Mỗi sample trả về ảnh và target gồm boxes, labels, area, image id và iscrowd. Ảnh được resize về một canvas cố định cho detector; bounding boxes được scale tương ứng. Horizontal flip hoặc augmentation hình học chỉ được dùng khi code cập nhật box chính xác. Validation/test không dùng augmentation ngẫu nhiên.
+
+\subsection{Paper chính: Feature Pyramid Networks for Object Detection}
+Paper chính dự kiến là Lin et al., \emph{Feature Pyramid Networks for Object Detection} \cite{lin2017fpn}; Faster R-CNN \cite{ren2015faster} là detector nền. Phần paper phải viết lại bằng lời của nhóm, không chép abstract, và gồm đủ method, experiments, limitations và liên hệ với pipeline.
+
+\subsubsection{Ý tưởng, kiến trúc và giả thiết}
+FPN dùng top-down pathway và lateral connections để tạo pyramid feature có semantic mạnh ở nhiều resolution. Backbone tạo $C_2,C_3,C_4,C_5$; mỗi level được chiếu bằng convolution $1\times1$, cộng với feature cấp cao được upsample, rồi convolution $3\times3$ tạo $P_2,P_3,P_4,P_5$.
+\safeimage{a2/a2_fpn_architecture.png}{Top-down pathway và lateral connections của custom FPN.}
+
+\subsubsection{Thí nghiệm của paper}
+\TODO{ĐỌC PAPER CHÍNH THỨC VÀ ĐIỀN: DATASET, BACKBONE, DETECTOR, METRIC, ABLATION, KẾT LUẬN; CITE TỪNG CLAIM QUAN TRỌNG.}
+
+\subsubsection{Hạn chế của paper và khả năng tái hiện}
+Báo cáo phải phân biệt rõ \emph{full benchmark reproduction} với \emph{controlled/partial reproduction}. Nếu nhóm dùng BDD100K/subset, schedule khác và pretrained backbone thì không được tuyên bố tái hiện đúng số liệu COCO của paper; mục tiêu là kiểm tra lại contribution FPN trong protocol có kiểm soát.
+
+\subsection{Pipeline Faster R-CNN tự ghép theo từng thành phần}
+Repository không gọi \code{torchvision.models.detection.FasterRCNN} và không gọi \code{fasterrcnn\_resnet50\_fpn}. Pipeline được viết thành các module độc lập:
+\begin{enumerate}
+\item fixed-size detection transform và box scaling;
+\item ResNet stages và single-scale/FPN backbone;
+\item custom anchor generator;
+\item custom RPN head, anchor matching, sampling, box regression và proposal generation;
+\item RoIAlign là operator cấp thấp từ torchvision;
+\item custom RoI sampling, two-FC box head và class-specific box predictor;
+\item custom training loss assembly và inference post-processing;
+\item NMS là operator tối ưu cấp thấp từ torchvision.
+\end{enumerate}
+\safeimage{a2/a2_pipeline.png}{Pipeline Faster R-CNN/FPN được hiện thực trong repository.}
+
+\subsection{Ma trận thí nghiệm A2}
+\begin{table}[H]\centering
+\caption{Bốn biến thể A2.}
+\begin{tabularx}{\textwidth}{@{}llXX@{}}
+\toprule
+ID & Detector & Biến thay đổi & Câu hỏi \\
+\midrule
+D1 & Faster R-CNN single-scale & Chỉ C5 projection, không FPN & Baseline detection \\
+D2 & Faster R-CNN + FPN & Custom P2--P5 & FPN cải thiện multi-scale detection thế nào? \\
+D3 & FPN + small anchors & Anchor scales nhỏ hơn & Có tăng AP của small objects không? \\
+D4 & FPN + deeper fine-tune & Mở thêm ResNet stages & Accuracy/compute trade-off thế nào? \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Training protocol}
+Backbone có thể khởi tạo ImageNet pretrained; detector heads/FPN được train trên dataset A2. Không bắt buộc train toàn bộ backbone từ random initialization. Để D1--D2 là controlled comparison, cần giữ giống nhau split, augmentation, image size, optimizer, schedule và backbone initialization; biến chính là FPN.
+
+\begin{table}[H]\centering
+\caption{Thiết lập huấn luyện A2.}
+\begin{tabularx}{0.94\textwidth}{@{}lX@{}}
+\toprule
+Thành phần & Giá trị \\
+\midrule
+Train/val/subset & \TBD \\
+Image size & \TBD \\
+Backbone init / trainable stages & \TBD \\
+Optimizer / LR / schedule & \TBD \\
+RPN anchors / NMS thresholds & \TBD \\
+Model selection & validation mAP \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kết quả định lượng}
+\begin{table}[H]\centering
+\caption{Kết quả chính A2.}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ID & mAP@0.5 & mAP@0.5:0.95 & AP$_S$ & AP$_M$ & AP$_L$ & Latency \\
+\midrule
+D1 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+D2 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+D3 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+D4 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+\bottomrule
+\end{tabular}
+\end{table}
+\safeimage{a2/a2_pr_ap.png}{Precision-recall/AP comparison giữa D1--D4.}
+\safeimage{a2/a2_detections.png}{Qualitative detections: đúng, false positive, false negative, small/occluded objects.}
+
+\subsection{Failure-case analysis}
+Phân nhóm lỗi theo small objects, occlusion, dense traffic, day/night, weather và class confusion. Các ví dụ phải được lấy từ output thật và đi kèm confidence/ground-truth để tránh cherry-picking.
+
+\subsection{Đối chiếu paper với pipeline của nhóm}
+\begin{table}[H]\centering
+\caption{Khung đối chiếu paper FPN và thí nghiệm nhóm.}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+Yếu tố & Paper & Pipeline nhóm \\
+\midrule
+Dataset & \TODO{ĐIỀN} & \ATwoDataset \\
+Backbone/init & \TODO{ĐIỀN} & \TODO{ĐIỀN CONFIG THẬT} \\
+Detector/FPN & \TODO{ĐIỀN} & Custom Faster R-CNN + custom FPN \\
+Training schedule & \TODO{ĐIỀN} & \TODO{ĐIỀN} \\
+Metric & \TODO{ĐIỀN} & mAP@0.5, mAP@0.5:0.95, AP by size \\
+Kết luận & \TODO{ĐIỀN} & \TODO{ĐIỀN SAU D1--D4} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Hạn chế và kết luận A2}
+\TODO{THẢO LUẬN GIỚI HẠN GPU 12GB, SUBSET NẾU CÓ, PRETRAINED BACKBONE, CLASS IMBALANCE, SMALL OBJECTS, WEATHER/TIME-OF-DAY DOMAIN SHIFT, VÀ MỨC ĐỘ REPRODUCTION THỰC SỰ.}

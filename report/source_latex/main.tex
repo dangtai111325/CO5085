@@ -1,0 +1,42 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{reportstyle}
+\input{metadata}
+
+\graphicspath{{../../assets/}{../../assets/logos/}{../../assets/shared/}{../../assets/e1/}{../../assets/e2/}{../../assets/e3/}{../../assets/a1/}{../../assets/a2/}}
+\title{CO5085 Coursework Report}
+\author{Nhóm CO5085}
+\date{10/2026}
+
+\begin{document}
+\input{sections/cover}
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+\pagenumbering{arabic}
+
+\input{sections/00_overview}
+\input{sections/01_shared_setup}
+\input{sections/02_e1}
+\input{sections/03_e2}
+\input{sections/04_e3}
+\input{sections/05_a1}
+\input{sections/06_a2}
+\input{sections/07_conclusion}
+\input{sections/08_appendix}
+
+\clearpage
+\section*{Tài liệu tham khảo}
+\addcontentsline{toc}{section}{Tài liệu tham khảo}
+\begin{thebibliography}{9}
+\bibitem{he2016resnet} K. He, X. Zhang, S. Ren, and J. Sun, ``Deep Residual Learning for Image Recognition,'' CVPR, 2016.
+\bibitem{dosovitskiy2021vit} A. Dosovitskiy et al., ``An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale,'' ICLR, 2021.
+\bibitem{touvron2021deit} H. Touvron et al., ``Training Data-Efficient Image Transformers and Distillation through Attention,'' ICML, 2021.
+\bibitem{ren2015faster} S. Ren, K. He, R. Girshick, and J. Sun, ``Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks,'' NeurIPS, 2015.
+\bibitem{lin2017fpn} T.-Y. Lin et al., ``Feature Pyramid Networks for Object Detection,'' CVPR, 2017.
+\bibitem{yu2020bdd100k} F. Yu et al., ``BDD100K: A Diverse Driving Dataset for Heterogeneous Multitask Learning,'' CVPR, 2020.
+\end{thebibliography}
+\end{document}

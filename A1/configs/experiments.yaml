@@ -1,0 +1,13 @@
+dataset: GTSRB
+num_classes: 43
+image_size: 224
+seed: 42
+experiments:
+  - {id: C1, family: resnet18, pretrained: false, mode: scratch}
+  - {id: C2, family: resnet18, pretrained: true, mode: head}
+  - {id: C3, family: resnet18, pretrained: true, mode: partial}
+  - {id: C4, family: resnet18, pretrained: true, mode: full}
+  - {id: T1, family: vit_tiny, pretrained: false, mode: scratch}
+  - {id: T2, family: vit_tiny, pretrained: true, mode: head}
+  - {id: T3, family: vit_tiny, pretrained: true, mode: partial}
+  - {id: T4, family: vit_tiny, pretrained: true, mode: full}

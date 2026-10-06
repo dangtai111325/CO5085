@@ -1,0 +1,10 @@
+dataset: BDD100K
+num_classes_including_background: 11
+seed: 42
+main_metric: mAP@0.5
+secondary_metrics: [mAP@0.5:0.95, AP_small, AP_medium, AP_large, per_class_AP, latency]
+experiments:
+  - {id: D1, variant: single_scale, pretrained_backbone: true, trainable_backbone_layers: 2, small_object_anchors: false}
+  - {id: D2, variant: fpn, pretrained_backbone: true, trainable_backbone_layers: 2, small_object_anchors: false}
+  - {id: D3, variant: fpn, pretrained_backbone: true, trainable_backbone_layers: 2, small_object_anchors: true}
+  - {id: D4, variant: fpn, pretrained_backbone: true, trainable_backbone_layers: 4, small_object_anchors: false}

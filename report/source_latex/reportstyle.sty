@@ -1,0 +1,89 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{reportstyle}[2026/10/06 CO5085 report style]
+
+\RequirePackage[a4paper,top=2.0cm,bottom=2.2cm,left=2.35cm,right=2.35cm]{geometry}
+\RequirePackage{fontspec}
+\setmainfont{FreeSerif}
+\setsansfont{FreeSans}
+\setmonofont{FreeMono}[Scale=0.88]
+\RequirePackage{microtype}
+\RequirePackage{setspace}
+\setstretch{1.06}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{tabularx}
+\RequirePackage{longtable}
+\RequirePackage{multirow}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{xcolor}
+\RequirePackage{float}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\RequirePackage{enumitem}
+\RequirePackage{fancyhdr}
+\RequirePackage{hyperref}
+\RequirePackage{url}
+\RequirePackage{listings}
+\RequirePackage{tikz}
+\RequirePackage{etoolbox}
+\RequirePackage{ifthen}
+\RequirePackage{mdframed}
+
+\definecolor{HCMUTBlue}{HTML}{0B3D91}
+\definecolor{TodoRed}{HTML}{B42318}
+\definecolor{TodoBg}{HTML}{FFF0EE}
+\definecolor{SoftGray}{HTML}{F5F6F8}
+\definecolor{SoftGreen}{HTML}{EEF8EE}
+\definecolor{SoftOrange}{HTML}{FFF5E8}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=HCMUTBlue,urlcolor=HCMUTBlue,pdfborder={0 0 0}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlist[itemize]{topsep=0.3em,itemsep=0.15em,leftmargin=1.7em}
+\setlist[enumerate]{topsep=0.3em,itemsep=0.15em,leftmargin=1.9em}
+
+\captionsetup{font=small,labelfont=bf,labelsep=colon,justification=centering}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\listfigurename}{Danh sách hình vẽ}
+\renewcommand{\listtablename}{Danh sách bảng}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Học sâu và ứng dụng trong thị giác máy tính}
+\fancyhead[R]{\small Báo cáo CO5085}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}{-2.5ex \@plus -1ex \@minus -.2ex}{1.2ex \@plus .2ex}{\normalfont\Large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-2ex \@plus -1ex \@minus -.2ex}{0.8ex \@plus .2ex}{\normalfont\large\bfseries}}
+\makeatother
+
+\newcommand{\TODO}[1]{\textcolor{TodoRed}{\textbf{[CẦN ĐIỀN: #1]}}}
+\newcommand{\TBD}{\TODO{CHƯA CÓ DỮ LIỆU}}
+\newcommand{\metricpending}{\textcolor{TodoRed}{\textbf{--}}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\newmdenv[linewidth=0.5pt,roundcorner=4pt,innerleftmargin=9pt,innerrightmargin=9pt,innertopmargin=8pt,innerbottommargin=8pt,skipabove=0.6em,skipbelow=0.6em]{objectivebox}
+
+\newcommand{\placeholderfigure}[2][0.78\linewidth]{%
+\begin{figure}[H]\centering
+\fbox{\begin{minipage}[c][4.1cm][c]{#1}\centering
+\textcolor{TodoRed}{\bfseries [CHƯA CÓ HÌNH]}\\[0.5em]
+#2
+\end{minipage}}
+\caption{#2}\label{fig:placeholder-\thefigure}
+\end{figure}}
+
+\newcommand{\safeimage}[3][0.82\linewidth]{%
+\begin{figure}[H]\centering
+\IfFileExists{../../assets/#2}{\includegraphics[width=#1]{../../assets/#2}}{%
+\fbox{\begin{minipage}[c][4.1cm][c]{#1}\centering\textcolor{TodoRed}{\bfseries [CHƯA CÓ FILE: \texttt{\detokenize{#2}}]}\\[0.5em]#3\end{minipage}}}
+\caption{#3}\end{figure}}
+
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single,framerule=0.3pt,backgroundcolor=\color{SoftGray},showstringspaces=false,columns=fullflexible}

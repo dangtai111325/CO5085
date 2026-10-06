@@ -1,0 +1,54 @@
+\section{E3 - LSTM/GRU trên chuỗi ảnh}
+
+\subsection{Mục tiêu và các cách biến ảnh thành chuỗi}
+E3 tiếp tục dùng Fashion-MNIST. Thay vì chỉ chọn một representation, báo cáo chuẩn bị ba cách để tạo đủ evidence cho comparison:
+\begin{enumerate}
+\item \textbf{Rows}: $T=28$, mỗi timestep có 28 feature.
+\item \textbf{Columns}: $T=28$, mỗi timestep có 28 feature.
+\item \textbf{Patch $4\times4$}: $T=49$, mỗi timestep có 16 feature.
+\end{enumerate}
+
+\subsection{Manual LSTM và GRU}
+Repository có manual cell theo phương trình cổng để kiểm chứng kiến thức. \code{nn.LSTM}/\code{nn.GRU} vẫn được giữ làm reference vì đề cho phép, nhưng không thay thế phần manual.
+
+\paragraph{LSTM.} Báo cáo cần trình bày input, forget, candidate và output gates; chỉ rõ cách cập nhật $c_t$ và $h_t$.
+\paragraph{GRU.} Báo cáo cần trình bày update/reset gates và hidden candidate; giải thích vì sao GRU có ít state hơn LSTM.
+
+\safeimage{e3/e3_recurrent_cells.png}{Sơ đồ manual LSTM/GRU cell và luồng ảnh $\rightarrow$ sequence $\rightarrow$ classifier.}
+
+\subsection{Ma trận thí nghiệm}
+\begin{table}[H]\centering
+\caption{Ma trận thí nghiệm E3.}
+\begin{tabularx}{0.92\textwidth}{@{}lllX@{}}
+\toprule
+ID & Recurrent model & Representation & Mục đích \\
+\midrule
+E3-L-R/E3-G-R & LSTM / GRU & Rows & Baseline sequence \\
+E3-L-C/E3-G-C & LSTM / GRU & Columns & Sensitivity theo hướng quét \\
+E3-L-P/E3-G-P & LSTM / GRU & Patch $4\times4$ & Local block sequence \\
+E1 baseline & MLP / best CNN & 2D image & So sánh non-recurrent \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kết quả}
+\begin{table}[H]\centering
+\caption{So sánh E3 với baseline E1.}
+\begin{tabular}{@{}lllrrrr@{}}
+\toprule
+Model & Representation & Params & Val Acc & Test Acc & Time/epoch & Best epoch \\
+\midrule
+LSTM & Row & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+GRU & Row & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+LSTM & Column & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+GRU & Column & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+LSTM & Patch & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+GRU & Patch & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+Best E1 CNN & 2D image & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+\bottomrule
+\end{tabular}
+\end{table}
+\safeimage{e3/e3_learning_comparison.png}{Learning curves và so sánh E3 với MLP/CNN baseline.}
+
+\subsection{Thảo luận E3}
+\TODO{PHÂN TÍCH LSTM VS GRU, ROW VS COLUMN VS PATCH, PARAMETER/TIME TRADE-OFF VÀ VÌ SAO MÔ HÌNH 2D CNN CÓ THỂ CÓ LỢI THẾ TRÊN ẢNH.}

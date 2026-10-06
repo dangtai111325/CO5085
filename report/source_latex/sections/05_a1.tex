@@ -1,0 +1,92 @@
+\section{A1 - CNN vs Transformer trên tập ảnh lớn}
+
+\subsection{Bài toán, dataset và A1.1 protocol}
+Dataset đề xuất hiện tại là \textbf{GTSRB} cho bài toán traffic-sign recognition. Trước A1.1 cần chốt và ghi rõ nguồn, license, số lớp, số ảnh, official split/subset và lý do chọn. Dataset phải lớn/khó hơn E1 và không dùng Fashion-MNIST/MNIST/CIFAR-10 làm tập chính.
+
+\TODO{XÁC NHẬN CUỐI CÙNG DATASET A1 TRƯỚC 26/10/2026.}
+\safeimage{a1/a1_eda.png}{EDA A1: class distribution, image-size distribution và sample grid.}
+
+\subsection{Split, DataLoader và augmentation}
+Ảnh được resize về $224\times224$. Training dùng augmentation; validation/test dùng deterministic transform. Validation được dùng chọn protocol/hyperparameter; test chỉ dùng sau khi chốt model. Báo cáo phải ghi rõ normalize statistics, batch size, số worker và mọi subset nếu GPU giới hạn.
+
+\begin{table}[H]\centering
+\caption{Dataset/split A1 sau khi chốt.}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Split & Số ảnh & Số lớp & Ghi chú \\
+\midrule
+Train & \metricpending & \metricpending & \TODO{OFFICIAL/SUBSET?} \\
+Validation & \metricpending & \metricpending & \TODO{CÁCH TÁCH} \\
+Test & \metricpending & \metricpending & Giữ cho final evaluation \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{CNN: custom ResNet-18}
+ResNet-18 được định nghĩa bằng \code{BasicBlock}, stem, four residual stages, global average pooling và classifier. Bản pretrained chỉ chuyển ImageNet weights vào các layer tương thích; head mới vẫn được train theo dataset A1.
+
+\subsection{Transformer: custom ViT/DeiT-Tiny}
+Transformer được tách thành PatchEmbedding, CLS/position embeddings, manual self-attention, MLP và encoder blocks. Bản pretrained dùng matching weights từ model tham chiếu; architecture forward và training loop của repository vẫn tường minh.
+\safeimage{a1/a1_architecture.png}{Sơ đồ ResNet-18 và ViT/DeiT-Tiny dùng trong A1.}
+
+\subsection{Protocol scratch, pretrained và freezing}
+\begin{table}[H]\centering
+\caption{Tám cấu hình chính A1.}
+\begin{tabular}{@{}llll@{}}
+\toprule
+ID & Họ mô hình & Khởi tạo & Chế độ train \\
+\midrule
+C1 & ResNet-18 & Random & From scratch \\
+C2 & ResNet-18 & ImageNet & Freeze backbone / train head \\
+C3 & ResNet-18 & ImageNet & Partial fine-tune \\
+C4 & ResNet-18 & ImageNet & Full fine-tune \\
+T1 & ViT/DeiT-Tiny & Random & From scratch \\
+T2 & ViT/DeiT-Tiny & ImageNet & Freeze encoder / train head \\
+T3 & ViT/DeiT-Tiny & ImageNet & Partial fine-tune \\
+T4 & ViT/DeiT-Tiny & ImageNet & Full fine-tune \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ngoài tám cấu hình bắt buộc/mở rộng trên, best CNN và best Transformer có thể chạy augmentation ablation và thêm seed để đánh giá độ ổn định. Phần này chỉ được thực hiện sau khi protocol chính chạy ổn định.
+
+\subsection{Thiết lập huấn luyện và chi phí}
+\begin{table}[H]\centering
+\caption{Thiết lập huấn luyện A1.}
+\begin{tabularx}{0.94\textwidth}{@{}lX@{}}
+\toprule
+Thành phần & Giá trị \\
+\midrule
+Optimizer/LR/scheduler & \TBD \\
+Epoch / early stopping & \TBD \\
+Batch size / image size & \TBD \\
+Model-selection metric & \TODO{VALIDATION ACCURACY HOẶC MACRO-F1, CHỐT SAU EDA} \\
+Compute log & total params, trainable params, epoch time, total time, peak VRAM \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kết quả so sánh}
+\begin{table}[H]\centering
+\caption{Kết quả chính A1.}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ID & Acc & Macro-F1 & Trainable params & Time & Peak VRAM & Seed \\
+\midrule
+C1 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+C2 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+C3 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+C4 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+T1 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+T2 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+T3 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+T4 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending & 42 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\safeimage{a1/a1_learning_curves.png}{Learning curves của các cấu hình A1 tiêu biểu.}
+\safeimage{a1/a1_confusion_errors.png}{Confusion matrix và error gallery của best CNN/Transformer.}
+\safeimage{a1/a1_cost_tradeoff.png}{Accuracy/F1 so với trainable parameters, training time và peak VRAM.}
+
+\subsection{Thảo luận A1}
+\TODO{TRẢ LỜI BẰNG SỐ LIỆU: pretraining giúp bao nhiêu; head-only/partial/full khác nhau thế nào; ViT có cần pretraining hơn CNN không; khi nào freeze có lợi; lỗi theo lớp; compute trade-off.}

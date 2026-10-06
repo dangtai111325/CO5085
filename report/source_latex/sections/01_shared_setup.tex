@@ -1,0 +1,32 @@
+\section{Thiết lập chung, tổ chức code và khả năng tái lập}
+
+\subsection{Môi trường tính toán}
+\begin{table}[H]\centering
+\caption{Môi trường thực nghiệm dự kiến.}
+\begin{tabularx}{0.92\textwidth}{@{}lX@{}}
+\toprule
+Thành phần & Thiết lập \\
+\midrule
+GPU & NVIDIA Precision A3000, 12 GB VRAM \\
+Framework & PyTorch, torchvision, Jupyter Notebook \\
+Seed chính & 42; các cấu hình quan trọng có thể lặp thêm seed để kiểm tra độ ổn định \\
+Thiết bị thực tế & \TODO{CHẠY scripts/check\_env.py VÀ ĐIỀN CPU/RAM/CUDA/DRIVER/PYTORCH} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Quy ước code}
+\begin{itemize}
+\item Không dùng \code{trainer.fit()} hoặc wrapper huấn luyện end-to-end.
+\item Training/validation/test loop được viết bằng PyTorch primitives: forward, loss, backward, optimizer step và metric accumulation.
+\item E2 tự viết Q/K/V, scaled dot-product attention và ghép head; \code{nn.MultiheadAttention} chỉ dùng làm reference.
+\item E3 có manual LSTM/GRU cell; \code{nn.LSTM}/\code{nn.GRU} dùng để đối chiếu.
+\item A1 tự định nghĩa ResNet-18 và ViT-Tiny theo block/layer; pretrained model chỉ cung cấp weight initialization phù hợp.
+\item A2 tự ghép transform, ResNet stages, custom FPN, custom anchors, RPN, proposal sampling, RoI head và Fast R-CNN predictor. Chỉ dùng operator tối ưu cấp thấp như NMS/RoIAlign từ torchvision.
+\end{itemize}
+
+\subsection{Artifact và naming convention}
+Mỗi experiment có ID cố định, config, seed, history, thời gian, parameter count và metric. Hình cuối cùng được copy vào thư mục \code{assets/}; bảng/JSON/CSV phục vụ báo cáo đặt trong \code{report/results/}. Dataset và checkpoint lớn không commit vào GitHub.
+
+\subsection{Quy trình notebook}
+Mỗi notebook tuân theo cùng logic: \textbf{Environment $\rightarrow$ Data/EDA $\rightarrow$ Split/DataLoader $\rightarrow$ Model sanity $\rightarrow$ Train $\rightarrow$ Validate/Test $\rightarrow$ Visualize $\rightarrow$ Export artifacts $\rightarrow$ Report checklist}. A1/A2 được tách thành nhiều notebook để evaluation/plotting không buộc phải train lại model.

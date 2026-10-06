@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Data and heavyweight artifacts
+data/*
+!data/README.md
+**/outputs/checkpoints/*.pt
+**/outputs/checkpoints/*.pth
+**/outputs/checkpoints/*.ckpt
+*.pt
+*.pth
+*.ckpt
+
+# Temporary experiment artifacts
+runs/
+wandb/
+*.log
+
+# LaTeX build intermediates
+report/.build/
+report/source_latex/*.aux
+report/source_latex/*.fdb_latexmk
+report/source_latex/*.fls
+report/source_latex/*.log
+report/source_latex/*.out
+report/source_latex/*.toc
+report/source_latex/*.lof
+report/source_latex/*.lot
+report/source_latex/*.xdv
+report/source_latex/*.synctex.gz
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+report/source_latex/main.pdf

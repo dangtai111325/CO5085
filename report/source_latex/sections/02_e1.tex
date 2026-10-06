@@ -1,0 +1,63 @@
+\section{E1 - Phân loại ảnh: Softmax, MLP và CNN}
+
+\subsection{Mục tiêu, dữ liệu và split}
+E1 sử dụng Fashion-MNIST và giữ cùng dataset/split cho E2--E3 theo yêu cầu đề. Tập train gốc sẽ được tách train/validation bằng seed cố định; test set chỉ dùng cho đánh giá cuối.
+
+\TODO{ĐIỀN SỐ MẪU TRAIN/VAL/TEST, TỶ LỆ TÁCH VÀ SEED SAU KHI CHẠY NOTEBOOK THẬT.}
+\safeimage{e1/e1_eda.png}{EDA Fashion-MNIST: sample grid và phân bố 10 lớp.}
+
+\subsection{Tiền xử lý và DataLoader}
+Ảnh giữ cấu trúc grayscale $1\times28\times28$. Softmax/MLP flatten ảnh trong forward; CNN nhận tensor 2D trực tiếp. Báo cáo cần ghi batch size, normalization nếu dùng, số worker và lý do augmentation có/không được áp dụng.
+
+\subsection{Kiến trúc bốn cấu hình}
+\begin{table}[H]\centering
+\caption{Các cấu hình E1.}
+\begin{tabularx}{\textwidth}{@{}lllX@{}}
+\toprule
+ID & Mô hình & Kiến trúc chính & Câu hỏi so sánh \\
+\midrule
+E1-M1 & Linear Softmax & Flatten $\rightarrow$ Linear(784,10) & Baseline tuyến tính \\
+E1-M2 & MLP & 784 $\rightarrow$ 256 $\rightarrow$ 128 $\rightarrow$ 10 & Giá trị của phi tuyến/depth \\
+E1-M3 & CNN-2 & 2 Conv blocks $\rightarrow$ classifier & Inductive bias không gian \\
+E1-M4 & CNN-3-BN & 3 Conv blocks + BatchNorm + Dropout & Capacity và regularization \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Training loop và protocol}
+Training loop phải thể hiện tường minh \code{optimizer.zero\_grad()}, forward, criterion, \code{loss.backward()} và \code{optimizer.step()}. Tất cả mô hình dùng cùng split; hyperparameter khác biệt phải được ghi rõ thay vì ngầm thay đổi.
+
+\begin{table}[H]\centering
+\caption{Thiết lập huấn luyện E1.}
+\begin{tabularx}{0.9\textwidth}{@{}lX@{}}
+\toprule
+Thành phần & Giá trị thực nghiệm \\
+\midrule
+Optimizer / LR & \TBD \\
+Batch size / epochs & \TBD \\
+Criterion & Cross-entropy \\
+Seed & \TBD \\
+Model selection & \TODO{CHỌN THEO VALIDATION ACCURACY/LOSS VÀ GHI RÕ} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kết quả định lượng}
+\begin{table}[H]\centering
+\caption{Kết quả E1 trên validation/test.}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Model & Params & Val Acc & Test Acc & Best epoch & Train time \\
+\midrule
+E1-M1 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+E1-M2 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+E1-M3 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+E1-M4 & \metricpending & \metricpending & \metricpending & \metricpending & \metricpending \\
+\bottomrule
+\end{tabular}
+\end{table}
+\safeimage{e1/e1_learning_curves.png}{Learning curves của bốn cấu hình E1.}
+\safeimage{e1/e1_confusion_errors.png}{Confusion matrix và các mẫu dự đoán sai tiêu biểu của E1.}
+
+\subsection{Phân tích lỗi và kết luận E1}
+\TODO{PHÂN TÍCH BẰNG EVIDENCE: lớp nào dễ nhầm, CNN cải thiện gì so với flatten, capacity có dẫn tới overfit không, tốc độ hội tụ và số tham số khác nhau thế nào.}

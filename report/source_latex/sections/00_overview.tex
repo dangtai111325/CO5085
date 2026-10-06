@@ -1,0 +1,45 @@
+\section{Xác định đề bài, phạm vi và mục tiêu}
+
+Báo cáo này là \textbf{một PDF thống nhất} cho toàn bộ coursework \CourseCode. Cấu trúc được thiết kế trực tiếp từ ba đề E1--E3, A1 và A2. E1--E3 theo đề bắt buộc dùng một báo cáo PDF chung; theo yêu cầu tổ chức của nhóm, A1 và A2 cũng được tích hợp vào cùng master report để dữ liệu, protocol, kết quả và thảo luận nằm trong một tài liệu nhất quán.
+
+\begin{objectivebox}
+\textbf{Nguyên tắc triển khai.} Mỗi kết luận trong báo cáo phải truy ngược được tới code, config và artifact chạy thực tế. Các mô hình/training loop được viết tường minh theo từng lớp/thành phần thay vì dùng trainer end-to-end. Mọi số liệu, biểu đồ và hình đánh giá đang thiếu đều giữ placeholder màu đỏ; không tự tạo kết quả.
+\end{objectivebox}
+
+\subsection{Đối chiếu yêu cầu của đề với cấu trúc báo cáo}
+\begin{table}[H]\centering
+\caption{Đối chiếu yêu cầu bắt buộc và vị trí đáp ứng trong báo cáo.}
+\begin{tabularx}{\textwidth}{@{}p{0.14\textwidth}X X@{}}
+\toprule
+Hạng mục & Yêu cầu chính từ đề & Phần đáp ứng \\
+\midrule
+E1 & Softmax, MLP, CNN; training loop tự viết; validation/test; accuracy, capacity/parameters, learning curves, error cases & Mục 3 \\
+E2 & MSA tự viết + bản PyTorch; ít nhất 2 tokenization; so sánh implementation/tokenizer bằng số liệu và nhận xét & Mục 4 \\
+E3 & Cả LSTM và GRU; mô tả cách chuyển ảnh thành chuỗi; so sánh với MLP/CNN; bảng/biểu đồ rõ & Mục 5 \\
+A1 & Dataset lớn; CNN vs Transformer; scratch/pretrained; head-only/partial/full fine-tune; accuracy/F1, time, trainable params, error analysis & Mục 6 \\
+A2 & Object Detection; dataset/EDA; ít nhất 2 variants; paper method/experiments/limitations; đối chiếu paper với pipeline; results/discussion/limitations & Mục 7 \\
+Tái lập & Seed, config, log, README/lệnh chạy, code và PDF trên GitHub/GitHub Pages & Mục 2, Phụ lục A \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Phạm vi thí nghiệm dự kiến}
+\begin{table}[H]\centering
+\caption{Tổng quan dataset và khối lượng experiment.}
+\begin{tabularx}{\textwidth}{@{}lX X@{}}
+\toprule
+Bài & Dataset / bài toán & Phạm vi dự kiến \\
+\midrule
+E1--E3 & Fashion-MNIST & 4 classifiers; 3 tokenizers; manual/PyTorch MSA; 3 sequence representations; LSTM/GRU và E1 baselines \\
+A1 & \AOneDataset & Custom ResNet-18 vs custom ViT/DeiT-Tiny; 8 protocol chính + augmentation/seed ablation \\
+A2 & \ATwoDataset & Custom Faster R-CNN pipeline; single-scale vs custom FPN; anchor và backbone fine-tuning ablations \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\placeholderfigure{Luồng tổng thể của coursework: dữ liệu $\rightarrow$ EDA/split $\rightarrow$ model components $\rightarrow$ training $\rightarrow$ evaluation $\rightarrow$ figures/tables $\rightarrow$ report.}
+
+\subsection{Quy tắc trung thực và sử dụng AI}
+Mọi trường chưa được xác nhận được đánh dấu \TODO{MÀU ĐỎ}. Synthetic smoke data chỉ dùng để kiểm tra tính chạy được của source code và \textbf{không được đưa vào phần kết quả}. Dataset test/final evaluation chỉ được dùng sau khi protocol đã được chốt bằng train/validation.
+
+\TODO{ĐIỀN TUYÊN BỐ SỬ DỤNG AI THEO QUY ĐỊNH MÔN HỌC: phạm vi hỗ trợ, phần code/report đã được kiểm tra và người nộp hiểu/bảo vệ được nội dung.}

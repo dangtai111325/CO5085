@@ -1,0 +1,27 @@
+\appendix
+\section{Phụ lục: lệnh chạy và tái lập}
+
+\subsection{Cài đặt}
+\begin{lstlisting}[language=bash]
+git clone https://github.com/dangtai111325/CO5085.git
+cd CO5085
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\\Scripts\\activate
+pip install -r requirements.txt
+python scripts/check_env.py
+python scripts/smoke_test.py
+\end{lstlisting}
+
+\subsection{Build báo cáo}
+\begin{lstlisting}[language=bash]
+bash scripts/build_report.sh
+\end{lstlisting}
+
+\subsection{Artifact cần giữ để tái lập}
+\begin{itemize}
+\item seed, config YAML và package versions;
+\item CSV/JSON history của từng run;
+\item checkpoint tốt nhất (lưu local/release nếu kích thước phù hợp, không bắt buộc commit Git);
+\item figures/tables đã dùng trong báo cáo;
+\item commit/tag tương ứng với từng deadline.
+\end{itemize}
