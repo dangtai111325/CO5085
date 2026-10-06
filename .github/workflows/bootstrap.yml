@@ -30,15 +30,19 @@ jobs:
           cat $(find .bootstrap2 -maxdepth 1 -type f -name 'xz-*' | sort) | base64 --decode > /tmp/co5085-final.tar.xz
           echo "$sha256  /tmp/co5085-final.tar.xz" | sha256sum -c -
 
-      - name: Expand tested scaffold
+      - name: Expand tested scaffold without workflow mutations
         shell: bash
         run: |
           set -euo pipefail
+          cp .github/workflows/bootstrap.yml /tmp/bootstrap.yml
+          cp .github/workflows/pages.yml /tmp/pages.yml
           tar -xJf /tmp/co5085-final.tar.xz -C .
+          cp /tmp/bootstrap.yml .github/workflows/bootstrap.yml
+          cp /tmp/pages.yml .github/workflows/pages.yml
+          rm -f .github/workflows/quality.yml .github/workflows/report.yml
           rm -rf .bootstrap .bootstrap2
-          rm -f .github/workflows/bootstrap.yml
 
-      - name: Commit final scaffold
+      - name: Commit tested source scaffold
         shell: bash
         run: |
           set -euo pipefail
