@@ -1,0 +1,28 @@
+name: Repository quality checks
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  structural-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile Python syntax
+        run: python -m compileall -q common E1 E2 E3 A1 A2 scripts tests
+      - name: Validate repository artifacts
+        run: python scripts/validate_repo.py
+      - name: Validate HTML syntax
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          HTMLParser().feed(Path('docs/index.html').read_text(encoding='utf-8'))
+          print('HTML parse OK')
+          PY
