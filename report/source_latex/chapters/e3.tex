@@ -1,0 +1,40 @@
+\chapter{E3: LSTM và GRU trên chuỗi ảnh}
+\section{Biểu diễn và baseline}
+Rows và columns có T=28,D=28; patches4$\times$4 có T=49,D=16. Các ảnh giữ cùng
+split Fashion-MNIST. Notebook định nghĩa và train MLP/CNN-B riêng, không đọc
+checkpoint E1. Điều này cho phép chạy từ kernel mới chỉ với dataset local đã xử lý.
+\section{Recurrent cells và kiểm chứng}
+LSTM dùng gates input/forget/output, candidate, hidden và cell state:
+\begin{equation}c_t=f_t\odot c_{t-1}+i_t\odot g_t,\quad h_t=o_t\odot\tanh(c_t).\end{equation}
+GRU dùng reset/update với convention PyTorch:
+\begin{equation}n_t=\tanh(W_{in}x_t+b_{in}+r_t\odot(W_{hn}h_{t-1}+b_{hn})),\quad
+h_t=(1-z_t)\odot n_t+z_t\odot h_{t-1}.\end{equation}
+Điểm cần chú ý: reset nhân sau projection hidden, gồm hidden bias. Manual cell được
+copy weight sang nn.LSTMCell/nn.GRUCell để so forward và gradient tất cả tham số.
+Model dùng hidden128, một layer, hidden cuối và linear10.
+\section{Protocol và ma trận}
+LSTM/GRU$\times$ba representation tạo6 run; MLP/CNN-B thêm2. AdamW$10^{-3}$,
+WD$10^{-4}$, batch128, tối đa 100 epoch, patience 4, gradient clipping1 cho recurrent.
+Baseline giữ protocol riêng tương ứng kiến trúc, không clipping như recurrent.
+Mỗi lần Run All tạo run mới, train trên toàn bộ train54k/val6k/test10k bằng CUDA.
+Early stopping theo validation loss, min\_delta=$10^{-4}$, patience 4;
+best checkpoint có validation loss thấp nhất. Text progress cập nhật tại chỗ,
+xác nhận tensor/gradient CUDA, tiến độ batch, VRAM và early-stop counter.
+Không dùng test cho lựa chọn. Log chi tiết, history, config và seed được lưu.
+\section{Kết quả và phân tích}
+\ResultTable{e3}{So sánh recurrent representation và baseline nội bộ.}
+\FigureOrPlaceholder{assets/e3/sequence_representations.png}{Rows, columns, patches}{Minh họa thứ tự và feature của chuỗi ảnh.}
+\FigureOrPlaceholder{assets/e3/comparison.png}{So sánh E3}{Accuracy validation của tám full run E3.}
+\FigureOrPlaceholder{assets/e3/learning_curves_loss.png}{Learning curves loss}{Ba nhóm tokenizer/representation, màu theo model; nét đứt train, nét liền validation.}
+\FigureOrPlaceholder{assets/e3/learning_curves_accuracy.png}{Learning curves accuracy}{Accuracy theo epoch của lần train mới.}
+\FigureOrPlaceholder{assets/e3/recurrent_representation_comparison.png}{LSTM và GRU}{So sánh cùng representation: accuracy, capacity, giây/epoch.}
+\FigureOrPlaceholder{assets/e3/baseline_curves.png}{So sánh baseline}{LSTM/GRU đại diện chọn bằng validation và MLP/CNN-B train tại chỗ.}
+\FigureOrPlaceholder{assets/e3/confusion_test_pair_1.png}{Confusion matrix test, cặp 1}{Mỗi ô ghi số ảnh và tỷ lệ theo hàng; cùng thang 0--100\%.}
+\FigureOrPlaceholder{assets/e3/confusion_test_pair_2.png}{Confusion matrix test, cặp 2}{Mỗi ô ghi số ảnh và tỷ lệ theo hàng; cùng thang 0--100\%.}
+\FigureOrPlaceholder{assets/e3/confusion_test_pair_3.png}{Confusion matrix test, cặp 3}{Mỗi ô ghi số ảnh và tỷ lệ theo hàng; cùng thang 0--100\%.}
+\FigureOrPlaceholder{assets/e3/confusion_test_pair_4.png}{Confusion matrix test, cặp 4}{Mỗi ô ghi số ảnh và tỷ lệ theo hàng; cùng thang 0--100\%.}
+\FigureOrPlaceholder{assets/e3/failure_examples_test.png}{Ảnh lỗi theo model/lớp}{Model đại diện chọn bằng validation; mỗi lớp/model lấy lỗi đầu tiên.}
+\Pending{Bổ sung kết quả thật, hiệu ứng thứ tự quét, loss gap và lỗi. So sánh chi phí
+LSTM/GRU, capacity và locality với CNN; hidden state không phải giải thích nhân quả.}
+
+\IfFileExists{assets/e3/test_results.tex}{\begin{table}[H]\centering\caption{Metric test sau khi khóa protocol.}\resizebox{\linewidth}{!}{\input{assets/e3/test_results.tex}}\end{table}}{}

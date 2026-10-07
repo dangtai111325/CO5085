@@ -1,0 +1,27 @@
+# Local datasets/annotation/pretrained caches; publish only their documentation.
+/datasets/*
+!/datasets/README.md
+
+# Python/Jupyter/editor caches.
+**/.ipynb_checkpoints/
+**/__pycache__/
+.ruff_cache/
+*.py[cod]
+.venv/
+.vscode/
+
+# LaTeX build intermediates; keep PDF, source, bibliography and report assets.
+*.aux
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.log
+*.lof
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.xdv
+*.tmp
+*.part

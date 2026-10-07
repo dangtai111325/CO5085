@@ -1,0 +1,48 @@
+\chapter{A1: GTSRB, CNN và Transformer}
+\section{Chọn dataset và split}
+GTSRB có43 lớp biển giao thông, ảnh đa độ phân giải và các track liên tiếp cùng
+biển vật lý \cite{gtsrb}. Dataset phù hợp A1 vì lớn/khó hơn tập toy chính và có nhiều
+lớp; không dùng Fashion-MNIST làm bài A1. Train/val tách theo class+track từ filename,
+giữ khoảng20\% track mỗi lớp cho val, seed42. Official test giữ đến đánh giá cuối.
+Không random split các frame của cùng track vì dễ rò rỉ ảnh gần như giống nhau.
+
+Nguồn: kho tác giả ERDA, giữ README gốc và metadata nguồn. Archive được xóa sau khi chia train/val/test; ảnh PPM chuyển PNG lossless và kiểm tra pixel với nguồn. Trang metadata không công bố mã
+SPDX; không gán giấy phép library cho dữ liệu. Cần kiểm tra điều kiện đi kèm, cite
+tác giả và không phân phối raw data khi chưa xác nhận quyền.
+\FigureOrPlaceholder{assets/a1/eda.png}{Phân bố lớp và resolution GTSRB}{EDA trên official train, không dùng test để tune.}
+\section{Preprocessing và kiến trúc}
+RGB224$\times$224, normalization ImageNet cho mọi regime. Train augmentation gồm
+rotate10 độ, translate0.05 và color jitter nhẹ; không flip vì có thể đổi ý nghĩa biển.
+ResNet-50 custom Bottleneck3/4/6/3, expansion4, stride Conv3x3 cùng tensor naming torchvision. DeiT-Small non-distilled:
+patch16, D384, depth12, heads6, MLP ratio4, CLS/position, LayerNorm eps$10^{-6}$
+\cite{resnet,deit}. Load tất cả backbone tensors; chỉ thay classification head43.
+BN num-batches counter không có trong checkpoint ImageNet cũ được khởi tạo0;
+không bỏ qua learned weight hoặc running mean/variance bị thiếu.
+\section{Regime và protocol}
+Mỗi family chạy scratch, pretrained head-only, partial và full. Partial ResNet mở
+layer4/head; partial DeiT mở hai block cuối/norm/head. Frozen BN giữ running buffers
+và weight bất biến trong train, được kiểm tra bằng assertion.
+
+AdamW WD0.01, batch128 cố định cho train/validation/test, accumulation1,
+effectivebatch128; giữ batch cuối và chuẩn hóa gradient theo số ảnh thực tế.
+Đo kiểm riêng trên RTX A3000 12GB với AMP backward/AdamW states cho thấy
+scratch/full giữ khoảng6898MiB reserved (ResNet-50), 6962MiB (DeiT-Small);
+tổng GPU khoảng72--73\% khi đo. FP32 evaluation batch128 đã được kiểm tra với
+optimizer còn resident. Đây là số đo kỹ thuật, không phải kết quả full training.
+Scratch LR$3\cdot10^{-4}$,
+max40 epoch; pretrained head$10^{-3}$/backbone$10^{-4}$, max25 epoch. Warmup3 epoch,
+cosine, patience4, min-delta$10^{-4}$. Checkpoint theo val loss thấp nhất,
+chọn chế độ bằng val accuracy/F1/loss trước khi gọi test. Seed43/44 đổi RNG train, giữ split42.
+\section{Ma trận mở rộng và đánh giá}
+Tám run chính. Với best regime từng family, thêm no-augmentation và hai seed repeats;
+tổng14. Báo cáo accuracy, macro-F1, params/trainable, thời gian, VRAM và lỗi.
+\ResultTable{a1}{So sánh regimes và các thí nghiệm mở rộng A1.}
+\begin{table}[H]\centering\caption{Độ biến thiên ba seed của regime được chọn.}
+\IfFileExists{assets/a1/seeds.tex}{\resizebox{\linewidth}{!}{\input{assets/a1/seeds.tex}}}
+{\begin{tabular}{ll}\toprule Kết quả & Trạng thái\\\midrule Mean/std, n=3 & Chờ full run\\\bottomrule\end{tabular}}\end{table}
+\FigureOrPlaceholder{assets/a1/comparison.png}{So sánh CNN và Transformer}{Accuracy validation của 14 full run A1.}
+\Pending{Điền metric official test, seed mean/std, curves và confusion matrices.
+Giải thích lợi ích pretraining và freeze theo data size; thảo luận no-augmentation
+và các nhầm lớp thật. Không khẳng định Transformer thắng/thua trước full run.}
+
+\IfFileExists{assets/a1/test_results.tex}{\begin{table}[H]\centering\caption{Metric test sau khi khóa protocol.}\resizebox{\linewidth}{!}{\input{assets/a1/test_results.tex}}\end{table}}{}

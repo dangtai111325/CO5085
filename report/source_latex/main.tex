@@ -1,0 +1,123 @@
+\documentclass[12pt,a4paper,oneside]{report}
+\input{preamble}
+\begin{document}
+\begin{titlepage}
+\centering
+{\large ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH\\
+TRƯỜNG ĐẠI HỌC BÁCH KHOA\\
+KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH\par}
+\vspace{14mm}
+\includegraphics[width=34mm]{assets/logos/Im0.png}\par
+\vspace{16mm}
+{\Large\bfseries BÁO CÁO COURSEWORK\par}
+\vspace{7mm}
+{\LARGE\bfseries DEEP LEARNING AND APPLICATIONS\\IN COMPUTER VISION\par}
+\vspace{6mm}
+{\large CO5085 - Học kỳ 261 (2026--2027)\par}
+\vspace{14mm}
+{\large E1 · E2 · E3 · A1 · A2\par}
+\vspace{10mm}
+\begin{tabular}{ll}\toprule Trường thông tin & Giá trị cần xác nhận\\\midrule
+Nhóm & \rule{65mm}{.3pt}\\
+Thành viên / MSSV & \rule{65mm}{.3pt}\\
+Thành viên thứ hai / MSSV & \rule{65mm}{.3pt}\\
+Lớp & \rule{65mm}{.3pt}\\\bottomrule\end{tabular}
+\vfill
+{\large TP. Hồ Chí Minh, tháng 10 năm 2026\par}
+\vspace{4mm}
+{\small Bản nháp phương pháp - kết quả full run chưa được điền\par}
+\end{titlepage}
+\pagenumbering{roman}
+\chapter*{Trạng thái và phạm vi báo cáo}
+\addcontentsline{toc}{chapter}{Trạng thái và phạm vi báo cáo}
+Tài liệu này gộp E1--E3 và A1--A2 theo yêu cầu tổ chức của nhóm. Các phương pháp,
+protocol và định nghĩa metric đã có trong notebook độc lập. Phần kết quả định lượng
+chính thức chỉ được điền sau khi chạy full, kiểm tra log và khóa protocol đánh giá.
+Các ô ``chưa có'' là trạng thái chờ thực nghiệm, không phải giá trị bằng không.
+
+E1--E3 dùng Fashion-MNIST; A1 dùng GTSRB; A2 dùng BDD100K từ archive legacy
+người dùng cung cấp, với 10 lớp detection và split đã lọc trùng. Code hiện làm việc local; công bố GitHub/Pages chỉ
+thực hiện sau khi được duyệt. Báo cáo mẫu được dùng để tham chiếu bố cục, font và
+logo; thông tin cá nhân của mẫu không được tự coi là metadata của bài hiện tại.
+
+\Pending{Chưa có kết quả full run và phân tích của nhóm. Cần bổ sung thông tin
+thành viên, đóng góp thực tế, khai báo AI, metric test và kết luận từ log thật trước khi nộp.}
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage\pagenumbering{arabic}
+\chapter{Thiết kế thực nghiệm chung}
+\section{Mục tiêu và yêu cầu học phần}
+E1 so sánh phân loại tuyến tính, MLP và CNN; E2 khảo sát self-attention và tokenization;
+E3 khảo sát LSTM/GRU trên chuỗi ảnh. A1 so sánh CNN/Transformer, scratch/pretrained
+và mức freeze. A2 hiện thực detection, so sánh ít nhất hai phương pháp/biến thể và
+phân tích paper liên quan. Mọi train loop thực hiện forward, loss, backward và
+optimizer step trực tiếp bằng PyTorch.
+\section{Tái lập và tính độc lập}
+Mỗi notebook chứa toàn bộ cấu hình, lớp model, xử lý dữ liệu, train/eval và xuất kết quả.
+Không notebook nào import notebook khác hoặc yêu cầu checkpoint của bài khác.
+Dataset đã xử lý thành train/val/test là dữ liệu dùng chung. E1--E3 độc lập kiểm tra
+cùng split seed42 và fingerprint; E3 tự train MLP/CNN để có baseline độc lập.
+
+Kernel dùng Python 3.14.7, PyTorch 2.11.0+cu128, torchvision 0.26.0+cu128;
+GPU NVIDIA RTX A3000 12GB Laptop. Phiên bản runtime được lưu vào từng config.
+Không thay thư viện đã có chỉ để khớp một phiên bản cũ trong kế hoạch.
+\section{Chạy đầy đủ và quản lý kết quả}
+Mỗi notebook trong source\_code chạy độc lập bằng Restart Kernel + Run All,
+dùng toàn bộ split local và khởi tạo model mới. Best checkpoint dựa validation/dev
+được sao chép sang CPU RAM để nạp cho đánh giá; không ghi weights hoặc resume qua
+phiên kernel. Bảng, đồ thị và tiến trình được lưu trong output cell khi Save notebook.
+Không tạo thư mục outputs. Assets của source LaTeX được biên tập riêng từ kết quả
+đã kiểm chứng; notebook không tự ghi vào báo cáo.
+\section{Đánh giá công bằng}
+Giữ split, normalization, metric và quy tắc chọn best nhất quán trong mỗi so sánh.
+Test chỉ dùng sau khi khóa quyết định. Loss được tổng hợp theo số mẫu; accumulation
+chia gradient theo số mẫu thực tế, bao gồm cửa sổ cuối. Accuracy/F1/AP khác đơn vị:
+không so sánh trực tiếp giá trị giữa classification và detection.
+\begin{table}[H]\centering\caption{Ma trận full run dự kiến}
+\begin{tabular}{lll}\toprule Bài & Thí nghiệm & Số run\\\midrule
+E1 & Linear, MLP, CNN-A/B & 4\\
+E2 & 2 implementations $\times$ 3 tokenizers + head ablation & 8\\
+E3 & 2 recurrent cells $\times$ 3 representations + MLP/CNN & 8\\
+A1 & 8 chính + 2 augmentation + 4 seed repeats & 14\\
+A2 & C5, FPN, anchors, unfreeze & 4\\\midrule
+Tổng & Không gồm smoke/pilot & 38\\\bottomrule\end{tabular}\end{table}
+\input{chapters/e1}
+\input{chapters/e2}
+\input{chapters/e3}
+\input{chapters/a1}
+\input{chapters/a2}
+\chapter{Kết luận và công việc cần hoàn tất}
+Pipeline local đã được tổ chức để thực hiện các thí nghiệm có thể tái lập. Hiệu năng
+chính thức và ưu/nhược điểm thực nghiệm phải được kết luận sau full run. Không suy
+ra chất lượng mô hình từ việc forward/backward chạy đúng hoặc từ smoke accuracy.
+\section{Checklist trước bản nộp}
+Đối chiếu fingerprint split; kiểm tra best/last và config; khóa test protocol; chạy
+full; đưa log, bảng và hình thật vào báo cáo; viết phân tích lỗi và giới hạn; kiểm
+tra PDF không tràn trang, citation và link hoạt động; xác nhận metadata và đóng góp.
+\section{Đóng góp và AI}
+Theo mục 1.6 của đề exercise, nhóm cần hiểu, kiểm chứng và tự đóng góp đáng kể vào
+code/thực nghiệm/phân tích. Không nộp sản phẩm chủ yếu do AI tạo. Điền bảng dưới
+bằng đóng góp thực tế, không ghi tên hoặc nhiệm vụ giả định.
+\begin{table}[H]\centering\caption{Khai báo đóng góp cần hoàn thiện}
+\begin{tabular}{p{.24\linewidth}p{.63\linewidth}}\toprule Thành phần & Nội dung thực tế\\\midrule
+Thành viên & Chưa xác nhận\\
+Code/thực nghiệm & Chưa khai báo đóng góp thực tế\\
+Phân tích/báo cáo & Chưa khai báo đóng góp thực tế\\
+AI hỗ trợ & Hỗ trợ tổ chức notebook, hiện thực ban đầu, kiểm tra và soạn bản nháp;
+nhóm phải ghi rõ phần đã kiểm chứng/sửa đổi và phần tự thực hiện.\\\bottomrule\end{tabular}\end{table}
+\bibliographystyle{plainnat}\bibliography{references}
+\appendix
+\chapter{Hướng dẫn chạy và lịch nộp}
+README tại root là hướng dẫn vận hành. Mở notebook bằng kernel Python 3.14 (CO5085),
+chạy Restart Kernel + Run All trên dữ liệu đầy đủ, sau đó Save notebook để giữ output cell.
+Đề bài nằm trong assignment; notebook nằm trong source\_code; HTML nằm trong public.
+Dataset giữ local trong datasets và bị Git ignore, chỉ README được công bố.
+Assets chỉ phục vụ source LaTeX; không tạo thư mục outputs.
+\begin{table}[H]\centering\caption{Các deadline, 23:59 GMT+7}
+\begin{tabular}{ll}\toprule Ngày & Mốc\\\midrule
+19/10/2026 & GitHub Pages\\26/10/2026 & A1.1\\02/11/2026 & E1, E2, A2.1\\
+09/11/2026 & E3, A1.2\\16/11/2026 & A2.2\\\bottomrule\end{tabular}\end{table}
+Giới hạn trễ theo đề: trừ 20\% điểm milestone mỗi tuần, tối đa 7 ngày.
+Việc công bố remote cần được duyệt trước các mốc phụ thuộc GitHub.
+\end{document}

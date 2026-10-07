@@ -1,0 +1,93 @@
+\chapter{A2: Detection với Faster R-CNN và FPN}
+\section{BDD100K local và protocol dữ liệu}
+BDD100K có 10 lớp detection trên ảnh giao thông, phù hợp bài phát hiện nhiều
+đối tượng \cite{bdd}. Dữ liệu sử dụng là hai archive legacy người dùng cung cấp,
+đã kiểm tra CRC, SHA256, decode JPEG, parse JSON và đồng bộ 100.000 tên ảnh--nhãn.
+Quyền dữ liệu và nhãn tuân theo điều kiện BDD100K/BAIR; không đồng nhất với BSD
+của toolkit. Raw JPEG/JSON giữ nguyên byte trong train/val/test.
+
+Schema name/frames/objects có bbox và polygon. Chỉ box2d dùng cho detection;
+person/bike/motor ánh xạ pedestrian/bicycle/motorcycle. Các lớp còn lại là rider,
+car, truck, bus, train, traffic light và traffic sign; head có 11 logits kể cả background.
+Tọa độ Scalabel inclusive chuyển bằng cộng 1 vào x2/y2 rồi clamp trong ảnh.
+Box một pixel được giữ khi còn diện tích; box ngoài mép không còn diện tích sau
+clamp/float32 bị loại và ghi đầy đủ source box/lý do trong metadata cache.
+Occluded/truncated vẫn là positive, chỉ crowd/ignored tường minh mới ignore.
+
+Raw split là 70.000/10.000/20.000. Lọc trùng byte bằng SHA256 theo ưu tiên
+test $>$ val $>$ train; trong split giữ tên nhỏ nhất. Loại 2 ảnh train và 2 dev,
+gồm một ảnh train trùng test; còn \textbf{69.998 train / 9.998 dev / 20.000 test}.
+Danh sách lọc, subset và fingerprint lưu split.json. Pilot dùng random 2.000/500,
+seed42; smoke 8/8; full toàn bộ split sạch. Cache NPZ detection được build inline
+từ JSON có kiểm tra checksum, không nhân bản JPEG hoặc polygon.
+
+Archive này có test JSON nhưng chưa xác nhận tương thích Detection 2020.
+Vì vậy chỉ báo cáo local legacy test; không nhận đó là official benchmark score.
+Test chỉ evaluate sau khi khóa protocol, không dùng để chọn anchor hay unfreeze.
+\FigureOrPlaceholder{assets/a2/eda.png}{Phân bố lớp và kích thước bbox}{EDA trên train subset BDD100K của A2.}
+\section{Paper chính: Feature Pyramid Networks}
+FPN \cite{fpn} giải quyết chênh lệch semantic giữa feature tầng nông/sâu bằng
+top-down và lateral connections. Bottom-up ResNet tạo C2--C5. Lateral1$\times$1
+đưa về256 channel; upsample và cộng với tầng dưới; conv3$\times$3 tạo P2--P5.
+P6 lấy từ pooling P5 cho RPN. RoI được gán tầng theo kích thước:
+\begin{equation}k=\left\lfloor4+\log_2\frac{\sqrt{wh}}{224}\right\rfloor,\quad k\in[2,5].\end{equation}
+Faster R-CNN \cite{faster} là nền tảng: RPN tạo proposals, RoI head dự đoán lớp và
+offset bbox. Paper cần được đọc theo phương pháp, thí nghiệm, ablation và giới hạn;
+không chỉ chép abstract. Bài local kiểm tra nguyên lý feature đa tỉ lệ trên BDD100K,
+không nhận tái tạo số COCO hoặc mọi chi tiết training của paper.
+\begin{table}[H]\centering\caption{Kết quả tác giả FPN, Table 3: ResNet-50 trên COCO minival; không phải kết quả local \cite{fpn}.}
+\begin{tabular}{lrr}\toprule Model trong paper & AP & AP50\\\midrule
+C4 baseline & 31.6 & 53.1\\
+C5 baseline & 28.0 & 51.7\\
+FPN & 33.9 & 56.9\\\bottomrule\end{tabular}\end{table}
+Các ablation của tác giả bỏ top-down/lateral để kiểm tra vai trò từng nhánh.
+BDD100K local không tái tạo các ablation này; D3/D4 khảo sát anchor và mức fine-tune.
+\section{Detector và các thành phần tự hiện thực}
+ResNet50 Bottleneck custom load ImageNet, FrozenBatchNorm. RPN gồm shared3$\times$3,
+objectness và bbox delta, anchor ratios0.5/1/2. Matching positive/negative tại
+IoU0.7/0.3 và low-quality match, sample256 positive ratio0.5. Proposals dùng NMS0.7.
+RoIAlign7$\times$7, hai FC1024, classification11 (gồm background), class-specific bbox.
+ROI sample512 positive ratio0.25, IoU0.5. Box coding và crowd ignore nằm
+trong notebook. Train có bốn loss RPN objectness/box và ROI classification/box.
+\begin{table}[H]\centering\caption{Bốn biến thể kiểm soát cùng RoI head và split}
+\begin{tabular}{lll}\toprule Run & Feature / anchors & Backbone trainable\\\midrule
+D1 & C5 projected256, size256 & C4/C5\\
+D2 & FPN, sizes32--512 & C4/C5\\
+D3 & FPN, sizes16--256 & C4/C5\\
+D4 & FPN, sizes32--512 & Tất cả convolution\\\bottomrule\end{tabular}\end{table}
+C5 là baseline đã chọn, khác C4 baseline trong paper. RoIAlign thay RoIPool và BDD100K
+khác COCO, vì vậy ghi rõ đây là tái hiện có điều chỉnh.
+Ngoài feature pyramid, D1/D2 còn khác độ phủ anchor (size256 so với32--512).
+Do đó D2-D1 là so sánh hai hệ thống; không quy toàn bộ chênh lệch AP cho riêng
+top-down/lateral. D3-D2 và D4-D2 là các ablation trong family FPN.
+\section{Training và kiểm chứng}
+SGD momentum0.9, WD$10^{-4}$, head LR0.005/backbone0.0005, warmup500 updates,
+12 epoch, milestones8/11; shortside640 max1280, flip0.5, micro2 accum2, AMP,
+clip10. Nếu OOM dùng micro1 accum4, giữ resolution/effectivebatch cho mọi variant.
+Best theo dev AP50:95; checkpoint nằm trong namespace bdd100k\_legacy, tách VOC cũ. Checkpoint lưu toàn bộ trạng thái để resume từ epoch hoàn tất.
+
+Kiểm tra box encode/decode, empty targets, crowd ignore, odd FPN dimensions,
+AP perfect/false-positive/empty, ánh xạ lớp và chuyển tọa độ inclusive/boundary.
+Forward/backward/inference chạy cả D1--D4; smoke technical dùng resolution nhỏ,
+không dùng số smoke để đánh giá giả thuyết FPN.
+\section{Metric và giới hạn phiên bản nhãn}
+Metric chính là COCO-style AP50:95 bằng pycocotools: IoU0.50--0.95 bước0.05,
+101 recall points, maxDets1/10/100. Kèm AP50, AP75, small/medium/large,
+AR100 và per-class AP/PR tại IoU0.50. Lớp không có GT trong subset ghi null,
+không gán AP bằng không và không đưa vào mean. Aggregate COCO bằng $-1$
+nghĩa không có GT hợp lệ ở nhóm đó. Không dùng VOC11-point trong A2.
+Threshold eval0.001, NMS0.5, max100 detections/image;
+threshold hiển thị0.3 chỉ vẽ hình. Metric này đo local legacy labels, không
+đồng nhất với benchmark Detection 2020 hoặc số COCO trong paper FPN.
+FPS ghi batch/GPU và gồm H2D/resize/model/NMS, không gồm disk/COCOeval.
+\ResultTable{a2}{So sánh bốn detection run trên dev.}
+\FigureOrPlaceholder{assets/a2/comparison.png}{So sánh C5/FPN}{BDD100K AP50:95 dev của bốn full run A2.}
+\FigureOrPlaceholder{assets/a2/D2_predictions_dev.png}{GT xanh / prediction đỏ}{Ví dụ qualitative của D2 trên dev.}
+\Pending{Điền local legacy test, per-class AP, PR curves, AP theo size, FPS và VRAM.
+Phân tích D2-D1, D3-D2, D4-D2; xem false positive/false negative và lỗi nhỏ/occlusion.
+Không dùng test để sửa anchor hay chọn unfreeze sau khi đã xem kết quả.}
+
+\IfFileExists{assets/a2/test_results.tex}{\begin{table}[H]\centering\caption{Metric test sau khi khóa protocol.}\resizebox{\linewidth}{!}{\input{assets/a2/test_results.tex}}\end{table}}{}
+
+Early stopping theo validation AP50:95, patience4, min-delta$10^{-4}$;
+checkpoint giữ AP validation cao nhất. Test không dùng để quyết định dừng.

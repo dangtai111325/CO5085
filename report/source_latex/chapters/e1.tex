@@ -1,0 +1,31 @@
+\chapter{E1: Softmax, MLP và CNN}
+\section{Dataset và tiền xử lý}
+Fashion-MNIST gồm 60k ảnh train và 10k test, 10 lớp quần áo, grayscale 28$\times$28
+\cite{fashion}. Mỗi lớp giữ 600 ảnh validation bằng seed42, tạo train54k/val6k.
+Mean/std chỉ tính từ train. Không augmentation để dễ quy chênh lệch về kiến trúc.
+\FigureOrPlaceholder{assets/e1/dataset_overview.png}{Fashion-MNIST: ví dụ 10 lớp và phân bố train/validation}{Ảnh mẫu và số ảnh dùng trong thí nghiệm E1.}
+\section{Kiến trúc và loss}
+Linear flatten ảnh thành vector784, head10 tạo logits. MLP dùng 784--256--128--10,
+ReLU/dropout0.2. CNN-A gồm conv32/64, pooling, FC128. CNN-B gồm conv32/64/128,
+BN/ReLU/pool, adaptive average pool và dropout0.3. Cross-entropy áp dụng logits:
+\begin{equation}\mathcal L=-\frac1N\sum_i\log\frac{\exp z_{i,y_i}}{\sum_c\exp z_{i,c}}.\end{equation}
+Không softmax trước cross-entropy. Số tham số và thời gian đo từ mỗi model/run.
+\section{Training protocol}
+AdamW, LR $10^{-3}$, weight decay $10^{-4}$, batch128 (422 batch/epoch), tối đa 100 epoch, patience 4.
+Early stopping khi validation loss không giảm ít nhất $10^{-4}$ trong 10 epoch liên tiếp.
+Chọn checkpoint có validation loss thấp nhất của lần train hiện tại. CUDA AMP;
+log xác nhận dữ liệu, parameters, logits và gradient trên GPU. Mỗi lần Run All train mới. Không dùng test
+để chọn architecture hoặc early stop. Engine tự viết xử lý batch cuối và checkpoint.
+\section{Kết quả và phân tích chờ hoàn thiện}
+\ResultTable{e1}{So sánh bốn model E1; bảng full được xuất tự động.}
+\FigureOrPlaceholder{assets/e1/comparison.png}{So sánh accuracy E1}{Accuracy validation của các full run E1.}
+\FigureOrPlaceholder{assets/e1/learning_curves.png}{Learning curves của bốn model E1}{Loss và accuracy của Softmax, MLP, CNN-A và CNN-B; nét đứt train, nét liền validation.}
+\FigureOrPlaceholder{assets/e1/confusion_test_pair_1.png}{Softmax và MLP: confusion matrix test}{Số ảnh và tỷ lệ theo hàng; mỗi lớp test có 1.000 ảnh.}
+\FigureOrPlaceholder{assets/e1/confusion_test_pair_2.png}{CNN-A và CNN-B: confusion matrix test}{Cùng thang màu để so sánh bốn model.}
+\FigureOrPlaceholder{assets/e1/failure_examples_test.png}{Ảnh lỗi test theo hàng model và cột lớp}{Một lỗi đầu tiên mỗi lớp/model, không đại diện toàn bộ lỗi.}
+\Pending{Diễn giải metric test, confusion matrix và phân tích lỗi sau full run. So sánh
+inductive bias, capacity và train/validation gap; kết luận phải dựa trên metric của lần chạy đầy đủ.}
+Các cặp Shirt/T-shirt/Coat cần xem ảnh thật, kiểm tra texture/outline và độ mơ hồ lớp.
+Phân tích tối thiểu một lợi ích và một giới hạn của từng family dựa trên evidence.
+
+\IfFileExists{assets/e1/test_results.tex}{\begin{table}[H]\centering\caption{Metric test sau khi khóa protocol.}\resizebox{\linewidth}{!}{\input{assets/e1/test_results.tex}}\end{table}}{}

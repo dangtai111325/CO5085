@@ -1,0 +1,18 @@
+{
+  "run_id": "20261007_012536_999a5c",
+  "source": "c:\\Users\\DELL\\Desktop\\CO5085\\E1\\outputs\\full\\20261007_012536_999a5c",
+  "dataset_scope": "full",
+  "train_count": 54000,
+  "val_count": 6000,
+  "test_count": 10000,
+  "sha256": {
+    "dataset_overview.png": "689e361525e892797679f3e1f46da007aebcc0aecea1524486e8923ae6df4814",
+    "comparison.png": "5c92f969a51023a400618e6192faaf95ee37e22c80ed4170db079c36d51cd074",
+    "learning_curves.png": "1e33263f7e755c7eeff5f3520557a91e9ba545dfb9f670ae20fcfebecfc79548",
+    "confusion_test_pair_1.png": "cd963631d96d1d0cb6d878eead82d6b1e5ab0c936ad429a78cd8a503598d47c9",
+    "confusion_test_pair_2.png": "da0de8ebc4a5b4b87e1e891856601c97e92c45f8c52074876395cae4da7ded99",
+    "failure_examples_test.png": "d58cf6d7dbc506ed2f114bc28f1d5f4b34ae455e9c1da658c0df152694ba17bd",
+    "results.tex": "fda53dd1f504b81e5c02e1b377291b361a692ea0ab2897a2a7e21b290b6068fa",
+    "test_results.tex": "05a831bf93fb4ad11eb61c17474588b6503c4355d018bca67bcfef78c982fe1d"
+  }
+}
