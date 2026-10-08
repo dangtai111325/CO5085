@@ -1,18 +1,88 @@
 {
-  "run_id": "20261007_012536_999a5c",
-  "source": "c:\\Users\\DELL\\Desktop\\CO5085\\E1\\outputs\\full\\20261007_012536_999a5c",
-  "dataset_scope": "full",
-  "train_count": 54000,
-  "val_count": 6000,
-  "test_count": 10000,
-  "sha256": {
-    "dataset_overview.png": "689e361525e892797679f3e1f46da007aebcc0aecea1524486e8923ae6df4814",
-    "comparison.png": "5c92f969a51023a400618e6192faaf95ee37e22c80ed4170db079c36d51cd074",
-    "learning_curves.png": "1e33263f7e755c7eeff5f3520557a91e9ba545dfb9f670ae20fcfebecfc79548",
-    "confusion_test_pair_1.png": "cd963631d96d1d0cb6d878eead82d6b1e5ab0c936ad429a78cd8a503598d47c9",
-    "confusion_test_pair_2.png": "da0de8ebc4a5b4b87e1e891856601c97e92c45f8c52074876395cae4da7ded99",
-    "failure_examples_test.png": "d58cf6d7dbc506ed2f114bc28f1d5f4b34ae455e9c1da658c0df152694ba17bd",
-    "results.tex": "fda53dd1f504b81e5c02e1b377291b361a692ea0ab2897a2a7e21b290b6068fa",
-    "test_results.tex": "05a831bf93fb4ad11eb61c17474588b6503c4355d018bca67bcfef78c982fe1d"
-  }
+  "source_notebook": "source_code/E1.ipynb",
+  "images": [
+    {
+      "cell": 9,
+      "output": 1,
+      "asset": "dataset_overview.png"
+    },
+    {
+      "cell": 20,
+      "output": 4,
+      "asset": "comparison.png"
+    },
+    {
+      "cell": 20,
+      "output": 5,
+      "asset": "learning_curves.png"
+    },
+    {
+      "cell": 22,
+      "output": 1,
+      "asset": "confusion_test_pair_1.png"
+    },
+    {
+      "cell": 22,
+      "output": 2,
+      "asset": "confusion_test_pair_2.png"
+    },
+    {
+      "cell": 22,
+      "output": 3,
+      "asset": "failure_examples_test.png"
+    }
+  ],
+  "markdown_outputs": [
+    {
+      "cell": 7,
+      "output": 1,
+      "text": "| Tập | Đầy đủ | Dùng lần này | Vai trò |\n|---|---:|---:|---|\n| Train | 54.000 | 54,000 | Cập nhật trọng số |\n| Validation | 6.000 | 6,000 | Chọn checkpoint, early stopping |\n| Test | 10.000 | 10,000 | Đánh giá sau chọn checkpoint |"
+    },
+    {
+      "cell": 11,
+      "output": 1,
+      "text": "| Model | Số tham số | Input | Output |\n|---|---:|---|---|\n| Softmax classifier | 7,850 | 1×28×28 | 10 logits |\n| MLP | 235,146 | 1×28×28 | 10 logits |\n| CNN-A | 421,642 | 1×28×28 | 10 logits |\n| CNN-B | 94,186 | 1×28×28 | 10 logits |"
+    },
+    {
+      "cell": 20,
+      "output": 1,
+      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| Softmax classifier | 24 | 14 | 10,128 | 0 | Early stopping | 19 |\n| MLP | 26 | 16 | 10,972 | 0 | Early stopping | 23 |\n| CNN-A | 18 | 8 | 7,596 | 0 | Early stopping | 52 |\n| CNN-B | 40 | 30 | 16,878 | 2 | Early stopping | 57 |"
+    },
+    {
+      "cell": 20,
+      "output": 2,
+      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| Softmax classifier | 86.51 | 84.88 | 0.8481 | 84.27 | 0.8418 | 0.4408 | 7,850 | 28.58 | 1.191 |\n| MLP | 91.58 | 89.47 | 0.8951 | 89.45 | 0.8948 | 0.3142 | 235,146 | 50.52 | 1.943 |\n| CNN-A | 94.61 | 92.00 | 0.9203 | 91.66 | 0.9169 | 0.2339 | 421,642 | 38.19 | 2.121 |\n| CNN-B | 95.82 | 91.92 | 0.9190 | 91.97 | 0.9193 | 0.2320 | 94,186 | 126.33 | 3.158 |"
+    },
+    {
+      "cell": 20,
+      "output": 3,
+      "text": "Train accuracy được đo trong train mode khi cập nhật trọng số; validation/test được đo trong eval mode. Thời gian gồm training và validation, không gồm vẽ hình hay test."
+    },
+    {
+      "cell": 24,
+      "output": 1,
+      "text": "**Chất lượng phân loại.** CNN-A có validation accuracy cao nhất (92.00%). Checkpoint từng model được chọn bằng validation loss. Trên test, MLP đạt 89.45%, tăng 5.18 điểm phần trăm so với Softmax. CNN-A đạt 91.66% và CNN-B đạt 91.97%. Kết quả phù hợp với lợi ích của phi tuyến ở MLP và đặc trưng không gian ở CNN trong thí nghiệm này.\n\n**Capacity và chi phí.** CNN-A có 421,642 tham số; CNN-B có 94,186, tỷ lệ 4.48×. Accuracy test của CNN-B − CNN-A là +0.31 điểm phần trăm. Số tham số riêng lẻ không giải thích toàn bộ chất lượng hoặc tốc độ: hai CNN còn khác pooling/head/batch normalization, và thời gian tổng phụ thuộc early stopping."
+    },
+    {
+      "cell": 24,
+      "output": 2,
+      "text": "**Train/validation gap tại checkpoint chọn**\n\n| Model | Train acc tại best (%) | Val acc (%) | Train − val (điểm %) |\n|---|---:|---:|---:|\n| Softmax classifier | 86.51 | 84.88 | +1.62 |\n| MLP | 91.58 | 89.47 | +2.11 |\n| CNN-A | 94.61 | 92.00 | +2.61 |\n| CNN-B | 95.82 | 91.92 | +3.91 |"
+    },
+    {
+      "cell": 24,
+      "output": 3,
+      "text": "Train accuracy ở đây là số đo trong train mode khi cập nhật weights; validation dùng eval mode. Đọc gap cùng learning curves: training loss tiếp tục giảm trong khi validation loss dao động là dấu hiệu cần dừng và chọn checkpoint. Early stopping giữ weights có validation loss thấp nhất."
+    },
+    {
+      "cell": 24,
+      "output": 4,
+      "text": "**Các cặp lớp nhầm nhiều nhất trên test**\n\n| Model | Nhầm nhiều nhất (thật → dự đoán) | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| Softmax classifier | Shirt → T-shirt/top | 154 | 15.4% |\n| MLP | T-shirt/top → Shirt | 124 | 12.4% |\n| CNN-A | T-shirt/top → Shirt | 137 | 13.7% |\n| CNN-B | Shirt → T-shirt/top | 103 | 10.3% |"
+    },
+    {
+      "cell": 24,
+      "output": 5,
+      "text": "Confusion matrix và ảnh lỗi cho thấy các nhầm lẫn giữa nhóm áo có hình dáng gần nhau cần được phân tích riêng với lớp giày hoặc túi. Gallery lấy lỗi đầu tiên theo lớp/model; tần suất lỗi được đánh giá bằng toàn bộ confusion matrix. Thí nghiệm dùng một seed, vì vậy chênh lệch nhỏ giữa hai model cần được đọc cùng giới hạn biến thiên giữa các lần huấn luyện."
+    }
+  ],
+  "source_sha256": "06d76d48f81fadd49d786879756ce9a1593125d961f9710b18716b29f16491e1"
 }

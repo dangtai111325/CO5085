@@ -1,31 +1,107 @@
 \chapter{E1: Softmax, MLP và CNN}
-\section{Dataset và tiền xử lý}
-Fashion-MNIST gồm 60k ảnh train và 10k test, 10 lớp quần áo, grayscale 28$\times$28
-\cite{fashion}. Mỗi lớp giữ 600 ảnh validation bằng seed42, tạo train54k/val6k.
-Mean/std chỉ tính từ train. Không augmentation để dễ quy chênh lệch về kiến trúc.
-\FigureOrPlaceholder{assets/e1/dataset_overview.png}{Fashion-MNIST: ví dụ 10 lớp và phân bố train/validation}{Ảnh mẫu và số ảnh dùng trong thí nghiệm E1.}
-\section{Kiến trúc và loss}
-Linear flatten ảnh thành vector784, head10 tạo logits. MLP dùng 784--256--128--10,
-ReLU/dropout0.2. CNN-A gồm conv32/64, pooling, FC128. CNN-B gồm conv32/64/128,
-BN/ReLU/pool, adaptive average pool và dropout0.3. Cross-entropy áp dụng logits:
-\begin{equation}\mathcal L=-\frac1N\sum_i\log\frac{\exp z_{i,y_i}}{\sum_c\exp z_{i,c}}.\end{equation}
-Không softmax trước cross-entropy. Số tham số và thời gian đo từ mỗi model/run.
-\section{Training protocol}
-AdamW, LR $10^{-3}$, weight decay $10^{-4}$, batch128 (422 batch/epoch), tối đa 100 epoch, patience 4.
-Early stopping khi validation loss không giảm ít nhất $10^{-4}$ trong 10 epoch liên tiếp.
-Chọn checkpoint có validation loss thấp nhất của lần train hiện tại. CUDA AMP;
-log xác nhận dữ liệu, parameters, logits và gradient trên GPU. Mỗi lần Run All train mới. Không dùng test
-để chọn architecture hoặc early stop. Engine tự viết xử lý batch cuối và checkpoint.
-\section{Kết quả và phân tích chờ hoàn thiện}
-\ResultTable{e1}{So sánh bốn model E1; bảng full được xuất tự động.}
-\FigureOrPlaceholder{assets/e1/comparison.png}{So sánh accuracy E1}{Accuracy validation của các full run E1.}
-\FigureOrPlaceholder{assets/e1/learning_curves.png}{Learning curves của bốn model E1}{Loss và accuracy của Softmax, MLP, CNN-A và CNN-B; nét đứt train, nét liền validation.}
-\FigureOrPlaceholder{assets/e1/confusion_test_pair_1.png}{Softmax và MLP: confusion matrix test}{Số ảnh và tỷ lệ theo hàng; mỗi lớp test có 1.000 ảnh.}
-\FigureOrPlaceholder{assets/e1/confusion_test_pair_2.png}{CNN-A và CNN-B: confusion matrix test}{Cùng thang màu để so sánh bốn model.}
-\FigureOrPlaceholder{assets/e1/failure_examples_test.png}{Ảnh lỗi test theo hàng model và cột lớp}{Một lỗi đầu tiên mỗi lớp/model, không đại diện toàn bộ lỗi.}
-\Pending{Diễn giải metric test, confusion matrix và phân tích lỗi sau full run. So sánh
-inductive bias, capacity và train/validation gap; kết luận phải dựa trên metric của lần chạy đầy đủ.}
-Các cặp Shirt/T-shirt/Coat cần xem ảnh thật, kiểm tra texture/outline và độ mơ hồ lớp.
-Phân tích tối thiểu một lợi ích và một giới hạn của từng family dựa trên evidence.
+\section{Mục tiêu và kiến trúc}
+E1 so sánh classifier tuyến tính, MLP và CNN trên cùng Fashion-MNIST.
+Softmax dùng vector flatten 784 chiều; MLP thêm phi tuyến; CNN giữ cấu trúc
+không gian trước khi gom feature. Hai CNN giúp phân biệt số tham số và
+chất lượng: CNN-A có head lớn, CNN-B dùng global average pooling.
 
-\IfFileExists{assets/e1/test_results.tex}{\begin{table}[H]\centering\caption{Metric test sau khi khóa protocol.}\resizebox{\linewidth}{!}{\input{assets/e1/test_results.tex}}\end{table}}{}
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[box] (in) at (0,0) {Ảnh\\$B\times1\times28\times28$};
+\node[fc] (lin) at (4.3,0) {Flatten 784\\FC $784\to10$};
+\node[output] (out) at (8.6,0) {10 logits\\Softmax khi suy luận};
+\draw[flow] (in)--(lin);\draw[flow] (lin)--(out);
+\end{tikzpicture}
+\caption{Softmax classifier: không Conv, một FC; 7.850 tham số.}
+\end{figure}
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[box] (in) at (0,0) {Ảnh flatten\\$B\times784$};
+\node[fc] (a) at (3.8,0) {FC $784\to256$\\ReLU, Dropout 0.2};
+\node[fc] (b) at (7.6,0) {FC $256\to128$\\ReLU, Dropout 0.2};
+\node[output] (out) at (11.4,0) {FC $128\to10$\\10 logits};
+\draw[flow] (in)--(a);\draw[flow] (a)--(b);\draw[flow] (b)--(out);
+\end{tikzpicture}
+\caption{MLP: ba FC, hai tầng ẩn; 235.146 tham số.}
+\end{figure}
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[box] (in) at (0,0) {Ảnh\\$1\times28\times28$};
+\node[box] (c1) at (4,0) {Conv $1\to32$, $3^2$\\ReLU, Pool $2^2$\\$32\times14\times14$};
+\node[box] (c2) at (8,0) {Conv $32\to64$, $3^2$\\ReLU, Pool $2^2$\\$64\times7\times7$};
+\node[fc,below=3mm of c2] (f) {Flatten 3.136\\FC $3136\to128$\\ReLU};
+\node[output,left=6mm of f] (o) {FC $128\to10$\\10 logits};
+\draw[flow] (in)--(c1);\draw[flow] (c1)--(c2);
+\draw[flow] (c2)--(f);\draw[flow] (f)--(o);
+\end{tikzpicture}
+\caption{CNN-A: hai Conv, hai MaxPool, hai FC; 421.642 tham số. Conv stride 1, padding 1, có bias.}
+\end{figure}
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[box] (in) at (0,0) {Ảnh\\$1\times28\times28$};
+\node[box] (a) at (3.8,0) {Conv $1\to32$, $3^2$\\BN, ReLU, Pool $2^2$\\$32\times14\times14$};
+\node[box] (b) at (7.6,0) {Conv $32\to64$, $3^2$\\BN, ReLU, Pool $2^2$\\$64\times7\times7$};
+\node[box] (c) at (11.4,0) {Conv $64\to128$, $3^2$\\BN, ReLU, Pool $2^2$\\$128\times3\times3$};
+\node[fc,below=3mm of c] (gap) {Adaptive AvgPool $1^2$\\Flatten 128\\Dropout 0.3};
+\node[output,left=6mm of gap] (out) {FC $128\to10$\\10 logits};
+\draw[flow] (in)--(a);\draw[flow] (a)--(b);\draw[flow] (b)--(c);
+\draw[flow] (c)--(gap);\draw[flow] (gap)--(out);
+\end{tikzpicture}
+\caption{CNN-B: ba Conv/BN/MaxPool, một FC; 94.186 tham số. Conv stride 1, padding 1, không bias. Kích thước sau pool thứ ba là $3\times3$.}
+\end{figure}
+Trong sơ đồ, $ B $ là batch và $3^2$ là kernel $3\times 3$; batch được giữ
+xuyên suốt dù lược khỏi một số nhãn tensor. CNN-A dành 401.536 tham số cho
+FC $3136\to 128$, khoảng 95,2\% tổng số tham số. CNN-B thay head này bằng
+average pooling, nên ít tham số hơn dù có thêm một Conv.
+
+\section{Huấn luyện}
+AdamW LR $10^{-3}$, weight decay $10^{-4}$, batch 128, tối đa 100 epoch.
+Mỗi epoch có 422 batch train, 47 validation; test có 79 batch, giữ batch cuối.
+Lần chạy tạo số liệu dùng patience 10, min-delta $10^{-4}$ và checkpoint theo
+validation loss nhỏ nhất. Không dùng scheduler hoặc augmentation.
+Các kiểm tra forward/backward trước train xác nhận đủ bốn model trên CUDA.
+
+\section{Kết quả định lượng và chi phí}
+\DataTable{assets/e1/results.tex}{Metric E1 tại checkpoint chọn bằng validation loss; F1 là macro-F1.}
+\DataTable{assets/e1/cost.tex}{Capacity và chi phí E1; epoch/best ghi số epoch thực chạy và epoch checkpoint.}
+\ReportFigure{assets/e1/comparison.png}{So sánh validation accuracy, số tham số và thời gian train+validation của E1.}
+MLP tăng test accuracy từ 84,27\% lên 89,45\%, tương đương 5,18 điểm phần trăm.
+Điều này cho thấy phi tuyến hữu ích trên cùng vector flatten. CNN-A đạt 91,66\%,
+CNN-B đạt 91,97\%, cao hơn MLP lần lượt 2,21 và 2,52 điểm phần trăm.
+
+CNN-A có số tham số gấp 4,48 lần CNN-B; CNN-B vẫn đạt test cao hơn 0,31 điểm
+phần trăm nhưng val thấp hơn 0,08 điểm. Đây là khác biệt nhỏ trong một seed,
+không phải bằng chứng CNN-B luôn tốt hơn. Hai mạng khác cả normalization,
+độ sâu, pooling và head; không quy chất lượng chỉ cho số tham số.
+CNN-A có val accuracy cao nhất 92,00\%; model đại diện không được chọn bằng
+test của CNN-B. Tính theo mỗi epoch, CNN-B chậm hơn CNN-A
+(3,158 so với 2,121 s) dù ít tham số hơn, vì convolution/BN và kích thước
+activation cũng quyết định chi phí.
+
+\section{Learning curves và phân tích lỗi}
+\ReportFigure{assets/e1/learning_curves.png}{Loss và accuracy của bốn model; nét đứt train, nét liền validation.}
+Train--validation gap ở best lần lượt khoảng 1,62; 2,11; 2,61; 3,91 điểm phần
+trăm. CNN-B có gap lớn nhất nhưng vẫn đạt test tốt; gap cần đọc cùng
+dropout và đường cong, không dùng riêng để xếp hạng tổng quát hóa.
+Đường cong train tiếp tục cải thiện sau khi validation chững lại giải thích
+việc chọn best checkpoint thay cho last epoch.
+\ReportFigure{assets/e1/confusion_test_pair_1.png}{Confusion matrix test của Softmax và MLP: mỗi ô ghi số ảnh và tỷ lệ theo lớp thật.}
+\ReportFigure{assets/e1/confusion_test_pair_2.png}{Confusion matrix test của CNN-A và CNN-B, cùng thang 0--100\%.}
+\begin{table}[H]\centering\caption{Cặp nhầm nhiều nhất trong E1; mỗi lớp test có 1.000 ảnh.}
+\small\begin{tabular}{llrr}\toprule Model & Thật $\to$ dự đoán & Số ảnh & \% lớp thật\\\midrule
+Softmax & Shirt $\to $ T-shirt/top &154&15,4\\
+MLP & T-shirt/top $\to $ Shirt &124&12,4\\
+CNN-A & T-shirt/top $\to $ Shirt &137&13,7\\
+CNN-B & Shirt $\to $ T-shirt/top &103&10,3\\\bottomrule\end{tabular}\end{table}
+\ReportFigure[.9]{assets/e1/failure_examples_test.png}{Ảnh dự đoán sai của E1; cùng cột là cùng lớp thật, mỗi hàng là một model.}
+Nhầm lẫn tập trung ở nhóm áo có silhouette gần nhau, trong khi giày/túi
+có hình dáng khác biệt dễ tách hơn trên ma trận. CNN giảm nhiều lỗi nhưng
+không loại bỏ sự mơ hồ giữa Shirt và T-shirt/top. Ảnh gallery là lỗi đầu tiên
+mỗi lớp/model, dùng minh họa; tần suất phải lấy từ toàn bộ confusion matrix.
+
+\section{Nhận xét và giới hạn}
+Softmax nhẹ và nhanh, nhưng ranh giới tuyến tính hạn chế biểu diễn.
+MLP tăng chất lượng với phi tuyến, song flatten không áp đặt locality và
+đòi hỏi nhiều FC. CNN phù hợp ảnh nhỏ nhờ receptive field và chia sẻ trọng số;
+CNN-B cho hiệu quả tham số tốt trong protocol này. Kết luận dựa trên một seed
+và một dataset cân bằng; chưa đo độ biến thiên hay kiểm soát matched capacity.

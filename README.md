@@ -74,7 +74,8 @@ Python 3.13 riêng trong project. Windows dùng `NUM_WORKERS=0` cho Dataset khai
 trong notebook. Không tự cài hoặc hạ phiên bản thư viện khi Run All.
 
 E1–E3: CUDA bắt buộc, batch128, tối đa100 epoch, early stopping theo validation loss,
-patience4, min_delta0,0001. Một khung text/model cập nhật tại chỗ; hiển thị
+patience4, min_delta0,0001 cho lần chạy tiếp theo. **Output đã lưu của E1–E3
+dùng patience10**, nên báo cáo ghi đúng cấu hình lịch sử tạo số liệu. Một khung text/model cập nhật tại chỗ; hiển thị
 GPU/tensor/gradient, epoch/batch, loss/accuracy, updates, AMP skips, VRAM và ETA.
 Bảng/đường cong có tên model/legend; confusion matrix có số ảnh và tỷ lệ theo hàng.
 
@@ -105,7 +106,9 @@ Bấm Save mới lưu output cell vào notebook; Restart Kernel xóa các biến
 [PDF báo cáo tổng](report/CO5085_Report.pdf) và [source LaTeX](report/source_latex/main.tex)
 nằm trong `report`. `report/source_latex/assets` dành cho
 hình/bảng của báo cáo, biên tập riêng sau khi có kết quả; notebook không tự ghi vào đây.
-PDF hiện có chưa được biên dịch lại theo các lần Run All mới.
+PDF đã cập nhật kết quả **E1–E3 và A1** từ output cell, với sơ đồ kiến trúc TikZ,
+bảng metric/chi phí, learning curves, confusion matrix và phân tích lỗi. A2 chưa có
+kết quả full được đưa vào báo cáo.
 
 `.gitignore` loại toàn bộ dữ liệu/cache trong `datasets`, chỉ cho phép
 `datasets/README.md`; đồng thời loại cache Python/Jupyter/Ruff và file build LaTeX.
@@ -158,11 +161,13 @@ thấp nhất và mỗi confusion matrix test chứa đúng 10.000 ảnh. Số o
 bố cục các hình đã được kiểm tra trực quan. A1/A2 không được huấn luyện trong
 lần kiểm chứng này.
 
-A1 dùng ResNet-50 và DeiT-Small; phần kiểm tra GPU/VRAM và training loop nhỏ
-được thực hiện riêng trong tệp tạm, không đưa metric thử vào báo cáo. Notebook
-bàn giao có output trống và dùng đủ31.380/7.829/12.630 ảnh với ngân sách40/25 epoch
-để người dùng tự Run All; chưa chạy huấn luyện full A1. Batch128 được cố định trong code cho train/val/test;
-bảng/tiến trình ghi cấu hình và mức sử dụng tài nguyên thực tế.
+A1 đã chạy full ngày 07–08/10/2026: **14 run, 208 epoch, 51.168 CUDA optimizer
+updates**, audit PASS, không có error/stderr. ResNet-50/DeiT-Small pretrained full
+seed42 đạt test accuracy **98,37% / 98,92%**, macro-F1 **0,9743 / 0,9790**.
+Ba seed42/43/44 đạt test accuracy **98,44±0,29% / 98,95±0,33%** (std mẫu).
+Dùng batch128/accumulation1, patience4, đủ31.380/7.829/12.630 ảnh; báo thêm
+metric trên12.622 test không trùng SHA256. Các notebook và output được giữ nguyên
+khi biên tập báo cáo. A2 chưa có kết quả full.
 
 ### Đối chiếu yêu cầu E1–E3
 
@@ -171,7 +176,7 @@ bảng/tiến trình ghi cấu hình và mức sử dụng tài nguyên thực t
 | E1 §2.2 | Flatten softmax/MLP; CNN; loop tự viết; val/test; accuracy/capacity; loss/accuracy; confusion matrix và ảnh lỗi |
 | E2 §3.2 | Manual MSA từ phép toán cơ bản; PyTorch reference; shallow classifier; Rows/Patch/CNN-stem; so sánh từng cặp cùng tokenizer và tokenizers theo accuracy/thời gian |
 | E3 §4.2 | LSTM/GRU; Rows/Columns/Patch; MLP/CNN-B cùng kiến trúc/split với E1 nhưng train độc lập; bảng accuracy/params/time và thảo luận phụ thuộc theo chuỗi |
-| Chung §1.2–1.4, §5 | Full Fashion-MNIST cùng split, seed/config/log, loop forward/loss/backward/step, README; báo cáo PDF/Pages còn cần cập nhật và publish sau khi duyệt |
+| Chung §1.2–1.4, §5 | Full Fashion-MNIST cùng split, seed/config/log, loop forward/loss/backward/step, README; báo cáo PDF đã cập nhật; Pages publish sau khi duyệt |
 
 Đây là đối chiếu phần thực nghiệm, không xác nhận hoàn tất điều kiện nộp bài.
 Đề §1.6 giới hạn AI ở vai trò hỗ trợ và yêu cầu khai báo; công cụ AI đã tham gia

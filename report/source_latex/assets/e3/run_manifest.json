@@ -1,0 +1,103 @@
+{
+  "source_notebook": "source_code/E3.ipynb",
+  "images": [
+    {
+      "cell": 22,
+      "output": 4,
+      "asset": "comparison.png"
+    },
+    {
+      "cell": 22,
+      "output": 5,
+      "asset": "recurrent_representation_comparison.png"
+    },
+    {
+      "cell": 22,
+      "output": 6,
+      "asset": "learning_curves_loss.png"
+    },
+    {
+      "cell": 22,
+      "output": 7,
+      "asset": "learning_curves_accuracy.png"
+    },
+    {
+      "cell": 22,
+      "output": 8,
+      "asset": "baseline_curves.png"
+    },
+    {
+      "cell": 24,
+      "output": 1,
+      "asset": "confusion_test_pair_1.png"
+    },
+    {
+      "cell": 24,
+      "output": 2,
+      "asset": "confusion_test_pair_2.png"
+    },
+    {
+      "cell": 24,
+      "output": 3,
+      "asset": "confusion_test_pair_3.png"
+    },
+    {
+      "cell": 24,
+      "output": 4,
+      "asset": "confusion_test_pair_4.png"
+    },
+    {
+      "cell": 24,
+      "output": 5,
+      "asset": "failure_examples_test.png"
+    },
+    {
+      "cell": 26,
+      "output": 1,
+      "asset": "sequence_representations.png"
+    }
+  ],
+  "markdown_outputs": [
+    {
+      "cell": 7,
+      "output": 1,
+      "text": "| Tập | Đầy đủ | Dùng lần này | Vai trò |\n|---|---:|---:|---|\n| Train | 54.000 | 54,000 | Cập nhật trọng số |\n| Validation | 6.000 | 6,000 | Chọn checkpoint, early stopping |\n| Test | 10.000 | 10,000 | Đánh giá sau chọn checkpoint |"
+    },
+    {
+      "cell": 13,
+      "output": 1,
+      "text": "| Model | T × feature | Số tham số | Gradient clipping |\n|---|---|---:|---|\n| LSTM · Rows | 28 × 28 | 82,186 | norm 1.0 |\n| LSTM · Columns | 28 × 28 | 82,186 | norm 1.0 |\n| LSTM · Patch 4×4 | 49 × 16 | 76,042 | norm 1.0 |\n| GRU · Rows | 28 × 28 | 61,962 | norm 1.0 |\n| GRU · Columns | 28 × 28 | 61,962 | norm 1.0 |\n| GRU · Patch 4×4 | 49 × 16 | 57,354 | norm 1.0 |\n| MLP | flatten | 235,146 | Không |\n| CNN-B | spatial | 94,186 | Không |"
+    },
+    {
+      "cell": 22,
+      "output": 1,
+      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| LSTM · Rows | 24 | 14 | 10,128 | 0 | Early stopping | 27 |\n| LSTM · Columns | 29 | 19 | 12,238 | 0 | Early stopping | 27 |\n| LSTM · Patch 4×4 | 34 | 24 | 14,348 | 0 | Early stopping | 34 |\n| GRU · Rows | 26 | 20 | 10,972 | 0 | Early stopping | 28 |\n| GRU · Columns | 29 | 19 | 12,238 | 0 | Early stopping | 28 |\n| GRU · Patch 4×4 | 30 | 20 | 12,660 | 0 | Early stopping | 35 |\n| MLP | 26 | 16 | 10,972 | 0 | Early stopping | 23 |\n| CNN-B | 40 | 30 | 16,878 | 2 | Early stopping | 57 |"
+    },
+    {
+      "cell": 22,
+      "output": 2,
+      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| LSTM · Rows | 91.95 | 89.95 | 0.8990 | 89.70 | 0.8965 | 0.2940 | 82,186 | 410.70 | 17.113 |\n| LSTM · Columns | 92.79 | 88.72 | 0.8881 | 88.81 | 0.8885 | 0.3260 | 82,186 | 452.70 | 15.610 |\n| LSTM · Patch 4×4 | 92.40 | 88.62 | 0.8861 | 88.22 | 0.8823 | 0.3414 | 76,042 | 853.58 | 25.105 |\n| GRU · Rows | 93.95 | 90.47 | 0.9044 | 90.06 | 0.9001 | 0.2882 | 61,962 | 393.42 | 15.132 |\n| GRU · Columns | 93.16 | 89.83 | 0.8983 | 89.51 | 0.8951 | 0.3137 | 61,962 | 407.87 | 14.064 |\n| GRU · Patch 4×4 | 92.36 | 89.05 | 0.8900 | 88.44 | 0.8841 | 0.3352 | 57,354 | 696.60 | 23.220 |\n| MLP | 91.58 | 89.47 | 0.8951 | 89.45 | 0.8948 | 0.3142 | 235,146 | 49.98 | 1.922 |\n| CNN-B | 95.82 | 91.92 | 0.9190 | 91.97 | 0.9193 | 0.2320 | 94,186 | 100.38 | 2.509 |"
+    },
+    {
+      "cell": 22,
+      "output": 3,
+      "text": "Train accuracy được đo trong train mode khi cập nhật trọng số; validation/test được đo trong eval mode. Thời gian gồm training và validation, không gồm vẽ hình hay test."
+    },
+    {
+      "cell": 22,
+      "output": 9,
+      "text": "| Model | Val acc (%) | Test acc (%) | Tham số | Train + val (s/epoch) |\n|---|---:|---:|---:|---:|\n| LSTM · Rows | 89.95 | 89.70 | 82,186 | 17.113 |\n| GRU · Rows | 90.47 | 90.06 | 61,962 | 15.132 |\n| MLP | 89.47 | 89.45 | 235,146 | 1.922 |\n| CNN-B | 91.92 | 91.97 | 94,186 | 2.509 |"
+    },
+    {
+      "cell": 24,
+      "output": 6,
+      "text": "| Model | Nhầm nhiều nhất: thật → dự đoán | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| LSTM · Rows | Shirt → T-shirt/top | 133 | 13.3% |\n| LSTM · Columns | T-shirt/top → Shirt | 141 | 14.1% |\n| LSTM · Patch 4×4 | T-shirt/top → Shirt | 132 | 13.2% |\n| GRU · Rows | Shirt → T-shirt/top | 125 | 12.5% |\n| GRU · Columns | Shirt → T-shirt/top | 126 | 12.6% |\n| GRU · Patch 4×4 | Shirt → T-shirt/top | 135 | 13.5% |\n| MLP | T-shirt/top → Shirt | 124 | 12.4% |\n| CNN-B | Shirt → T-shirt/top | 103 | 10.3% |"
+    },
+    {
+      "cell": 28,
+      "output": 1,
+      "text": "**Toàn bộ dữ liệu:** 54.000 train / 6.000 validation / 10.000 test; huấn luyện 8 model trong 238 epoch / 100434 updates trên CUDA.\n\n**Recurrent có validation accuracy cao nhất:** GRU · Rows 90.47%; test 90.06%. **Baseline validation cao nhất:** CNN-B 91.92%. Chênh lệch recurrent − baseline: -1.45 điểm %.\n\n**Diễn giải:** Rows/Columns cùng T=28 và feature28 nhưng đổi thứ tự/phụ thuộc; patch có T=49, feature16. LSTM mang cả hidden và cell state, GRU mang hidden; trong code này đều unroll theo từng token, hidden128. Số gates/tham số và chiều dài chuỗi ảnh hưởng capacity/tốc độ. MLP không dùng cấu trúc không gian trực tiếp; CNN có locality và chia sẻ trọng số. Khác biệt accuracy không tự chứng minh model đã học phụ thuộc xa; cần đối chiếu biểu diễn, learning curves và lỗi. Gradient clipping norm1 chỉ dùng recurrent; baseline giữ protocol tương ứng. Thời gian tổng bị ảnh hưởng early stopping; xem thêm giây/epoch."
+    }
+  ],
+  "source_sha256": "c0daf053b9e2badba2a325c97508c923a469afb27a8e9022f8b3ac78a07007bf"
+}

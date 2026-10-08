@@ -1,10 +1,10 @@
-\begin{tabular}{lllll}
+\begin{tabular}{lrrrrrr}
 \toprule
-model & val\_accuracy & val\_macro\_f1 & parameters & seconds \\
+Model & Train (\%) & Val (\%) & Val F1 & Test (\%) & Test F1 & Test loss\\
 \midrule
-Softmax regression & 0.8488 & 0.8481 & 7850 & 33.9163 \\
-MLP & 0.8947 & 0.8951 & 235146 & 51.6499 \\
-CNN-A & 0.9200 & 0.9203 & 421642 & 37.8933 \\
-CNN-B & 0.9192 & 0.9190 & 94186 & 132.8080 \\
+Softmax & 86.51 & 84.88 & 0.8481 & 84.27 & 0.8418 & 0.4408\\
+MLP & 91.58 & 89.47 & 0.8951 & 89.45 & 0.8948 & 0.3142\\
+CNN-A & 94.61 & 92.00 & 0.9203 & 91.66 & 0.9169 & 0.2339\\
+CNN-B & 95.82 & 91.92 & 0.9190 & 91.97 & 0.9193 & 0.2320\\
 \bottomrule
 \end{tabular}

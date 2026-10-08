@@ -1,0 +1,144 @@
+{
+  "source_notebook": "source_code/A1.ipynb",
+  "images": [
+    {
+      "cell": 9,
+      "output": 0,
+      "asset": "eda.png"
+    },
+    {
+      "cell": 9,
+      "output": 2,
+      "asset": "class_gallery.png"
+    },
+    {
+      "cell": 24,
+      "output": 3,
+      "asset": "comparison.png"
+    },
+    {
+      "cell": 24,
+      "output": 4,
+      "asset": "learning_curves_loss.png"
+    },
+    {
+      "cell": 24,
+      "output": 5,
+      "asset": "learning_curves_accuracy.png"
+    },
+    {
+      "cell": 28,
+      "output": 0,
+      "asset": "confusion_full.png"
+    },
+    {
+      "cell": 28,
+      "output": 1,
+      "asset": "confusion_detail.png"
+    },
+    {
+      "cell": 28,
+      "output": 3,
+      "asset": "failure_examples_test.png"
+    }
+  ],
+  "markdown_outputs": [
+    {
+      "cell": 9,
+      "output": 1,
+      "text": "| ID | Ý nghĩa | Train | Validation | Test |\n|---:|---|---:|---:|---:|\n| 0 | Speed limit 20 | 180 | 30 | 60 |\n| 1 | Speed limit 30 | 1,770 | 450 | 720 |\n| 2 | Speed limit 50 | 1,800 | 450 | 750 |\n| 3 | Speed limit 60 | 1,140 | 270 | 450 |\n| 4 | Speed limit 70 | 1,590 | 390 | 660 |\n| 5 | Speed limit 80 | 1,500 | 360 | 630 |\n| 6 | End speed limit 80 | 330 | 90 | 150 |\n| 7 | Speed limit 100 | 1,140 | 300 | 450 |\n| 8 | Speed limit 120 | 1,140 | 270 | 450 |\n| 9 | No passing | 1,170 | 300 | 480 |\n| 10 | No passing >3.5t | 1,620 | 390 | 660 |\n| 11 | Right-of-way intersection | 1,050 | 270 | 420 |\n| 12 | Priority road | 1,680 | 420 | 690 |\n| 13 | Yield | 1,740 | 420 | 720 |\n| 14 | Stop | 630 | 150 | 270 |\n| 15 | No vehicles | 510 | 120 | 210 |\n| 16 | Vehicles >3.5t prohibited | 330 | 90 | 150 |\n| 17 | No entry | 900 | 210 | 360 |\n| 18 | General caution | 960 | 240 | 390 |\n| 19 | Dangerous curve left | 180 | 30 | 60 |\n| 20 | Dangerous curve right | 300 | 60 | 90 |\n| 21 | Double curve | 270 | 60 | 90 |\n| 22 | Bumpy road | 300 | 90 | 120 |\n| 23 | Slippery road | 420 | 90 | 150 |\n| 24 | Road narrows right | 210 | 60 | 90 |\n| 25 | Road work | 1,200 | 300 | 480 |\n| 26 | Traffic signals | 480 | 120 | 180 |\n| 27 | Pedestrians | 180 | 60 | 60 |\n| 28 | Children crossing | 420 | 120 | 150 |\n| 29 | Bicycle crossing | 210 | 60 | 90 |\n| 30 | Ice/snow caution | 360 | 90 | 150 |\n| 31 | Wild animals crossing | 630 | 150 | 270 |\n| 32 | End speed/passing limits | 180 | 60 | 60 |\n| 33 | Turn right ahead | 540 | 149 | 210 |\n| 34 | Turn left ahead | 330 | 90 | 120 |\n| 35 | Ahead only | 960 | 240 | 390 |\n| 36 | Straight or right | 300 | 90 | 120 |\n| 37 | Straight or left | 180 | 30 | 60 |\n| 38 | Keep right | 1,650 | 420 | 690 |\n| 39 | Keep left | 240 | 60 | 90 |\n| 40 | Roundabout mandatory | 300 | 60 | 90 |\n| 41 | End no passing | 180 | 60 | 60 |\n| 42 | End no passing >3.5t | 180 | 60 | 90 |"
+    },
+    {
+      "cell": 15,
+      "output": 1,
+      "text": "| Họ | Chế độ | Tổng tham số | Trainable | Trainable (%) |\n|---|---|---:|---:|---:|\n| ResNet-50 | Scratch | 23,596,139 | 23,596,139 | 100.00 |\n| ResNet-50 | Pretrained · head-only | 23,596,139 | 88,107 | 0.37 |\n| ResNet-50 | Pretrained · partial | 23,596,139 | 15,052,843 | 63.79 |\n| ResNet-50 | Pretrained · full | 23,596,139 | 23,596,139 | 100.00 |\n| DeiT-Small/16 | Scratch | 21,682,219 | 21,682,219 | 100.00 |\n| DeiT-Small/16 | Pretrained · head-only | 21,682,219 | 16,555 | 0.08 |\n| DeiT-Small/16 | Pretrained · partial | 21,682,219 | 3,566,251 | 16.45 |\n| DeiT-Small/16 | Pretrained · full | 21,682,219 | 21,682,219 | 100.00 |"
+    },
+    {
+      "cell": 24,
+      "output": 0,
+      "text": "**Tám cấu hình chính · Huấn luyện thực tế**"
+    },
+    {
+      "cell": 24,
+      "output": 1,
+      "text": "| Model | Batch × accumulation | Eval batch | Epoch | Best epoch | Updates | AMP skips | Dừng | Peak GPU (MiB) |\n|---|---|---:|---:|---:|---:|---:|---|---:|\n| ResNet-50 · Scratch · seed42 | 128 × 1 | 128 | 9 | 5 | 2,214 | 0 | Early stopping | 5830 |\n| ResNet-50 · Pretrained · head-only · seed42 | 128 × 1 | 128 | 24 | 20 | 5,904 | 0 | Early stopping | 1567 |\n| ResNet-50 · Pretrained · partial · seed42 | 128 × 1 | 128 | 13 | 9 | 3,198 | 0 | Early stopping | 1681 |\n| ResNet-50 · Pretrained · full · seed42 | 128 × 1 | 128 | 11 | 7 | 2,706 | 0 | Early stopping | 5823 |\n| DeiT-Small/16 · Scratch · seed42 | 128 × 1 | 128 | 39 | 35 | 9,594 | 0 | Early stopping | 6635 |\n| DeiT-Small/16 · Pretrained · head-only · seed42 | 128 × 1 | 128 | 25 | 21 | 6,150 | 0 | Early stopping | 636 |\n| DeiT-Small/16 · Pretrained · partial · seed42 | 128 × 1 | 128 | 8 | 4 | 1,968 | 0 | Early stopping | 1374 |\n| DeiT-Small/16 · Pretrained · full · seed42 | 128 × 1 | 128 | 10 | 6 | 2,460 | 0 | Early stopping | 6632 |"
+    },
+    {
+      "cell": 24,
+      "output": 2,
+      "text": "| Model | Train acc tại best (%) | Val acc (%) | Val F1 | Test acc (%) | Test F1 | Total params | Trainable | Trainable (%) | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| ResNet-50 · Scratch · seed42 | 98.51 | 98.26 | 0.9688 | 96.33 | 0.9447 | 23,596,139 | 23,596,139 | 100.00 | 2334.67 | 259.408 |\n| ResNet-50 · Pretrained · head-only · seed42 | 91.12 | 69.22 | 0.5952 | 70.35 | 0.6143 | 23,596,139 | 88,107 | 0.37 | 4448.81 | 185.367 |\n| ResNet-50 · Pretrained · partial · seed42 | 99.76 | 97.89 | 0.9720 | 96.05 | 0.9438 | 23,596,139 | 15,052,843 | 63.79 | 2531.09 | 194.699 |\n| ResNet-50 · Pretrained · full · seed42 | 99.94 | 99.80 | 0.9981 | 98.37 | 0.9743 | 23,596,139 | 23,596,139 | 100.00 | 2805.20 | 255.018 |\n| DeiT-Small/16 · Scratch · seed42 | 99.98 | 98.38 | 0.9752 | 96.14 | 0.9350 | 21,682,219 | 21,682,219 | 100.00 | 10347.38 | 265.317 |\n| DeiT-Small/16 · Pretrained · head-only · seed42 | 91.34 | 71.31 | 0.6066 | 69.73 | 0.6125 | 21,682,219 | 16,555 | 0.08 | 4695.43 | 187.817 |\n| DeiT-Small/16 · Pretrained · partial · seed42 | 98.64 | 89.32 | 0.8360 | 87.85 | 0.8063 | 21,682,219 | 3,566,251 | 16.45 | 1581.80 | 197.725 |\n| DeiT-Small/16 · Pretrained · full · seed42 | 99.79 | 99.39 | 0.9863 | 98.92 | 0.9790 | 21,682,219 | 21,682,219 | 100.00 | 2510.02 | 251.002 |"
+    },
+    {
+      "cell": 24,
+      "output": 6,
+      "text": "**CNN vs Transformer, cùng chế độ**\n\n| Cùng chế độ | CNN val (%) | ViT val (%) | ViT − CNN (điểm %) | CNN test (%) | ViT test (%) | CNN / ViT s/epoch | CNN / ViT peak MiB |\n|---|---:|---:|---:|---:|---:|---|---|\n| Scratch | 98.26 | 98.38 | +0.11 | 96.33 | 96.14 | 259.408 / 265.317 | 5830 / 6635 |\n| Pretrained · head-only | 69.22 | 71.31 | +2.09 | 70.35 | 69.73 | 185.367 / 187.817 | 1567 / 636 |\n| Pretrained · partial | 97.89 | 89.32 | -8.57 | 96.05 | 87.85 | 194.699 / 197.725 | 1681 / 1374 |\n| Pretrained · full | 99.80 | 99.39 | -0.41 | 98.37 | 98.92 | 255.018 / 251.002 | 5823 / 6632 |"
+    },
+    {
+      "cell": 24,
+      "output": 7,
+      "text": "**Scratch/pretrained và ba mức freeze**\n\n| Họ | Pretrained full − scratch val (điểm %) | Full − head val (điểm %) | Partial − head val (điểm %) | Head / partial / full trainable |\n|---|---:|---:|---:|---|\n| ResNet-50 | +1.53 | +30.58 | +28.68 | 88,107 / 15,052,843 / 23,596,139 |\n| DeiT-Small/16 | +1.01 | +28.08 | +18.01 | 16,555 / 3,566,251 / 21,682,219 |"
+    },
+    {
+      "cell": 24,
+      "output": 8,
+      "text": "**Inference FP32 · CUDA Events, tách khỏi DataLoader**\n\n| Model | Batch inference | GPU ms/batch | GPU images/s | Test end to end (s) |\n|---|---:|---:|---:|---:|\n| ResNet-50 · Scratch · seed42 | 32 | 77.06 | 415.3 | 51.30 |\n| ResNet-50 · Pretrained · head-only · seed42 | 32 | 77.54 | 412.7 | 45.32 |\n| ResNet-50 · Pretrained · partial · seed42 | 32 | 76.63 | 417.6 | 44.35 |\n| ResNet-50 · Pretrained · full · seed42 | 32 | 77.09 | 415.1 | 44.70 |\n| DeiT-Small/16 · Scratch · seed42 | 32 | 138.44 | 231.1 | 64.70 |\n| DeiT-Small/16 · Pretrained · head-only · seed42 | 32 | 139.91 | 228.7 | 64.56 |\n| DeiT-Small/16 · Pretrained · partial · seed42 | 32 | 139.99 | 228.6 | 65.06 |\n| DeiT-Small/16 · Pretrained · full · seed42 | 32 | 139.22 | 229.9 | 64.99 |"
+    },
+    {
+      "cell": 24,
+      "output": 9,
+      "text": "**Độ nhạy với ảnh trùng SHA256 · full test và test không trùng**\n\n| Model | Full test acc (%) | Không trùng acc (%) | Δkhông trùng − full (điểm %) | Full F1 | Không trùng F1 | Số ảnh không trùng |\n|---|---:|---:|---:|---:|---:|---:|\n| ResNet-50 · Scratch · seed42 | 96.33 | 96.33 | -0.002 | 0.9447 | 0.9447 | 12,622 |\n| ResNet-50 · Pretrained · head-only · seed42 | 70.35 | 70.33 | -0.019 | 0.6143 | 0.6143 | 12,622 |\n| ResNet-50 · Pretrained · partial · seed42 | 96.05 | 96.05 | -0.003 | 0.9438 | 0.9438 | 12,622 |\n| ResNet-50 · Pretrained · full · seed42 | 98.37 | 98.37 | -0.001 | 0.9743 | 0.9743 | 12,622 |\n| DeiT-Small/16 · Scratch · seed42 | 96.14 | 96.13 | -0.002 | 0.9350 | 0.9350 | 12,622 |\n| DeiT-Small/16 · Pretrained · head-only · seed42 | 69.73 | 69.71 | -0.019 | 0.6125 | 0.6125 | 12,622 |\n| DeiT-Small/16 · Pretrained · partial · seed42 | 87.85 | 87.85 | -0.008 | 0.8063 | 0.8063 | 12,622 |\n| DeiT-Small/16 · Pretrained · full · seed42 | 98.92 | 98.91 | -0.001 | 0.9790 | 0.9790 | 12,622 |"
+    },
+    {
+      "cell": 26,
+      "output": 0,
+      "text": "**Sáu thực nghiệm bổ sung · Huấn luyện thực tế**"
+    },
+    {
+      "cell": 26,
+      "output": 1,
+      "text": "| Model | Batch × accumulation | Eval batch | Epoch | Best epoch | Updates | AMP skips | Dừng | Peak GPU (MiB) |\n|---|---|---:|---:|---:|---:|---:|---|---:|\n| ResNet-50 · Pretrained · full · seed42 · no augmentation | 128 × 1 | 128 | 5 | 3 | 1,230 | 0 | Early stopping | 5831 |\n| ResNet-50 · Pretrained · full · seed43 | 128 × 1 | 128 | 8 | 4 | 1,968 | 0 | Early stopping | 5826 |\n| ResNet-50 · Pretrained · full · seed44 | 128 × 1 | 128 | 7 | 3 | 1,722 | 0 | Early stopping | 5827 |\n| DeiT-Small/16 · Pretrained · full · seed42 · no augmentation | 128 × 1 | 128 | 17 | 13 | 4,182 | 0 | Early stopping | 6633 |\n| DeiT-Small/16 · Pretrained · full · seed43 | 128 × 1 | 128 | 22 | 18 | 5,412 | 0 | Early stopping | 6632 |\n| DeiT-Small/16 · Pretrained · full · seed44 | 128 × 1 | 128 | 10 | 6 | 2,460 | 0 | Early stopping | 6632 |"
+    },
+    {
+      "cell": 26,
+      "output": 2,
+      "text": "| Model | Train acc tại best (%) | Val acc (%) | Val F1 | Test acc (%) | Test F1 | Total params | Trainable | Trainable (%) | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| ResNet-50 · Pretrained · full · seed42 · no augmentation | 99.57 | 98.85 | 0.9811 | 97.20 | 0.9545 | 23,596,139 | 23,596,139 | 100.00 | 941.91 | 188.382 |\n| ResNet-50 · Pretrained · full · seed43 | 99.79 | 99.92 | 0.9991 | 98.76 | 0.9834 | 23,596,139 | 23,596,139 | 100.00 | 1912.95 | 239.119 |\n| ResNet-50 · Pretrained · full · seed44 | 99.54 | 99.28 | 0.9881 | 98.19 | 0.9630 | 23,596,139 | 23,596,139 | 100.00 | 1717.14 | 245.305 |\n| DeiT-Small/16 · Pretrained · full · seed42 · no augmentation | 99.99 | 99.46 | 0.9896 | 99.22 | 0.9896 | 21,682,219 | 21,682,219 | 100.00 | 3547.77 | 208.692 |\n| DeiT-Small/16 · Pretrained · full · seed43 | 100.00 | 99.85 | 0.9963 | 99.29 | 0.9914 | 21,682,219 | 21,682,219 | 100.00 | 6838.98 | 310.863 |\n| DeiT-Small/16 · Pretrained · full · seed44 | 99.74 | 99.50 | 0.9908 | 98.64 | 0.9781 | 21,682,219 | 21,682,219 | 100.00 | 2510.36 | 251.036 |"
+    },
+    {
+      "cell": 26,
+      "output": 3,
+      "text": "**Ablation augmentation · Seed42, cùng cấu hình**\n\n| Họ / cấu hình cố định | Aug val (%) | No-aug val (%) | Aug − no-aug (điểm %) | Aug / no-aug test (%) |\n|---|---:|---:|---:|---|\n| ResNet-50 / Pretrained · full | 99.80 | 98.85 | +0.95 | 98.37 / 97.20 |\n| DeiT-Small/16 / Pretrained · full | 99.39 | 99.46 | -0.08 | 98.92 / 99.22 |"
+    },
+    {
+      "cell": 26,
+      "output": 4,
+      "text": "**Lặp ba seed · Std mẫu (ddof=1), cùng split seed42**\n\n| Họ / cấu hình | Seeds | Val acc mean±std (%) | Test acc mean±std (%) | Val macro-F1 mean±std | Test macro-F1 mean±std |\n|---|---|---|---|---|---|\n| ResNet-50 / Pretrained · full | 42/43/44 | 99.67±0.34 | 98.44±0.29 | 0.9951±0.0061 | 0.9736±0.0102 |\n| DeiT-Small/16 / Pretrained · full | 42/43/44 | 99.58±0.24 | 98.95±0.33 | 0.9912±0.0050 | 0.9828±0.0074 |"
+    },
+    {
+      "cell": 28,
+      "output": 2,
+      "text": "**Cặp nhầm lẫn nhiều nhất · 8 cấu hình chính**\n\n| Model | Lớp thật → dự đoán nhầm nhiều nhất | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| ResNet-50 · Scratch · seed42 | 27: Pedestrians → 11: Right-of-way intersection | 29 | 48.33% |\n| ResNet-50 · Pretrained · head-only · seed42 | 1: Speed limit 30 → 2: Speed limit 50 | 201 | 27.92% |\n| ResNet-50 · Pretrained · partial · seed42 | 5: Speed limit 80 → 2: Speed limit 50 | 49 | 7.78% |\n| ResNet-50 · Pretrained · full · seed42 | 27: Pedestrians → 25: Road work | 30 | 50.00% |\n| DeiT-Small/16 · Scratch · seed42 | 27: Pedestrians → 25: Road work | 26 | 43.33% |\n| DeiT-Small/16 · Pretrained · head-only · seed42 | 1: Speed limit 30 → 2: Speed limit 50 | 135 | 18.75% |\n| DeiT-Small/16 · Pretrained · partial · seed42 | 34: Turn left ahead → 33: Turn right ahead | 78 | 65.00% |\n| DeiT-Small/16 · Pretrained · full · seed42 | 0: Speed limit 20 → 8: Speed limit 120 | 30 | 50.00% |"
+    },
+    {
+      "cell": 28,
+      "output": 4,
+      "text": "**Per-class metrics · hai cấu hình chọn bằng validation**\n\n| ID / ý nghĩa | Test support | CNN Precision / Recall / F1 | Transformer Precision / Recall / F1 |\n|---|---:|---|---|\n| 0: Speed limit 20 | 60 | 1.000 / 1.000 / 1.000 | 1.000 / 0.500 / 0.667 |\n| 1: Speed limit 30 | 720 | 0.984 / 1.000 / 0.992 | 0.997 / 0.997 / 0.997 |\n| 2: Speed limit 50 | 750 | 0.989 / 0.996 / 0.993 | 0.999 / 0.997 / 0.998 |\n| 3: Speed limit 60 | 450 | 0.985 / 0.993 / 0.989 | 1.000 / 0.993 / 0.997 |\n| 4: Speed limit 70 | 660 | 0.998 / 0.986 / 0.992 | 0.997 / 0.998 / 0.998 |\n| 5: Speed limit 80 | 630 | 0.964 / 0.990 / 0.977 | 0.994 / 0.998 / 0.996 |\n| 6: End speed limit 80 | 150 | 1.000 / 0.993 / 0.997 | 1.000 / 0.973 / 0.986 |\n| 7: Speed limit 100 | 450 | 1.000 / 0.996 / 0.998 | 0.976 / 1.000 / 0.988 |\n| 8: Speed limit 120 | 450 | 0.986 / 0.938 / 0.961 | 0.937 / 0.996 / 0.966 |\n| 9: No passing | 480 | 1.000 / 1.000 / 1.000 | 0.986 / 1.000 / 0.993 |\n| 10: No passing >3.5t | 660 | 0.990 / 1.000 / 0.995 | 0.998 / 1.000 / 0.999 |\n| 11: Right-of-way intersection | 420 | 0.976 / 0.955 / 0.965 | 0.978 / 0.971 / 0.975 |\n| 12: Priority road | 690 | 1.000 / 0.993 / 0.996 | 0.996 / 1.000 / 0.998 |\n| 13: Yield | 720 | 0.989 / 0.996 / 0.992 | 1.000 / 0.997 / 0.999 |\n| 14: Stop | 270 | 0.944 / 1.000 / 0.971 | 0.996 / 1.000 / 0.998 |\n| 15: No vehicles | 210 | 0.991 / 0.995 / 0.993 | 0.991 / 0.995 / 0.993 |\n| 16: Vehicles >3.5t prohibited | 150 | 1.000 / 1.000 / 1.000 | 0.987 / 1.000 / 0.993 |\n| 17: No entry | 360 | 1.000 / 0.956 / 0.977 | 1.000 / 0.969 / 0.984 |\n| 18: General caution | 390 | 1.000 / 0.992 / 0.996 | 0.982 / 0.990 / 0.986 |\n| 19: Dangerous curve left | 60 | 1.000 / 1.000 / 1.000 | 1.000 / 1.000 / 1.000 |\n| 20: Dangerous curve right | 90 | 1.000 / 1.000 / 1.000 | 1.000 / 1.000 / 1.000 |\n| 21: Double curve | 90 | 1.000 / 0.978 / 0.989 | 0.968 / 1.000 / 0.984 |\n| 22: Bumpy road | 120 | 0.980 / 0.800 / 0.881 | 0.991 / 0.950 / 0.970 |\n| 23: Slippery road | 150 | 0.974 / 1.000 / 0.987 | 0.968 / 1.000 / 0.984 |\n| 24: Road narrows right | 90 | 1.000 / 1.000 / 1.000 | 0.947 / 1.000 / 0.973 |\n| 25: Road work | 480 | 0.897 / 0.998 / 0.945 | 0.985 / 0.967 / 0.976 |\n| 26: Traffic signals | 180 | 1.000 / 0.994 / 0.997 | 1.000 / 0.972 / 0.986 |\n| 27: Pedestrians | 60 | 1.000 / 0.500 / 0.667 | 1.000 / 0.883 / 0.938 |\n| 28: Children crossing | 150 | 1.000 / 1.000 / 1.000 | 1.000 / 1.000 / 1.000 |\n| 29: Bicycle crossing | 90 | 0.978 / 1.000 / 0.989 | 1.000 / 1.000 / 1.000 |\n| 30: Ice/snow caution | 150 | 0.887 / 0.940 / 0.913 | 0.917 / 0.960 / 0.938 |\n| 31: Wild animals crossing | 270 | 0.996 / 1.000 / 0.998 | 0.993 / 1.000 / 0.996 |\n| 32: End speed/passing limits | 60 | 1.000 / 0.967 / 0.983 | 1.000 / 1.000 / 1.000 |\n| 33: Turn right ahead | 210 | 1.000 / 1.000 / 1.000 | 1.000 / 1.000 / 1.000 |\n| 34: Turn left ahead | 120 | 0.960 / 1.000 / 0.980 | 0.992 / 1.000 / 0.996 |\n| 35: Ahead only | 390 | 0.990 / 0.990 / 0.990 | 1.000 / 0.982 / 0.991 |\n| 36: Straight or right | 120 | 0.966 / 0.942 / 0.954 | 0.976 / 1.000 / 0.988 |\n| 37: Straight or left | 60 | 1.000 / 0.983 / 0.992 | 1.000 / 1.000 / 1.000 |\n| 38: Keep right | 690 | 0.993 / 0.988 / 0.991 | 0.989 / 1.000 / 0.994 |\n| 39: Keep left | 90 | 1.000 / 0.922 / 0.960 | 1.000 / 1.000 / 1.000 |\n| 40: Roundabout mandatory | 90 | 0.963 / 0.878 / 0.919 | 1.000 / 0.844 / 0.916 |\n| 41: End no passing | 60 | 0.984 / 1.000 / 0.992 | 1.000 / 1.000 / 1.000 |\n| 42: End no passing >3.5t | 90 | 0.978 / 1.000 / 0.989 | 0.927 / 0.989 / 0.957 |"
+    }
+  ],
+  "source_sha256": "ac91b5ebc7f6104a3e08100f60d91c77706602cf2fbbfdbd59373c0a5a75f93b",
+  "derived_figures": [
+    {
+      "asset": "augmentation_seeds.png",
+      "source_outputs": [
+        [
+          26,
+          3
+        ],
+        [
+          26,
+          4
+        ]
+      ],
+      "description": "Report plot redrawn from saved rounded Markdown metrics; no model execution."
+    }
+  ]
+}

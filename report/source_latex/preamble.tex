@@ -1,36 +1,57 @@
-\usepackage[a4paper,top=27mm,bottom=25mm,left=28mm,right=24mm,headheight=15pt]{geometry}
+\usepackage[a4paper,top=25mm,bottom=24mm,left=27mm,right=23mm,headheight=15pt]{geometry}
 \usepackage{fontspec}
 \setmainfont{Times New Roman}
 \setsansfont{Arial}
 \setmonofont{Courier New}
-\usepackage{amsmath,amssymb,graphicx,booktabs,array,longtable,float}
+\usepackage{amsmath,amssymb,graphicx,booktabs,array,longtable,float,tabularx}
 \usepackage[table]{xcolor}
 \usepackage{enumitem,fancyhdr,titlesec,caption,subcaption,tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\usepackage{pdflscape}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue,
- pdftitle={CO5085 Coursework Report},pdfauthor={}}
+ pdftitle={CO5085: E1--E3 and A1},pdfauthor={Dang Nguyen Tan Tai}}
 \definecolor{navy}{HTML}{164E9B}
+\definecolor{convcolor}{HTML}{EDF5FF}
+\definecolor{fccolor}{HTML}{F0F8EC}
+\definecolor{outcolor}{HTML}{FFF3E5}
 \setlength{\parindent}{1.2em}
 \setlength{\parskip}{4pt}
-\linespread{1.12}
+\linespread{1.1}
 \emergencystretch=4em
+\raggedbottom
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small CO5085 Coursework}
-\fancyhead[R]{\small Deep Learning and Computer Vision}
+\fancyhead[L]{\small CO5085: E1--E3 và A1}
+\fancyhead[R]{\small Học sâu và thị giác máy tính}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
 \titleformat{\chapter}[hang]{\normalfont\LARGE\bfseries}{\thechapter.}{0.6em}{}
 \titlespacing*{\chapter}{0pt}{-8pt}{18pt}
 \captionsetup{font=small,labelfont=bf}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\listfigurename}{Danh sách hình vẽ}
+\renewcommand{\listtablename}{Danh sách bảng}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\bibname}{Tài liệu tham khảo}
+\renewcommand{\appendixname}{Phụ lục}
 \setlist[itemize]{topsep=3pt,itemsep=2pt,leftmargin=1.6em}
-\newcommand{\Pending}[1]{\begin{tcolorbox}[colback=white,colframe=navy,title={Chưa có kết quả chính thức},fonttitle=\bfseries]#1\end{tcolorbox}}
-\newcommand{\FigureOrPlaceholder}[3]{\begin{figure}[H]\centering
-\IfFileExists{#1}{\includegraphics[width=.9\linewidth,height=.43\textheight,keepaspectratio]{#1}}
-{\fbox{\parbox[c][35mm][c]{.85\linewidth}{\centering #2\\[4pt]\small Hình sẽ được xuất từ full run.}}}
-\caption{#3}\end{figure}}
-\newcommand{\ResultTable}[2]{\begin{table}[H]\centering\caption{#2}
-\IfFileExists{assets/#1/results.tex}{\resizebox{\linewidth}{!}{\input{assets/#1/results.tex}}}
-{\begin{tabular}{ll}\toprule Nội dung & Trạng thái\\\midrule Metric full run & Chưa chạy / chờ bổ sung\\\bottomrule\end{tabular}}\end{table}}
+\tikzset{box/.style={draw=black!70,rounded corners=2pt,align=center,
+ minimum height=12mm,text width=29mm,font=\small,fill=convcolor},
+ fc/.style={box,fill=fccolor},output/.style={box,fill=outcolor},
+ flow/.style={-{Latex[length=2mm]},thick},
+ note/.style={align=center,font=\footnotesize,text width=35mm}}
+\newcommand{\ReportFigure}[3][.97]{\begin{figure}[H]\centering
+\includegraphics[width=#1\linewidth,keepaspectratio]{#2}\caption{#3}\end{figure}}
+\newcommand{\DataTable}[2]{\begin{table}[H]\centering\caption{#2}
+\small\setlength{\tabcolsep}{4pt}\input{#1}\end{table}}
+\newcommand{\Evidence}[1]{\begin{tcolorbox}[colback=convcolor,colframe=navy,
+ boxrule=.5pt,arc=1mm]#1\end{tcolorbox}}
+% Compatibility for A2 source, outside the current experimental scope.
+\newcommand{\Pending}[1]{\Evidence{#1}}
+\newcommand{\FigureOrPlaceholder}[3]{\IfFileExists{#1}{\ReportFigure{#1}{#3}}{}}
+\newcommand{\ResultTable}[2]{\IfFileExists{assets/#1/results.tex}{\DataTable{assets/#1/results.tex}{#2}}{}}
