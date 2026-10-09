@@ -6,19 +6,7 @@ giữa hai bản. Ba tokenizer cùng dùng split/normalization Fashion-MNIST ở
 Chương 1; không sử dụng checkpoint E1.
 
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[box] (in) at (0,0) {Ảnh\\$B\times1\times28\times28$};
-\node[box,text width=43mm] (r) at (5,2.1) {Rows: mỗi hàng 1 token\\$B\times28\times28$};
-\node[box,text width=43mm] (p) at (5,0) {Patch $4\times4$, stride 4\\49 patch, raster order\\$B\times49\times16$};
-\node[box,text width=43mm] (c) at (5,-2.5) {CNN-stem: Conv $1\to16$\\Pool; Conv $16\to16$; Pool\\$B\times16\times7\times7$\\reshape $B\times49\times16$};
-\node[fc] (out) at (10,0) {FC embedding\\$F\to64$\\$B\times N\times64$};
-\draw[flow] (in.east)--++(.7,0)|-(r.west);
-\draw[flow] (in)--(p);
-\draw[flow] (in.east)--++(.7,0)|-(c.west);
-\draw[flow] (r.east)--++(.8,0)|-(out.west);
-\draw[flow] (p)--(out);
-\draw[flow] (c.east)--++(.8,0)|-(out.west);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchTokens}
 \caption{Ba tokenizer E2; CNN-stem có hai Conv kernel 3, stride 1, padding 1, bias, ReLU và MaxPool 2 sau mỗi Conv. Rows không có Conv; patch lấy trực tiếp pixel.}
 \end{figure}
 Rows có $ N=28,F=28$; patch/CNN-stem có $ N=49,F=16$.
@@ -27,31 +15,11 @@ tokenizer thay đổi cả inductive bias và capacity.
 
 \section{Kiến trúc encoder và MSA}
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[fc] (a) at (0,0) {Embedding\\$B\times N\times64$};
-\node[box] (b) at (4,0) {Cộng position học\\$1\times N\times64$};
-\node[box] (c) at (8,0) {2 encoder block\\$D=64$, $H=4$\\giữ $B\times N\times64$};
-\node[box,below=3mm of c] (d) {LayerNorm 64\\Mean pooling token\\$B\times64$};
-\node[output,left=6mm of d] (e) {FC $64\to10$\\10 logits};
-\draw[flow] (a)--(b);\draw[flow] (b)--(c);
-\draw[flow] (c)--(d);\draw[flow] (d)--(e);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchEncoder}
 \caption{Classifier E2: một FC embedding, hai encoder block và một FC head; không CLS token.}
 \end{figure}
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[box] (x) at (0,0) {$X$\\$B\times N\times64$};
-\node[box] (ln) at (3.8,0) {LayerNorm\\64};
-\node[fc] (msa) at (7.6,0) {MSA\\QKV $64\to192$\\output FC $64\to64$};
-\node[box] (add) at (11.4,0) {Dropout 0.1\\Cộng residual\\$U=X+\mathrm{MSA}$};
-\node[box] (ln2) at (11.4,-2) {LayerNorm 64};
-\node[fc] (ff) at (7.6,-2) {FFN: FC $64\to128$\\GELU, Dropout 0.1\\FC $128\to64$, Drop 0.1};
-\node[output] (y) at (3.8,-2) {Cộng residual\\$Y=U+\mathrm{FFN}$};
-\draw[flow] (x)--(ln);\draw[flow] (ln)--(msa);\draw[flow] (msa)--(add);
-\draw[flow] (add)--(ln2);\draw[flow] (ln2)--(ff);\draw[flow] (ff)--(y);
-\draw[flow] (x.north)--++(0,.7)-|(add.north);
-\draw[flow] (add.east)--++(.7,0)|-([yshift=-9mm]y.south)--(y.south);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchMSA}
 \caption{Một pre-norm encoder block: hai projection MSA và hai FC trong FFN, tổng bốn ánh xạ Linear/block. Đường ngoài là residual.}
 \end{figure}
 Với $ D=64,H=4,d_h=16$, QKV reshape thành $ B\times H\times N\times d_h $:
@@ -62,7 +30,7 @@ A_h=\operatorname{softmax}_{\mathrm{key}}\left(Q_hK_h^\top/\sqrt{d_h}\right),
 Attention dropout 0,1 áp dụng lên $ A_h $ trước khi nhân $ V_h $; output dropout
 nằm trên nhánh residual. Mỗi block có FFN $64\to 128\to 64$, GELU,
 dropout 0,1. Toàn classifier có 10 ánh xạ Linear theo cách đếm QKV gộp là
-một Linear:1 embedding +2$\times $4 trong encoder +1 head. CNN-stem bổ sung 2 Conv.
+một Linear: 1 embedding + $2\times4$ trong encoder + 1 head. CNN-stem bổ sung 2 Conv.
 
 Cặp manual/PyTorch copy toàn bộ weights khởi tạo, gồm tokenizer, position,
 FFN và head. Kiểm tra CUDA float64 với dropout tắt đạt sai số tối đa
@@ -70,11 +38,11 @@ $1,665\times10^{-16}$ ở forward và input/weight/bias gradients.
 Parity xác nhận phép toán; không đảm bảo dropout/RNG và đường tối ưu của
 hai lần training giống nhau.
 
-\section{Protocol và tám cấu hình}
-AdamW LR $10^{-3}$, WD $10^{-4}$, batch 128, tối đa 100 epoch; full run dùng
+\section{Thiết lập huấn luyện và tám cấu hình}
+AdamW LR $10^{-3}$, WD $10^{-4}$, batch 128, tối đa 100 epoch; thí nghiệm dùng
 patience 10, min-delta $10^{-4}$ và checkpoint min validation loss.
 Sáu run cơ sở là manual/PyTorch $\times $ rows/patch/stem, H=4.
-Tokenizer manual tốt nhất theo validation là CNN-stem, được dùng thêmH=2 vàH=8;
+Tokenizer manual tốt nhất theo validation là CNN-stem, được dùng thêm H=2 và H=8;
 H=4 tái dùng run đã train. D giữ 64 nên số tham số không thay đổi theo H.
 
 Ký hiệu bảng: M=manual, T=PyTorch; R=rows, P=patch 4, C=CNN-stem;
@@ -90,8 +58,8 @@ chữ số cuối là H. Ví dụ M-C4 là manual CNN-stem, 4 head.
 Rows &89,97&89,90&+0,07&6,217 / 6,142\\
 Patch &89,17&88,47&+0,70&7,347 / 6,902\\
 CNN-stem &90,65&90,68&$-0,03$&6,487 / 6,824\\\bottomrule\end{tabular}\end{table}
-Sai số parity rất nhỏ không có nghĩa metric training phải bằng nhau:
-dropout, random-number consumption và AMP làm đường tối ưu khác.
+Sai số đối chiếu phép toán rất nhỏ không có nghĩa metric training phải bằng nhau:
+dropout, thứ tự sử dụng số ngẫu nhiên và AMP làm đường tối ưu khác.
 Chênh lệch 0,07 hoặc 0,03 điểm ở rows/stem nhỏ; chênh lệch 0,70 ở patch cũng
 chỉ quan sát ở một seed, chưa kết luận implementation nào tốt hơn.
 
@@ -125,9 +93,9 @@ tự chứng minh token là nguyên nhân của quyết định phân loại.
 M-R4 & Shirt $\to $ T-shirt/top &139&13,9\\
 M-P4 & Coat $\to $ Pullover &127&12,7\\
 M-C4 & Shirt $\to $ T-shirt/top &94&9,4\\\bottomrule\end{tabular}\end{table}
-\ReportFigure[.9]{assets/e2/failure_examples_test.png}{Gallery lỗi của các model đại diện E2 chọn bằng validation.}
+\ReportFigure[.9]{assets/e2/failure_examples_test.png}{Gallery lỗi của các mô hình đại diện E2 chọn bằng validation.}
 Ảnh lỗi và ma trận đầy đủ ở Phụ lục cho thấy nhóm áo vẫn khó tách.
 Patch hay nhầm Coat/Pullover; stem giảm cặp Shirt/T-shirt/top trong bản
-manual, song không xóa lỗi. E2 đã đáp ứng hai implementation và ba tokenizers;
+manual, song không xóa lỗi. E2 sử dụng hai cách cài đặt và ba cách tạo token;
 giới hạn là encoder nhỏ, một seed, chưa kiểm soát capacity giữa tokenizers
 và attention visualization chỉ mang tính mô tả.

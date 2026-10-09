@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="CO5085 — Deep Learning and Applications in Computer Vision, HCMUT, Semester 261." />
+  <meta name="description" content="Bài tập CO5085 của Đặng Nguyễn Tấn Tài: năm notebook, kết quả thực nghiệm E1–E3, A1–A2 và báo cáo tổng trên Fashion-MNIST, GTSRB, VOC2012." />
+  <meta name="theme-color" content="#164e9b" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23164e9b'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='sans-serif' font-size='32' font-weight='bold' fill='white'%3ECO%3C/text%3E%3C/svg%3E" />
   <title>CO5085 · Deep Learning & Computer Vision</title>
   <style>
     :root{
       --bg:#f6f8fb;--surface:#fff;--text:#18202a;--muted:#526174;
       --line:#e5e9ef;--accent:#164e9b;--accent-soft:#edf4ff;
-      --danger:#b42318;--danger-bg:#fff0ee;--warn:#9a6700;--warn-bg:#fff7d6;
       --ok:#067647;--ok-bg:#ecfdf3;--shadow:0 12px 35px rgba(20,35,55,.07);
       --radius:18px;
     }
@@ -19,7 +20,7 @@
     a{color:inherit}
     .wrap{width:min(1120px,calc(100% - 36px));margin:auto}
     header{position:sticky;top:0;z-index:20;background:rgba(246,248,251,.9);backdrop-filter:blur(14px);border-bottom:1px solid rgba(229,233,239,.9)}
-    nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0}
     .brand{font-weight:800;letter-spacing:-.02em;text-decoration:none}
     .brand span{color:var(--accent)}
     .navlinks{display:flex;gap:20px;align-items:center;font-size:14px;color:var(--muted)}
@@ -37,14 +38,12 @@
     h2{font-size:30px;letter-spacing:-.035em;margin:0}
     .section-head p{margin:0;color:var(--muted);max-width:620px}
     .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+    .card{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
     .span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
     .card h3{margin:0 0 8px;font-size:19px;letter-spacing:-.02em}
     .card p{margin:0;color:var(--muted)}
     .kv{display:grid;grid-template-columns:140px 1fr;gap:10px 16px;margin-top:16px;font-size:14px}
-    .kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:650}
-    .todo{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:7px;background:var(--danger-bg);color:var(--danger);font-weight:800;border:1px solid #ffd7d2}
-    .proposed{display:inline-flex;align-items:center;padding:3px 8px;border-radius:7px;background:var(--warn-bg);color:var(--warn);font-weight:800}
+    .kv dt{color:var(--muted)} .kv dd{min-width:0;margin:0;font-weight:650;overflow-wrap:anywhere}
     .fixed{display:inline-flex;align-items:center;padding:3px 8px;border-radius:7px;background:var(--ok-bg);color:var(--ok);font-weight:800}
     .assignment-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:13px}
     .code{font-size:12px;font-weight:800;color:var(--accent);background:var(--accent-soft);padding:5px 8px;border-radius:8px}
@@ -52,7 +51,19 @@
     .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
     .btn{display:inline-flex;padding:8px 11px;border-radius:9px;text-decoration:none;border:1px solid var(--line);font-size:13px;font-weight:700}
     .btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
-    .btn.disabled{color:#98a2b3;background:#f8fafc;pointer-events:none}
+    .btn:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+    .btn.primary:hover{background:#103d7b;color:white}
+    .btn:active{opacity:.8}
+    .result-table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;font-variant-numeric:tabular-nums}
+    .result-table caption{text-align:left;color:var(--muted);font-size:13px;padding-bottom:6px}
+    .result-table th,.result-table td{padding:9px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    .result-table th{font-weight:650}
+    .result-table th:not(:first-child),.result-table td:not(:first-child){text-align:right;padding-left:12px}
+    .result-table thead th{font-size:12px;color:var(--muted)}
+    .summary-stats{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:28px;color:var(--muted);font-size:14px}
+    .summary-stats strong{font-size:22px;color:var(--text);margin-right:5px;font-variant-numeric:tabular-nums}
+    .resource-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .card .context{margin-top:14px;font-size:14px}
     .timeline{position:relative;margin-top:6px}
     .timeline:before{content:"";position:absolute;left:13px;top:8px;bottom:8px;width:2px;background:var(--line)}
     .event{position:relative;padding-left:44px;margin:0 0 18px}
@@ -60,16 +71,17 @@
     .event time{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.05em}
     .event strong{display:block;margin-top:2px}
     .event span{color:var(--muted);font-size:14px}
-    .note{border-left:4px solid var(--danger);background:var(--danger-bg);padding:14px 16px;border-radius:10px;color:#7a271a}
+    .note{border-left:4px solid var(--accent);background:var(--accent-soft);padding:14px 16px;border-radius:10px}
     footer{padding:48px 0 56px;color:var(--muted);font-size:13px}
     footer .foot{border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
-    @media(max-width:850px){.span-4,.span-6,.span-8{grid-column:span 12}.navlinks{flex-wrap:wrap;gap:4px 10px;justify-content:flex-end}.navlinks a{font-size:13px}.navlinks .repo{display:none}.kv{grid-template-columns:1fr}.hero{padding-top:52px}}
+    @media(max-width:850px){.span-4,.span-6,.span-8{grid-column:span 12}.navlinks{flex-wrap:wrap;gap:4px 12px;justify-content:flex-end}.navlinks a{font-size:13px}.navlinks .repo{display:none}.kv{grid-template-columns:100px minmax(0,1fr)}.hero{padding-top:52px}}
   a:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
     .skip{position:absolute;left:12px;top:-80px;background:white;padding:12px;z-index:30}.skip:focus{top:8px}
     section,article[id]{scroll-margin-top:110px}.navlinks a,.btn{min-height:44px;display:inline-flex;align-items:center}
     .review{background:var(--accent-soft);border-left:4px solid var(--accent);padding:14px 18px;border-radius:8px;margin-bottom:24px}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-    @media(max-width:450px){nav{align-items:flex-start}.brand{padding-top:8px}.navlinks{max-width:210px}.hero h1{font-size:34px}}
+    @media(max-width:450px){.wrap{width:calc(100% - 32px)}nav{align-items:center}.navlinks{gap:0 10px}.hero h1{font-size:36px}.card{padding:20px}.kv{grid-template-columns:1fr;gap:4px}.kv dd{margin-bottom:8px}.deadline{max-width:65%;text-align:right}.section-head{display:block}}
+    @media print{header,.skip,.links,.resource-list{display:none}.hero{padding-top:12px}.card{box-shadow:none;break-inside:avoid}body{background:white}.wrap{width:100%}a{overflow-wrap:anywhere}}
   </style>
 </head>
 <body>
@@ -79,7 +91,7 @@
     <nav aria-label="Điều hướng chính">
       <a class="brand" href="#top">CO<span>5085</span></a>
       <div class="navlinks">
-        <a href="#team">Nhóm</a><a href="#coursework">Bài tập</a><a href="#timeline">Timeline</a>
+        <a href="#team">Thông tin</a><a href="#coursework">Bài tập</a><a href="#resources">Tài liệu</a>
         <a class="repo" href="https://github.com/dangtai111325/CO5085" target="_blank" rel="noreferrer">GitHub Repository ↗</a>
       </div>
     </nav>
@@ -91,7 +103,9 @@
     <div class="wrap">
       <div class="eyebrow">HCMUT · Faculty of Computer Science & Engineering</div>
       <h1>Deep Learning & Applications in Computer Vision</h1>
-      <p>Trang tổng hợp coursework cho học phần CO5085 — theo dõi bài tập E1–E3, Assignment A1–A2, báo cáo, mã nguồn, thí nghiệm và các mốc nộp.</p>
+      <p>Từ phân loại ảnh đến phát hiện đối tượng: code, kết quả thực nghiệm và báo cáo cho năm bài tập E1–E3, A1–A2.</p>
+      <div class="links"><a class="btn primary" href="../report/CO5085_Report.pdf">Đọc báo cáo tổng · PDF</a><a class="btn" href="#coursework">Khám phá các bài tập</a></div>
+      <div class="summary-stats" aria-label="Quy mô thực nghiệm"><span><strong>5</strong> notebook độc lập</span><span><strong>36</strong> lượt huấn luyện</span><span><strong>3</strong> bộ dữ liệu</span><span><strong>79</strong> trang báo cáo</span></div>
       <div class="hero-meta">
         <span class="chip">Học kỳ 261 · 2026–2027</span>
         <span class="chip">Giảng viên: Lê Thành Sách · Nguyễn Quốc Minh</span>
@@ -102,14 +116,14 @@
 
   <section class="section" id="team">
     <div class="wrap">
-      <div class="section-head"><div><h2>Thông tin nhóm</h2><p>Các trường màu đỏ là thông tin cần bổ sung trước khi công bố bản hoàn chỉnh.</p></div></div>
+      <div class="section-head"><div><h2>Thông tin học phần</h2><p>Bài tập cá nhân của Đặng Nguyễn Tấn Tài, lớp CH01.</p></div></div>
       <div class="grid">
         <article class="card span-6">
-          <h3>Nhóm</h3>
+          <h3>Người thực hiện</h3>
           <dl class="kv">
-            <dt>Tên nhóm</dt><dd><span class="todo">CẦN ĐIỀN · TÊN NHÓM</span></dd>
-            <dt>Thành viên 1</dt><dd><span class="todo">CẦN ĐIỀN · HỌ TÊN / MSSV</span></dd>
-            <dt>Thành viên 2</dt><dd><span class="todo">CẦN ĐIỀN · HỌ TÊN / MSSV</span></dd>
+            <dt>Tên nhóm</dt><dd>CO5085 · 2570357</dd>
+            <dt>Thực hiện</dt><dd>Đặng Nguyễn Tấn Tài · 2570357</dd>
+            <dt>Lớp</dt><dd>CH01</dd>
           </dl>
         </article>
         <article class="card span-6">
@@ -126,29 +140,33 @@
 
   <section class="section" id="coursework">
     <div class="wrap">
-      <div class="section-head"><div><h2>Coursework</h2><p>Notebook độc lập và báo cáo phương pháp đã có trong bản local. Kết quả huấn luyện đầy đủ đang chờ thực nghiệm.</p></div></div>
-      <div class="review"><strong>Bản local để duyệt.</strong> Notebook chạy độc lập; kết quả lưu trong output cell. Dataset chỉ giữ local. Báo cáo PDF hiện có chờ cập nhật từ các lần chạy đầy đủ. <a href="../report/CO5085_Report.pdf">Mở báo cáo nháp</a> · <a href="../report/source_latex/main.tex">Source LaTeX</a> · <a href="../README.md">README</a> · <a href="../datasets/README.md">Thông tin dataset</a> · <a href="../assignment/exercise-vne.pdf">Đề E1–E3</a> · <a href="../assignment/assignment1-vne.pdf">Đề A1</a> · <a href="../assignment/assignment2-vne.pdf">Đề A2</a></div>
+      <div class="section-head"><div><h2>Bài tập và kết quả</h2><p>Mỗi notebook chứa toàn bộ pipeline và output đã lưu. Xem trên GitHub hoặc tải về để chạy bằng Jupyter.</p></div></div>
+      <div class="review">Các số liệu dưới đây lấy từ test sau khi chọn mô hình bằng validation. Bảng đầy đủ, đường học, ma trận và ảnh dự đoán nằm trong notebook và <a href="../report/CO5085_Report.pdf">báo cáo tổng</a>.</div>
       <div class="grid">
         <article class="card span-4" id="e1">
           <div class="assignment-top"><span class="code">E1</span><span class="deadline">02/11/2026 · 23:59</span></div>
           <h3>Softmax · MLP · CNN</h3>
           <p>Phân loại ảnh với training loop PyTorch tự viết và phân tích lỗi.</p>
-          <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Code local · chờ full run</dd></dl>
-          <div class="links"><a class="btn" href="../source_code/E1.ipynb" download>Notebook E1</a><a class="btn" href="../report/CO5085_Report.pdf">Báo cáo nháp PDF</a></div>
+          <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
+          <table class="result-table"><caption>Test accuracy · 10.000 ảnh</caption><tbody><tr><th scope="row">Softmax</th><td>84,27%</td></tr><tr><th scope="row">MLP</th><td>89,45%</td></tr><tr><th scope="row">CNN-A</th><td>91,66%</td></tr><tr><th scope="row">CNN-B</th><td><strong>91,97%</strong></td></tr></tbody></table>
+          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E1.ipynb">Xem E1</a><a class="btn" href="../source_code/E1.ipynb" download>Tải .ipynb</a></div>
         </article>
         <article class="card span-4" id="e2">
           <div class="assignment-top"><span class="code">E2</span><span class="deadline">02/11/2026 · 23:59</span></div>
           <h3>MSA · Tokenization</h3>
           <p>Multi-Head Self-Attention tự hiện thực, bản PyTorch đối chiếu và nhiều cách token hóa.</p>
-          <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Code local · chờ full run</dd></dl>
-          <div class="links"><a class="btn" href="../source_code/E2.ipynb" download>Notebook E2</a><a class="btn" href="../report/CO5085_Report.pdf">Báo cáo nháp PDF</a></div>
+          <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
+          <table class="result-table"><caption>Cấu hình có test accuracy cao nhất trong E2</caption><tbody><tr><th scope="row">MSA PyTorch<br>CNN-stem · 4 heads</th><td><strong>90,78%</strong></td></tr></tbody></table>
+          <p class="context">8 cấu hình đối chiếu MSA thủ công/PyTorch, token theo hàng, patch, CNN-stem và số attention heads.</p>
+          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E2.ipynb">Xem E2</a><a class="btn" href="../source_code/E2.ipynb" download>Tải .ipynb</a></div>
         </article>
         <article class="card span-4" id="e3">
           <div class="assignment-top"><span class="code">E3</span><span class="deadline">09/11/2026 · 23:59</span></div>
           <h3>LSTM · GRU</h3>
           <p>Mô hình hóa ảnh dưới dạng chuỗi và so sánh với baseline không hồi tiếp.</p>
-          <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Code local · chờ full run</dd></dl>
-          <div class="links"><a class="btn" href="../source_code/E3.ipynb" download>Notebook E3</a><a class="btn" href="../report/CO5085_Report.pdf">Báo cáo nháp PDF</a></div>
+          <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
+          <table class="result-table"><caption>Test accuracy · chuỗi theo hàng và baseline</caption><tbody><tr><th scope="row">LSTM rows</th><td>89,70%</td></tr><tr><th scope="row">GRU rows</th><td>90,06%</td></tr><tr><th scope="row">CNN-B baseline</th><td><strong>91,97%</strong></td></tr></tbody></table>
+          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E3.ipynb">Xem E3</a><a class="btn" href="../source_code/E3.ipynb" download>Tải .ipynb</a></div>
         </article>
 
         <article class="card span-6" id="a1">
@@ -160,24 +178,41 @@
             <dt>CNN</dt><dd><span class="fixed">ResNet-50</span></dd>
             <dt>Transformer</dt><dd><span class="fixed">DeiT-Small/16 · non-distilled</span></dd>
           </dl>
-          <div class="links"><a class="btn" href="../source_code/A1.ipynb" download>Notebook A1</a><a class="btn" href="../report/CO5085_Report.pdf">Báo cáo nháp PDF</a></div>
+          <table class="result-table"><caption>Pretrained full · seed 42 · test GTSRB</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">Accuracy</th><th scope="col">Macro-F1</th></tr></thead><tbody><tr><th scope="row">ResNet-50</th><td>98,37%</td><td>0,9743</td></tr><tr><th scope="row">DeiT-Small</th><td>98,92%</td><td>0,9790</td></tr></tbody></table>
+          <p class="context">14 lượt train: scratch, head-only, partial/full fine-tuning, ảnh hưởng augmentation và lặp ba seed. Train/validation được chia theo track biển báo.</p>
+          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A1.ipynb">Xem A1</a><a class="btn" href="../source_code/A1.ipynb" download>Tải .ipynb</a></div>
         </article>
 
         <article class="card span-6" id="a2">
           <div class="assignment-top"><span class="code">A2</span><span class="deadline">A2.1 · 02/11 · A2.2 · 16/11</span></div>
-          <h3>Object Detection · Faster R-CNN + FPN</h3>
-          <p>Pipeline detection trên BDD100K, so sánh C5/FPN, anchor nhỏ và unfreeze; đánh giá AP50:95, AP50/AP75 và vật thể nhỏ.</p>
+          <h3>Object Detection · One-stage vs Two-stage</h3>
+          <p>Cùng backbone ResNet-50 pretrained ImageNet: RetinaNet với FPN P3–P7 và Faster R-CNN với FPN P2–P6. Hai detection head được huấn luyện trên VOC2012.</p>
           <dl class="kv">
             <dt>Chủ đề</dt><dd><span class="fixed">Object Detection</span></dd>
-            <dt>Dataset</dt><dd><span class="fixed">BDD100K legacy local · 10 lớp</span></dd>
-            <dt>Paper</dt><dd><a href="https://openaccess.thecvf.com/content_cvpr_2017/papers/Lin_Feature_Pyramid_Networks_CVPR_2017_paper.pdf">Feature Pyramid Networks · CVPR 2017</a></dd>
+            <dt>Dataset</dt><dd><span class="fixed">VOC2012 · 20 lớp · 9.232/1.154/1.154 local holdout</span></dd>
+            <dt>Huấn luyện</dt><dd>Batch 4 × accumulation 3; 23 / 13 epoch; best 21 / 11.</dd>
+            <dt>Video demo</dt><dd>Chưa có liên kết video.</dd>
           </dl>
-          <div class="links"><a class="btn" href="../source_code/A2.ipynb" download>Notebook A2</a><a class="btn" href="../report/CO5085_Report.pdf">Báo cáo nháp PDF</a></div>
+          <table class="result-table"><caption>Test holdout VOC2012 · 1.154 ảnh</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">VOC mAP50</th><th scope="col">AP50:95</th></tr></thead><tbody><tr><th scope="row">RetinaNet</th><td>71,58%</td><td>41,36%</td></tr><tr><th scope="row">Faster R-CNN</th><td>73,07%</td><td>40,75%</td></tr></tbody></table>
+          <p class="context">Notebook có AP/AR, precision, recall, F1, AP từng lớp, PR curves, ma trận, ảnh GT/dự đoán/lỗi và benchmark latency/FPS/VRAM.</p>
+          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A2.ipynb">Xem A2</a><a class="btn" href="../source_code/A2.ipynb" download>Tải .ipynb</a></div>
         </article>
 
         <article class="card span-12">
-          <div class="note"><strong>CẦN BỔ SUNG TRƯỚC BẢN NỘP:</strong> thông tin nhóm/thành viên, kết quả full run, phân tích từ log thật và khai báo đóng góp/AI. Báo cáo hiện là bản nháp phương pháp.</div>
+          <div class="note"><strong>Đọc kết quả:</strong> A2 dùng test holdout nội bộ VOC2012. COCO-style AP là cách tính metric trên VOC. Điều kiện đo, kết quả từng lớp và giới hạn so sánh được trình bày trong báo cáo.</div>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="resources">
+    <div class="wrap">
+      <div class="section-head"><div><h2>Báo cáo và tài liệu</h2><p>Đề bài, dữ liệu, nguồn LaTeX và các paper dùng trong thực nghiệm.</p></div></div>
+      <div class="grid">
+        <article class="card span-6"><h3>Báo cáo tổng · 79 trang</h3><p>Thiết lập thực nghiệm, sơ đồ mạng TikZ, kết quả và thảo luận cho cả năm bài. Notebook và các hình trong báo cáo được công bố cùng mã nguồn.</p><div class="resource-list"><a class="btn primary" href="../report/CO5085_Report.pdf">Mở PDF</a><a class="btn" href="../report/CO5085_Report.pdf" download>Tải PDF</a><a class="btn" href="https://github.com/dangtai111325/CO5085/tree/main/report/source_latex">Nguồn LaTeX</a></div></article>
+        <article class="card span-6"><h3>Dữ liệu và cách chạy</h3><p>Fashion-MNIST, GTSRB và PASCAL VOC2012. README mô tả số lượng, phân bố lớp, định dạng nhãn, cách chia tập và nguồn tải. Dataset được giữ local, không đưa lên Git.</p><div class="resource-list"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/datasets/README.md">Thông tin dataset</a><a class="btn" href="https://github.com/dangtai111325/CO5085#readme">Hướng dẫn chạy</a></div></article>
+        <article class="card span-6"><h3>Đề bài</h3><p>Các yêu cầu về code, so sánh mô hình, đầu ra thực nghiệm và báo cáo.</p><div class="resource-list"><a class="btn" href="../assignment/exercise-vne.pdf">Đề E1–E3 · PDF</a><a class="btn" href="../assignment/assignment1-vne.pdf">Đề A1 · PDF</a><a class="btn" href="../assignment/assignment2-vne.pdf">Đề A2 · PDF</a></div></article>
+        <article class="card span-6"><h3>Paper cho A2</h3><p>Feature pyramid đa tỉ lệ và Focal Loss cho phát hiện đối tượng one-stage.</p><div class="resource-list"><a class="btn" href="https://arxiv.org/abs/1612.03144">FPN · CVPR 2017</a><a class="btn" href="https://arxiv.org/abs/1708.02002">Focal Loss · ICCV 2017</a></div><p class="context">A2 còn yêu cầu video demo riêng theo đề. Liên kết video sẽ được công bố khi có video.</p></article>
       </div>
     </div>
   </section>

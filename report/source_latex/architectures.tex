@@ -1,0 +1,280 @@
+% Architecture drawings use only black strokes and white fills.
+% Spatial extent and channel depth are schematic, not a common physical scale.
+\newcommand{\TensorMap}[8]{%
+\begin{scope}[shift={(#2,#3)}]
+\pgfmathsetmacro{\depthy}{#6*.55}
+\draw[draw=black,fill=white,line width=#7pt]
+ (0,#5)--(#6,{#5+\depthy})--({#4+#6},{#5+\depthy})--(#4,#5)--cycle;
+\draw[draw=black,fill=white,line width=#7pt]
+ (#4,0)--({#4+#6},\depthy)--({#4+#6},{#5+\depthy})--(#4,#5)--cycle;
+\foreach \q in {.33,.66}{\draw[black,line width=.35pt]
+ ({#4+#6*\q},{\depthy*\q})--({#4+#6*\q},{#5+\depthy*\q});}
+\draw[draw=black,fill=white,line width=#7pt] (0,0) rectangle (#4,#5);
+\coordinate (#1-west) at (0,{#5/2});
+\coordinate (#1-east) at ({#4+#6},{#5/2+\depthy/2});
+\coordinate (#1-north) at ({#4/2+#6/2},{#5+\depthy});
+\coordinate (#1-south) at ({#4/2},0);
+\node[font=\footnotesize,align=center,anchor=north] at ({#4/2},-.13) {#8};
+\end{scope}}
+\newcommand{\NeuronLayer}[4]{%
+\foreach \k in {1,...,4}{\node[draw=black,fill=white,circle,inner sep=0pt,minimum size=2.3mm,line width=.5pt]
+ (#1-\k) at (#2,{#3+.32*(\k-1)}) {};}
+\node[font=\footnotesize,anchor=north,align=center] at (#2,{#3-.2}) {#4};}
+\newcommand{\DenseLinks}[2]{\foreach \i in {1,...,4}{\foreach \j in {1,...,4}{\draw[black,line width=.18pt] (#1-\i)--(#2-\j);}}}
+\newcommand{\ArchSoftmax}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{im}{0}{0}{1.5}{1.5}{.08}{.35}{$28\times28\times1$}
+\NeuronLayer{v}{3.3}{.23}{784 inputs}
+\NeuronLayer{o}{6.8}{.23}{10 logits}
+\draw[flow] (im-east)--node[above,font=\small]{Flatten}(2.9,.8);
+\DenseLinks{v}{o}
+\node[font=\small,align=center] at (5,1.9) {FC $784\to10$};
+\draw[flow] (7.2,.8)--(9,.8);
+\node[align=center,font=\small] at (9.6,.8) {Softmax\\10 xác suất};
+\end{tikzpicture}}
+\newcommand{\ArchMLP}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\NeuronLayer{i}{.4}{0}{784}
+\NeuronLayer{h}{3.2}{0}{256}
+\NeuronLayer{g}{6}{0}{128}
+\NeuronLayer{o}{8.8}{0}{10 logits}
+\DenseLinks{i}{h}\DenseLinks{h}{g}\DenseLinks{g}{o}
+\node[font=\small,align=center] at (3.2,1.75) {ReLU\\Dropout 0,2};
+\node[font=\small,align=center] at (6,1.75) {ReLU\\Dropout 0,2};
+\node[font=\footnotesize] at (4.6,-1) {Mỗi cột minh họa một tầng; các nơ-ron được lược bớt.};
+\end{tikzpicture}}
+\newcommand{\ArchCNNA}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{i}{0}{0}{1.6}{1.6}{.06}{.35}{$28\times28\times1$}
+\TensorMap{a}{4}{.25}{1.1}{1.1}{.25}{.7}{$14\times14\times32$}
+\TensorMap{b}{8}{.4}{.72}{.72}{.45}{1}{$7\times7\times64$}
+\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$1\to32$; ReLU\\MaxPool $2\times2$}(a-west);
+\draw[flow] (a-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$32\to64$; ReLU\\MaxPool $2\times2$}(b-west);
+\NeuronLayer{h}{8.5}{-2.9}{128; ReLU}
+\NeuronLayer{o}{4.7}{-2.9}{10 logits}
+\DenseLinks{h}{o}
+\draw[flow] (b-south)--node[right,align=left,font=\footnotesize]{Flatten 3136\\FC $3136\to128$}(8.5,-1.65);
+\node[font=\footnotesize] at (6.6,-1.55) {FC $128\to10$};
+\end{tikzpicture}}
+\newcommand{\ArchCNNB}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{i}{0}{0}{1.6}{1.6}{.06}{.35}{$28\times28\times1$}
+\TensorMap{a}{3.5}{.25}{1.1}{1.1}{.22}{.7}{$14\times14\times32$}
+\TensorMap{b}{7}{.4}{.72}{.72}{.4}{1}{$7\times7\times64$}
+\TensorMap{c}{10.2}{.5}{.48}{.48}{.65}{1.3}{$3\times3\times128$}
+\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Conv $3^2$, $1\to32$\\BN, ReLU, Pool $2^2$}(a-west);
+\draw[flow] (a-east)--node[above,align=center,font=\footnotesize]{Conv $3^2$, $32\to64$\\BN, ReLU, Pool $2^2$}(b-west);
+\draw[flow] (b-east)--node[above,align=center,font=\footnotesize]{Conv $3^2$, $64\to128$\\BN, ReLU, Pool $2^2$}(c-west);
+\NeuronLayer{h}{10.6}{-2.7}{128}
+\NeuronLayer{o}{6.9}{-2.7}{10 logits}
+\DenseLinks{h}{o}
+\draw[flow] (c-south)--node[right,align=left,font=\footnotesize]{AvgPool $1\times1$\\Flatten; Dropout 0,3}(10.6,-1.4);
+\node[font=\footnotesize] at (8.7,-1.35) {FC $128\to10$};
+\end{tikzpicture}}
+\newcommand{\ArchTokens}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{i}{0}{0}{1.5}{1.5}{.05}{.35}{$28\times28\times1$}
+\draw[step=.214,black,line width=.2pt] (0,0) grid (1.5,1.5);
+\TensorMap{r}{4.5}{3}{1.8}{.7}{.12}{.5}{Rows: $28\times28$}
+\foreach \k in {1,...,6}{\draw[line width=.25pt] (4.5,{3+.1*\k})--(6.3,{3+.1*\k});}
+\TensorMap{p}{4.5}{.4}{1.8}{.7}{.12}{.5}{Patch $4^2$: $49\times16$}
+\draw[step=.225,black,line width=.2pt] (4.5,.4) grid (6.3,1.1);
+\TensorMap{c}{4.5}{-2.3}{1.05}{1.05}{.38}{.9}{CNN-stem: $7\times7\times16$}
+\TensorMap{e}{9.5}{.4}{1.8}{.7}{.45}{1}{$N\times64$}
+\draw[flow] (i-east)--++(.6,0)|-(r-west);
+\node[anchor=south,align=center,font=\footnotesize] at (3.2,3.55) {Mỗi hàng\\một token};
+\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Patch $4\times4$\\không overlap}(p-west);
+\draw[flow] (i-east)--++(.6,0)|-(c-west);
+\node[align=center,font=\footnotesize] at (3.3,-.6) {Conv $1\to16$\\Conv $16\to16$};
+\draw[flow] (r-east)--++(.6,0)|-(e-west);
+\draw[flow] (p-east)--node[above,font=\footnotesize]{FC $F\to64$}(e-west);
+\draw[flow] (c-east)--++(1.1,0)|-(e-west);
+\node[anchor=west,align=left,font=\footnotesize] at (7.2,-1.5) {Reshape\\$49\times16$};
+\end{tikzpicture}}
+\newcommand{\ArchEncoder}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{i}{0}{0}{1.6}{1}{.4}{.8}{$N\times64$}
+\TensorMap{e}{4.5}{0}{1.6}{1}{.4}{.8}{$N\times64$}
+\TensorMap{h}{8.9}{.2}{.25}{.7}{.35}{.9}{64}
+\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Position học\\2 encoder block\\$D=64$, $H=4$}(e-west);
+\draw[flow] (e-east)--node[above,align=center,font=\footnotesize]{LayerNorm\\Mean theo token}(h-west);
+\NeuronLayer{o}{11.5}{.1}{10 logits}
+\draw[flow] (h-east)--node[above,font=\footnotesize]{FC}(11.2,.65);
+\end{tikzpicture}}
+\newcommand{\ArchMSA}{%
+\begin{tikzpicture}[x=1cm,y=1cm,op/.style={draw=black,fill=white,circle,inner sep=2pt,font=\small}]
+\TensorMap{x}{0}{0}{1.2}{.8}{.25}{.6}{$X:N\times64$}
+\node[font=\footnotesize,align=center] at (2.65,1.1) {LayerNorm\\QKV Linear};
+\TensorMap{q}{4}{2}{1}{.7}{.15}{.5}{$Q_h:N\times16$}
+\TensorMap{k}{4}{0}{1}{.7}{.15}{.5}{$K_h:N\times16$}
+\TensorMap{v}{4}{-2}{1}{.7}{.15}{.5}{$V_h:N\times16$}
+\draw[flow] (x-east)--(3,.5);
+\foreach \a in {q,k,v}{\draw[flow] (3,.5)|-(\a-west);}
+\TensorMap{att}{7}{1}{1.2}{1.2}{.06}{.5}{$A_h:N\times N$}
+\draw[flow] (q-east)--(att-west);
+\node[font=\footnotesize] at (5.8,3.25) {$Q_hK_h^\top/\sqrt{16}$};
+\draw[flow] (k-east)--++(.5,0)|-(att-west);
+\node[font=\footnotesize,align=center] at (8,3.25) {Softmax theo key\\Dropout 0,1};
+\node[op] (mul) at (9.3,-1.5) {$\times$};
+\draw[flow] (att-east)-|(mul);\draw[flow] (v-east)--(mul);
+\node[font=\footnotesize,align=center] (concat) at (11,-1.5) {Concat 4 head\\FC $64\to64$\\Dropout};
+\node[op] (add) at (10.7,.5) {$+$};
+\draw[flow] (mul)--(concat.west);\draw[flow] (concat.north)|-(10.7,-.5)--(add);
+\draw[flow] (x-north)--++(0,3.2)-|(add);
+\node[font=\footnotesize,align=center] at (6,4.4) {$U=X+\mathrm{MSA}(\mathrm{LN}(X))$};
+\draw[flow] (add)--node[above,font=\footnotesize]{$U$}(12.8,.5);
+\TensorMap{u}{0}{-5.3}{1.2}{.8}{.25}{.6}{$U:N\times64$}
+\TensorMap{ff}{4.5}{-5.3}{1.3}{.8}{.55}{1}{$N\times128$}
+\TensorMap{back}{8.5}{-5.3}{1.2}{.8}{.25}{.6}{$N\times64$}
+\draw[flow] (u-east)--node[above,align=center,font=\footnotesize]{LayerNorm\\FC $64\to128$}(ff-west);
+\draw[flow] (ff-east)--node[above,align=center,font=\footnotesize]{GELU, Dropout\\FC $128\to64$}(back-west);
+\node[op] (sumff) at (11.2,-4.8) {$+$};
+\draw[flow] (back-east)--(sumff);
+\node[font=\footnotesize] at (10.35,-4.15) {Dropout};
+\draw[flow] (u-north)--++(0,1.1)-|(sumff);
+\draw[flow] (sumff)--node[above,font=\footnotesize]{$Y$}(12.8,-4.8);
+\node[font=\footnotesize] at (6,-6.4) {$Y=U+\mathrm{FFN}(\mathrm{LN}(U))$; Dropout 0,1};
+\end{tikzpicture}}
+\newcommand{\ArchSequence}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{i}{0}{0}{1.5}{1.5}{.06}{.35}{$28\times28\times1$}
+\TensorMap{s}{3.5}{.2}{1.4}{1.1}{.15}{.5}{$T\times F$}
+\foreach \k in {1,...,5}{\draw[black,line width=.3pt] (3.5,{.2+\k*.18})--(4.9,{.2+\k*.18});}
+\draw[flow] (i-east)--node[above,font=\footnotesize]{Quét ảnh}(s-west);
+\foreach \x/\t in {6.1/1,8/2,10/T}{
+\node[draw=black,fill=white,rounded corners=3mm,minimum width=1.1cm,minimum height=1cm,font=\footnotesize,align=center] (c\t) at (\x,.8) {LSTM\\hoặc GRU};
+\node[font=\footnotesize] at (\x,-.15) {$x_{\t}$};
+\draw[flow] (\x,.05)--(\x,.3);}
+\draw[flow] (s-east)--(c1);\draw[flow] (c1)--node[above,font=\footnotesize]{$h_1$}(c2);
+\draw[flow,dashed] (c2)--node[above,font=\footnotesize]{$\cdots$}(cT);
+\draw[flow] (cT.east)--(11.5,.8);
+\NeuronLayer{o}{12}{.25}{10 logits}
+\node[font=\footnotesize,align=center] at (10.8,2) {$h_T\in\mathbb{R}^{128}$\\FC $128\to10$};
+\node[font=\footnotesize,align=center] at (6,-1.4) {Rows/columns: $T=28,F=28$; patch: $T=49,F=16$.\\Một bộ trọng số được dùng chung ở mọi bước.};
+\end{tikzpicture}}
+\newcommand{\ArchLSTM}{%
+\begin{tikzpicture}[x=1cm,y=1cm,gate/.style={draw=black,fill=white,rounded corners=1mm,minimum size=7mm,font=\small},op/.style={draw=black,fill=white,circle,inner sep=2pt}]
+\coordinate (cp) at (0,3);\node[above,font=\small] at (cp) {$c_{t-1}$};
+\node[op] (forget) at (3,3) {$\times$};\node[op] (sum) at (7,3) {$+$};
+\draw[flow] (cp)--(forget);\draw[flow] (forget)--(sum);\draw[flow] (sum)--node[above,font=\small]{$c_t$}(11,3);
+\foreach \x/\n/\lab in {3/f/\sigma,5/i/\sigma,7/g/\tanh,9/o/\sigma}{
+\node[gate] (\n) at (\x,.8) {$\lab$};
+\draw[flow] (\x,-.2)--(\n);}
+\node[op] (write) at (6,2) {$\times$};
+\draw[flow] (f)--(forget);\draw[flow] (i)|-(write);\draw[flow] (g)|-(write);\draw[flow] (write)-|(sum);
+\node[gate] (tc) at (10,2) {$\tanh$};\node[op] (read) at (10,.8) {$\times$};
+\draw[flow] (10,3)--(tc);\draw[flow] (tc)--(read);\draw[flow] (o)--(read);
+\draw[flow] (read)--node[above,font=\small]{$h_t$}(11.6,.8);
+\draw[line width=.6pt] (2,-.2)--(9,-.2);
+\draw[flow] (1,-1.4)--node[above,align=center,font=\footnotesize]{FC $F\to512$ + FC $128\to512$\\Tách $f,i,g,o$, mỗi gate 128 chiều}(5.5,-1.4)--(5.5,-.2);
+\node[font=\small,align=center] at (.3,-1.4) {$x_t$\\$h_{t-1}$};
+\node[font=\footnotesize] at (6,4) {Đường trên truyền bộ nhớ; các nút tròn là phép toán theo phần tử.};
+\end{tikzpicture}}
+\newcommand{\ArchGRU}{%
+\begin{tikzpicture}[x=1cm,y=1cm,gate/.style={draw=black,fill=white,rounded corners=1mm,minimum size=7mm,font=\small},op/.style={draw=black,fill=white,circle,inner sep=2pt}]
+\node[font=\small] (hp) at (0,3) {$h_{t-1}$};
+\node[gate] (r) at (2.5,.6) {$r_t: \sigma$};\node[gate] (z) at (5,.6) {$z_t: \sigma$};
+\node[op] (reset) at (2.5,1.8) {$\times$};\node[gate] (n) at (7.5,1.8) {$n_t: \tanh$};
+\node[op] (keep) at (9,3) {$\times$};\node[op] (write) at (9,1.8) {$\times$};\node[op] (sum) at (11,2.4) {$+$};
+\draw[flow] (hp)--(keep);\draw[flow] (r)--(reset);
+\draw[flow] (reset)--node[above,font=\footnotesize]{$x_n+r_t\odot h_n$}(n);
+\draw[flow] (z)--(5,3)--(keep);\draw[flow] (z)-|node[pos=.7,below,font=\footnotesize]{$1-z_t$}(write);
+\draw[flow] (n)--(write);\draw[flow] (keep)-|(sum);\draw[flow] (write)-|(sum);
+\draw[flow] (sum)--node[above,font=\small]{$h_t$}(12.3,2.4);
+\node[font=\footnotesize,align=center] at (5,-.9) {$x_t,h_{t-1}$: hai projection $F\to384$, $128\to384$\\Chia ba nhóm $r,z,n$; reset nhân sau projection hidden.};
+\draw[flow] (2.5,-.3)--(r);\draw[flow] (5,-.3)--(z);
+\draw[flow] (1.1,.6)--node[left,font=\footnotesize]{$h_n$}(1.1,1.8)--(reset);
+\end{tikzpicture}}
+\newcommand{\ArchResNet}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{i}{0}{0}{2.2}{2.2}{.08}{.35}{$224\times224\times3$}
+\TensorMap{c}{6.2}{.7}{.7}{.7}{1.05}{1.5}{$7\times7\times2048$}
+\draw[flow] (i-east)--node[above,align=center,font=\small]{ResNet-50 backbone\\Bottleneck: $3,4,6,3$\\Stem, C2--C5}(c-west);
+\TensorMap{v}{10.4}{.6}{.2}{1}{.4}{1.1}{2048}
+\draw[flow] (c-east)--node[above,align=center,font=\footnotesize]{Global\\AvgPool}(v-west);
+\NeuronLayer{o}{10.7}{-2.5}{43 logits}
+\draw[flow] (v-south)--node[right,font=\footnotesize]{FC $2048\to43$}(10.7,-1.3);
+\end{tikzpicture}}
+\newcommand{\ArchDeiT}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{i}{0}{0}{2.2}{2.2}{.08}{.35}{$224\times224\times3$}
+\draw[step=.157,black,line width=.2pt] (0,0) grid (2.2,2.2);
+\TensorMap{p}{4.5}{.5}{1.9}{1}{.6}{1}{$196\times384$}
+\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Conv $16\times16$\\stride 16\\$3\to384$}(p-west);
+\TensorMap{e}{8.8}{.5}{1.9}{1}{.6}{1}{$197\times384$}
+\draw[flow] (p-east)--node[above,align=center,font=\footnotesize]{CLS + position\\12 encoder block\\6 head; FFN 1536}(e-west);
+\NeuronLayer{h}{9.7}{-2.6}{384; CLS}
+\NeuronLayer{o}{5.7}{-2.6}{43 logits}
+\draw[flow] (e-south)--node[right,font=\footnotesize]{LayerNorm, lấy CLS}(9.7,-1.4);
+\DenseLinks{h}{o}\node[font=\footnotesize] at (7.6,-1.35) {FC $384\to43$};
+\end{tikzpicture}}
+\newcommand{\ArchFPN}[1]{%
+\begin{tikzpicture}[x=1cm,y=1cm,op/.style={draw=black,fill=white,circle,inner sep=1.5pt,font=\small}]
+\foreach \l/\y/\w/\ch/\s/\d/\b in {5/9/.6/2048/16/1.0/1.4,4/6/.85/1024/32/.8/1.2,3/3/1.15/512/64/.6/1,2/0/1.5/256/128/.45/.8}{%
+\ifnum#1=1\relax\def\low{3}\else\def\low{2}\fi
+\ifnum\l<\low\relax\else
+\TensorMap{c\l}{0}{\y}{\w}{\w}{\d}{\b}{$C_{\l}:\s^2\times\ch$}
+\ifnum\l=5
+\node[font=\footnotesize,fill=white] (t\l) at (5,{\y+.5}) {$T_5$};
+\else
+\node[op] (t\l) at (5,{\y+.5}) {$+$};
+\fi
+\draw[flow] (c\l-east)--node[above,font=\footnotesize]{Conv $1\times1$}(t\l);
+\TensorMap{p\l}{9}{\y}{\w}{\w}{.45}{.8}{$P_{\l}:\s^2\times256$}
+\draw[flow] (t\l)--node[above,font=\footnotesize]{Conv $3\times3$}(p\l-west);
+\ifnum\l<5
+\pgfmathtruncatemacro{\up}{\l+1}
+\draw[flow] (t\up)--node[right,align=left,font=\footnotesize]{Nearest\\upsample $\times2$}(t\l);
+\fi
+\fi}
+\node[font=\small,align=center] at (.6,11.1) {ResNet-50\\bottom-up};
+\node[font=\small,align=center] at (5,11.1) {Top-down\\$T_l=L_l(C_l)+\uparrow T_{l+1}$};
+\node[font=\small,align=center] at (9.8,11.1) {Smoothing\\256 channels};
+\draw[flow] (c3-west)--++(-.35,0)|-(c4-west);
+\draw[flow] (c4-west)--++(-.35,0)|-(c5-west);
+\ifnum#1=1
+\TensorMap{p6}{9}{-.1}{.45}{.45}{.45}{.8}{}
+\node[anchor=east,font=\footnotesize] at (8.7,-.35) {$P_6:8^2\times256$};
+\TensorMap{p7}{9}{-2.8}{.3}{.3}{.45}{.8}{$P_7:4^2\times256$}
+\draw[flow] (c5-west)--++(-1.1,0)|-node[pos=.8,above,font=\footnotesize]{Conv $3\times3$, stride 2}(p6-west);
+\draw[flow] (p6-south)--(p7-north);
+\node[anchor=east,align=right,font=\footnotesize] at (8.7,-1.65) {ReLU\\Conv $3\times3$, stride 2};
+\else
+\draw[flow] (c2-west)--++(-.35,0)|-(c3-west);
+\TensorMap{p6}{9}{-2.8}{.45}{.45}{.45}{.8}{$P_6:8^2\times256$}
+\draw[flow] (p5-east)--++(1.2,0)|-(p6-east);
+\node[align=center,font=\footnotesize] at (9.5,-1.5) {MaxPool $1\times1$\\stride 2};
+\fi
+\end{tikzpicture}}
+\newcommand{\ArchRetinaHead}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+\TensorMap{p}{0}{0}{1.4}{1.4}{.4}{.8}{$P_l:H_l\times W_l\times256$}
+\TensorMap{c}{5}{2}{1.1}{1.1}{.5}{1}{$H_l\times W_l\times256$}
+\TensorMap{r}{5}{-2}{1.1}{1.1}{.5}{1}{$H_l\times W_l\times256$}
+\draw[flow] (p-east)--++(.7,0)|-node[pos=.8,above,align=center,font=\footnotesize]{Classification subnet\\4 Conv $3^2$ + ReLU}(c-west);
+\draw[flow] (p-east)--++(.7,0)|-node[pos=.8,below,align=center,font=\footnotesize]{Regression subnet\\4 Conv $3^2$ + ReLU}(r-west);
+\TensorMap{co}{10}{2}{.8}{.8}{.45}{.9}{$H_l\times W_l\times180$}
+\TensorMap{ro}{10}{-2}{.8}{.8}{.2}{.6}{$H_l\times W_l\times36$}
+\draw[flow] (c-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$9\times20$ logits}(co-west);
+\draw[flow] (r-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$9\times4$ offsets}(ro-west);
+\node[font=\small,align=center] at (6,-3.8) {Hai subnet riêng; trọng số từng subnet dùng chung trên P3--P7.\\Focal Loss ($\alpha=0,25$, $\gamma=2$) + Smooth L1.};
+\end{tikzpicture}}
+\newcommand{\ArchFasterHead}{%
+\begin{tikzpicture}[x=1cm,y=1cm,op/.style={draw=black,fill=white,circle,inner sep=3pt}]
+\TensorMap{p}{0}{0}{1.4}{1.4}{.4}{.8}{$P_l:H_l\times W_l\times256$}
+\node[font=\footnotesize,align=center] (rpn) at (5.2,3.6) {RPN: Conv $3^2$ + ReLU\\Conv $1^2$: 3 objectness + 12 offsets\\Decode, NMS 0,7};
+\draw[flow] (p-east)--++(.6,0)|-(rpn.west);
+\TensorMap{roi}{5}{-.1}{.7}{.7}{.65}{1}{$7\times7\times256$}
+\draw[flow] (p-east)--(roi-west);
+\node[font=\footnotesize] at (3.25,1.3) {RoI Pool $7\times7$};
+\draw[flow] (rpn.south)--node[left,font=\footnotesize]{Proposals}(roi-north);
+\NeuronLayer{fc1}{8.6}{.1}{1024; ReLU}
+\NeuronLayer{fc2}{11.3}{.1}{1024; ReLU}
+\draw[flow] (roi-east)--(8.2,.6);
+\node[font=\footnotesize,align=center] at (7.2,1.5) {Flatten 12544\\FC};
+\DenseLinks{fc1}{fc2}
+\node[font=\footnotesize,align=center] at (9.9,2) {FC $1024\to1024$};
+\draw[flow] (11.3,-.7)--(11.3,-1.7)--(9,-1.7);
+\node[font=\footnotesize,align=center] at (6.8,-1.7) {FC $1024\to21$: lớp + BG\\FC $1024\to84$: bbox theo lớp};
+\node[font=\footnotesize,align=center] at (5,-3) {RPN: P2--P6; RoI Pool: P2--P5 theo $\lfloor4+\log_2(\sqrt{wh}/224)\rfloor$.\\Loss: objectness + classification CE, hai thành phần Smooth L1.};
+\end{tikzpicture}}

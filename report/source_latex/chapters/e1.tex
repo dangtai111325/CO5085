@@ -6,58 +6,29 @@ không gian trước khi gom feature. Hai CNN giúp phân biệt số tham số 
 chất lượng: CNN-A có head lớn, CNN-B dùng global average pooling.
 
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[box] (in) at (0,0) {Ảnh\\$B\times1\times28\times28$};
-\node[fc] (lin) at (4.3,0) {Flatten 784\\FC $784\to10$};
-\node[output] (out) at (8.6,0) {10 logits\\Softmax khi suy luận};
-\draw[flow] (in)--(lin);\draw[flow] (lin)--(out);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchSoftmax}
 \caption{Softmax classifier: không Conv, một FC; 7.850 tham số.}
 \end{figure}
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[box] (in) at (0,0) {Ảnh flatten\\$B\times784$};
-\node[fc] (a) at (3.8,0) {FC $784\to256$\\ReLU, Dropout 0.2};
-\node[fc] (b) at (7.6,0) {FC $256\to128$\\ReLU, Dropout 0.2};
-\node[output] (out) at (11.4,0) {FC $128\to10$\\10 logits};
-\draw[flow] (in)--(a);\draw[flow] (a)--(b);\draw[flow] (b)--(out);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchMLP}
 \caption{MLP: ba FC, hai tầng ẩn; 235.146 tham số.}
 \end{figure}
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[box] (in) at (0,0) {Ảnh\\$1\times28\times28$};
-\node[box] (c1) at (4,0) {Conv $1\to32$, $3^2$\\ReLU, Pool $2^2$\\$32\times14\times14$};
-\node[box] (c2) at (8,0) {Conv $32\to64$, $3^2$\\ReLU, Pool $2^2$\\$64\times7\times7$};
-\node[fc,below=3mm of c2] (f) {Flatten 3.136\\FC $3136\to128$\\ReLU};
-\node[output,left=6mm of f] (o) {FC $128\to10$\\10 logits};
-\draw[flow] (in)--(c1);\draw[flow] (c1)--(c2);
-\draw[flow] (c2)--(f);\draw[flow] (f)--(o);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchCNNA}
 \caption{CNN-A: hai Conv, hai MaxPool, hai FC; 421.642 tham số. Conv stride 1, padding 1, có bias.}
 \end{figure}
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[box] (in) at (0,0) {Ảnh\\$1\times28\times28$};
-\node[box] (a) at (3.8,0) {Conv $1\to32$, $3^2$\\BN, ReLU, Pool $2^2$\\$32\times14\times14$};
-\node[box] (b) at (7.6,0) {Conv $32\to64$, $3^2$\\BN, ReLU, Pool $2^2$\\$64\times7\times7$};
-\node[box] (c) at (11.4,0) {Conv $64\to128$, $3^2$\\BN, ReLU, Pool $2^2$\\$128\times3\times3$};
-\node[fc,below=3mm of c] (gap) {Adaptive AvgPool $1^2$\\Flatten 128\\Dropout 0.3};
-\node[output,left=6mm of gap] (out) {FC $128\to10$\\10 logits};
-\draw[flow] (in)--(a);\draw[flow] (a)--(b);\draw[flow] (b)--(c);
-\draw[flow] (c)--(gap);\draw[flow] (gap)--(out);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchCNNB}
 \caption{CNN-B: ba Conv/BN/MaxPool, một FC; 94.186 tham số. Conv stride 1, padding 1, không bias. Kích thước sau pool thứ ba là $3\times3$.}
 \end{figure}
-Trong sơ đồ, $ B $ là batch và $3^2$ là kernel $3\times 3$; batch được giữ
-xuyên suốt dù lược khỏi một số nhãn tensor. CNN-A dành 401.536 tham số cho
+Ký hiệu $3^2$ chỉ kernel $3\times3$; chiều batch được lược khỏi sơ đồ. CNN-A dành 401.536 tham số cho
 FC $3136\to 128$, khoảng 95,2\% tổng số tham số. CNN-B thay head này bằng
 average pooling, nên ít tham số hơn dù có thêm một Conv.
 
 \section{Huấn luyện}
 AdamW LR $10^{-3}$, weight decay $10^{-4}$, batch 128, tối đa 100 epoch.
 Mỗi epoch có 422 batch train, 47 validation; test có 79 batch, giữ batch cuối.
-Lần chạy tạo số liệu dùng patience 10, min-delta $10^{-4}$ và checkpoint theo
+Thí nghiệm dùng patience 10, min-delta $10^{-4}$ và checkpoint theo
 validation loss nhỏ nhất. Không dùng scheduler hoặc augmentation.
 Các kiểm tra forward/backward trước train xác nhận đủ bốn model trên CUDA.
 
@@ -73,8 +44,8 @@ CNN-A có số tham số gấp 4,48 lần CNN-B; CNN-B vẫn đạt test cao hơ
 phần trăm nhưng val thấp hơn 0,08 điểm. Đây là khác biệt nhỏ trong một seed,
 không phải bằng chứng CNN-B luôn tốt hơn. Hai mạng khác cả normalization,
 độ sâu, pooling và head; không quy chất lượng chỉ cho số tham số.
-CNN-A có val accuracy cao nhất 92,00\%; model đại diện không được chọn bằng
-test của CNN-B. Tính theo mỗi epoch, CNN-B chậm hơn CNN-A
+CNN-A có val accuracy cao nhất 92,00\%; mô hình đại diện không được chọn bằng
+kết quả test của CNN-B. Tính theo mỗi epoch, CNN-B chậm hơn CNN-A
 (3,158 so với 2,121 s) dù ít tham số hơn, vì convolution/BN và kích thước
 activation cũng quyết định chi phí.
 
@@ -84,7 +55,7 @@ Train--validation gap ở best lần lượt khoảng 1,62; 2,11; 2,61; 3,91 đi
 trăm. CNN-B có gap lớn nhất nhưng vẫn đạt test tốt; gap cần đọc cùng
 dropout và đường cong, không dùng riêng để xếp hạng tổng quát hóa.
 Đường cong train tiếp tục cải thiện sau khi validation chững lại giải thích
-việc chọn best checkpoint thay cho last epoch.
+việc dùng trọng số tại epoch tốt nhất thay cho epoch cuối.
 \ReportFigure{assets/e1/confusion_test_pair_1.png}{Confusion matrix test của Softmax và MLP: mỗi ô ghi số ảnh và tỷ lệ theo lớp thật.}
 \ReportFigure{assets/e1/confusion_test_pair_2.png}{Confusion matrix test của CNN-A và CNN-B, cùng thang 0--100\%.}
 \begin{table}[H]\centering\caption{Cặp nhầm nhiều nhất trong E1; mỗi lớp test có 1.000 ảnh.}
@@ -103,5 +74,5 @@ mỗi lớp/model, dùng minh họa; tần suất phải lấy từ toàn bộ c
 Softmax nhẹ và nhanh, nhưng ranh giới tuyến tính hạn chế biểu diễn.
 MLP tăng chất lượng với phi tuyến, song flatten không áp đặt locality và
 đòi hỏi nhiều FC. CNN phù hợp ảnh nhỏ nhờ receptive field và chia sẻ trọng số;
-CNN-B cho hiệu quả tham số tốt trong protocol này. Kết luận dựa trên một seed
+CNN-B cho hiệu quả tham số tốt trong thiết lập này. Kết luận dựa trên một seed
 và một dataset cân bằng; chưa đo độ biến thiên hay kiểm soát matched capacity.

@@ -8,18 +8,8 @@ tạo 49 bước, mỗi bước 16 pixel. Không thêm CNN/token embedding trư�
 
 \ReportFigure{assets/e3/sequence_representations.png}{Cùng một ảnh validation được chuyển thành rows, columns và patch: thứ tự quét cùng ma trận timestep--feature.}
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[box] (in) at (0,0) {Ảnh\\$B\times1\times28\times28$};
-\node[box] (seq) at (4,0) {Chuỗi $B\times T\times F$\\Rows/Cols: $28\times28$\\Patch: $49\times16$};
-\node[box] (cell) at (8,0) {LSTM hoặc GRU\\1 layer, hidden 128\\weights dùng chung};
-\node[fc,below=3mm of cell] (h) {$h_T$: $B\times128$\\FC $128\to10$};
-\node[output,left=6mm of h] (out) {10 logits};
-\draw[flow] (in)--(seq);\draw[flow] (seq)--(cell);\draw[flow] (cell)--(h);
-\draw[flow] (h)--(out);
-\draw[flow] (cell.east)--++(.7,0)--++(0,2)-|(cell.north);
-\node[note] at (8,2.55) {$h_{t-1}$; thêm$c_{t-1}$ ở LSTM};
-\end{tikzpicture}
-\caption{Classifier recurrent E3: không Conv, một recurrent layer unroll T lần và một FC head. Trạng thái khởi tạo0, chỉ dùng hidden cuối.}
+\resizebox{.97\linewidth}{!}{\ArchSequence}
+\caption{Classifier recurrent E3: không Conv, một recurrent layer unroll T lần và một FC head. Trạng thái khởi tạo bằng 0, chỉ dùng hidden cuối.}
 \end{figure}
 
 \section{Cell LSTM/GRU tự hiện thực}
@@ -32,15 +22,7 @@ c_t&=f_t\odot c_{t-1}+i_t\odot g_t,\qquad
 h_t=o_t\odot\tanh c_t.
 \end{align}
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[fc] (x) at (0,1) {$x_t$, $F$ chiều\\Linear $F\to512$};
-\node[fc] (h) at (0,-1) {$h_{t-1}$,128 chiều\\Linear $128\to512$};
-\node[box] (g) at (4.5,0) {Cộng, chia 4 gate\\$i,f,g,o$: mỗi 128\\$\sigma,\sigma,\tanh,\sigma$};
-\node[box] (c) at (9,0) {$c_t=f\odot c_{t-1}$\\$+\,i\odot g$\\$h_t=o\odot\tanh c_t$};
-\draw[flow] (x)--(g);\draw[flow] (h)--(g);\draw[flow] (g)--(c);
-\node[note] (cp) at (9,1.8) {$c_{t-1}\in\mathbb{R}^{128}$};
-\draw[flow] (cp)--(c);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchLSTM}
 \caption{LSTM cell: hai projection dùng chung ở mọi bước; không tạo thêm bộ tham số cho mỗi timestep.}
 \end{figure}
 GRU có hai projection $ F\to 384$ và $128\to 384$ cho reset, update và candidate:
@@ -49,33 +31,26 @@ r_t&=\sigma(x_r+h_r),\quad z_t=\sigma(x_z+h_z),\\
 n_t&=\tanh(x_n+r_t\odot h_n),\quad
 h_t=(1-z_t)\odot n_t+z_t\odot h_{t-1}.
 \end{align}
-$x_\cdot$ và$h_\cdot$ đã gồm bias. Reset nhân \emph{sau} projection hidden,
+$x_\cdot$ và $h_\cdot$ đã gồm bias. Reset nhân \emph{sau} projection hidden,
 kể cả hidden bias, theo convention PyTorch.
 \begin{figure}[H]\centering
-\begin{tikzpicture}
-\node[fc] (x) at (0,1) {$x_t$, $F$ chiều\\Linear $F\to384$};
-\node[fc] (h) at (0,-1) {$h_{t-1}$,128 chiều\\Linear $128\to384$};
-\node[box] (g) at (4.5,0) {Chia 3 nhóm 128\\$r=\sigma(x_r+h_r)$\\$z=\sigma(x_z+h_z)$\\$n=\tanh(x_n+r h_n)$};
-\node[output] (o) at (9,0) {$h_t=(1-z)n$\\$+\,zh_{t-1}$\\128 chiều};
-\draw[flow] (x)--(g);\draw[flow] (h)--(g);\draw[flow] (g)--(o);
-\draw[flow] (h.south)--++(0,-.7)-|(o.south);
-\end{tikzpicture}
+\resizebox{.97\linewidth}{!}{\ArchGRU}
 \caption{GRU cell: hai projection cho ba nhóm gate, chỉ duy trì hidden state.}
 \end{figure}
 Kể cả head, số tham số là $4 H(F+H+2)+10 H+10$ cho LSTM và
-$3H(F+H+2)+10H+10$ cho GRU. Cùng$F$, GRU ít tham số hơn vì dùng
+$3 H(F+H+2)+10 H+10$ cho GRU. Cùng $F$, GRU ít tham số hơn vì dùng
 ba nhóm thay cho bốn. Kiểm tra copy weight sang \texttt{nn.LSTMCell}/
-\texttt{nn.GRUCell} trên CUDA float64 qua4 bước, so forward và gradients
+\texttt{nn.GRUCell} trên CUDA float64 qua 4 bước, so forward và gradients
 của state/input/tất cả params, đạt max error $5,551\times 10^{-17}$ (LSTM)
 và $3,331\times 10^{-16}$ (GRU).
 
-\section{Baseline và training protocol}
+\section{Baseline và thiết lập huấn luyện}
 Sáu recurrent run là LSTM/GRU $\times $ rows/columns/patch. MLP và CNN-B
-có đúng kiến trúc E1, tự định nghĩa và train mới trong E3 trên cùng split;
+có đúng kiến trúc E1, tự định nghĩa và huấn luyện độc lập trong E3 trên cùng split;
 không đọc trọng số E1. Baseline MLP có 3 FC, CNN-B có 3 Conv và 1 FC như sơ đồ E1.
 
 AdamW LR $10^{-3}$, WD $10^{-4}$, batch 128, tối đa 100 epoch.
-Full run dùng patience 10 và min-delta $10^{-4}$, checkpoint min val loss.
+Thí nghiệm dùng patience 10 và min-delta $10^{-4}$, checkpoint min val loss.
 Recurrent clip gradient norm 1; baseline giữ protocol tương ứng E1,
 không clipping. Vòng lặp recurrent unroll từng token bằng Python/PyTorch,
 không dùng fused \texttt{nn.LSTM}/\texttt{nn.GRU} trong train;
@@ -86,17 +61,17 @@ không dùng fused \texttt{nn.LSTM}/\texttt{nn.GRU} trong train;
 \DataTable{assets/e3/cost.tex}{Số tham số, epoch và chi phí E3.}
 \ReportFigure{assets/e3/comparison.png}{Accuracy, capacity và thời gian E3 trên cùng Fashion-MNIST.}
 \ReportFigure{assets/e3/recurrent_representation_comparison.png}{LSTM vs GRU với cùng representation.}
-Rows tốt nhất trong từng family: LSTM val 89,95\%, test 89,70\%;
+Rows tốt nhất trong từng họ kiến trúc: LSTM val 89,95\%, test 89,70\%;
 GRU val 90,47\%, test 90,06\%. Với columns, test giảm còn 88,81\%/89,51\%;
 patch giảm còn 88,22\%/88,44\%. Rows/columns cùng $ T,F $ và capacity,
 nên thay đổi hướng quét làm thay đổi thông tin ở mỗi bước. Patch đổi cả
 thông tin, độ dài 49 và input 16, nên không cô lập riêng tác động thứ tự.
 
 GRU cao hơn LSTM trên test ở cả ba representation lần lượt 0,36/0,70/0,22
-điểm phần trăm, dùng ít tham số và ít giây/epoch hơn. Rows:61.962 so
+điểm phần trăm, dùng ít tham số và ít giây/epoch hơn. Với rows: 61.962 so
 với 82.186 params; 15,132 so với 17,113 s/epoch. Patch dài 49 bước làm
 thời gian/epoch lớn hơn rows, dù ít tham số hơn. Đây là chi phí của implementation
-unroll hiện tại, không khẳng định mọi GRU/LSTM kernel đều có cùng tỷ lệ tốc độ.
+vòng lặp unroll bằng Python/PyTorch, không khẳng định mọi GRU/LSTM kernel đều có cùng tỷ lệ tốc độ.
 
 \ReportFigure{assets/e3/baseline_curves.png}{So sánh recurrent rows chọn bằng validation với MLP và CNN-B train trong E3.}
 GRU rows test 90,06\% cao hơn MLP 89,45\% khoảng 0,61 điểm, nhưng thấp
@@ -111,7 +86,7 @@ tích lũy thông tin qua toàn chuỗi, nhưng accuracy không chứng minh mod
 \ReportFigure{assets/e3/learning_curves_accuracy.png}{Accuracy E3 theo representation.}
 LSTM columns có train 92,79\% so với val 88,72\% tại best; GRU rows có
 train 93,95\% và val 90,47\%. Khoảng cách cùng curves cho thấy
-validation không theo kịp train hoàn toàn; best checkpoint giữ chất lượng trước
+validation không theo kịp train hoàn toàn; checkpoint được chọn giữ chất lượng trước
 các epoch làm val loss xấu hơn.
 \begin{table}[H]\centering\caption{Cặp nhầm lớn nhất của recurrent đại diện và baseline E3.}
 \small\begin{tabular}{llrr}\toprule Model & Thật $\to$ dự đoán & Số ảnh & \% lớp thật\\\midrule
@@ -128,5 +103,5 @@ nhầm ngược trên ma trận, không dùng riêng một cặp để đánh gi
 \noindent\textbf{Nhận xét và giới hạn.}
 Cả LSTM và GRU hoạt động với ba biểu diễn, có parity và baseline độc lập.
 GRU rows là recurrent được chọn bằng validation; CNN-B vẫn là lựa chọn hiệu quả
-hơn về accuracy và thời gian ở bài toán ảnh tĩnh này. Một seed, gradient clip
+hơn về độ chính xác và thời gian ở bài toán ảnh tĩnh này. Một seed, gradient clip
 chỉ cho recurrent và unroll không fused là giới hạn khi suy rộng kết luận.

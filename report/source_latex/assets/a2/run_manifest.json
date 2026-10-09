@@ -1,0 +1,1019 @@
+{
+  "notebook": "source_code/A2.ipynb",
+  "notebook_sha256": "e65e119840d4c99db41c8baf5a70bd3899f678986577239ad85b2b589650d2a3",
+  "training_config": {
+    "seed": 42,
+    "batch": 4,
+    "eval_batch": 4,
+    "accumulation": 3,
+    "effective_batch": 12,
+    "max_epochs": 30,
+    "patience": 2,
+    "min_delta": 0.001
+  },
+  "figures": [
+    {
+      "file": "class_distribution.png",
+      "cell": 4,
+      "output": 2,
+      "sha256": "77e627e8aaf9e75340052b0d269586955eef42129cb044f7e74bc32c9733d113"
+    },
+    {
+      "file": "bbox_distribution.png",
+      "cell": 4,
+      "output": 3,
+      "sha256": "fad66a7a5bd4a44fb80fd55fa02fe19a89a5af487ffe9477598c5caf0549af31"
+    },
+    {
+      "file": "preprocessing.png",
+      "cell": 4,
+      "output": 4,
+      "sha256": "aad22a6204749100a2e9d79a15cd8ac3746adca210fc981ab83ecf45c477cd64"
+    },
+    {
+      "file": "learning_curves.png",
+      "cell": 14,
+      "output": 3,
+      "sha256": "97dba18880ca957e468466e4b82ceb9223f988f2bcfe1f69d26a3f52b389b508"
+    },
+    {
+      "file": "loss_components.png",
+      "cell": 14,
+      "output": 4,
+      "sha256": "33b5aa88c6fb004e33fffb77455da0cd85205411fca9be8be8278a66f94ba47d"
+    },
+    {
+      "file": "comparison.png",
+      "cell": 14,
+      "output": 5,
+      "sha256": "93a8e5417f415a049878f0befbf56718393961897e64ca3f673a51327914767d"
+    },
+    {
+      "file": "per_class_ap.png",
+      "cell": 16,
+      "output": 2,
+      "sha256": "e64ff1720b2ce787b3eeff01f5a06beb222ed068ca4bdfa1ebd938aa21448d52"
+    },
+    {
+      "file": "precision_recall.png",
+      "cell": 16,
+      "output": 3,
+      "sha256": "835bb345e173ae3d06b59ad4789b27fc1b48f5adc318f257345326379504bc78"
+    },
+    {
+      "file": "confusion.png",
+      "cell": 18,
+      "output": 0,
+      "sha256": "a28ac0c874462e8b2d966611c392d63ed249b368170b08509c55c2004689338d"
+    },
+    {
+      "file": "predictions.png",
+      "cell": 18,
+      "output": 1,
+      "sha256": "b6c144158df85a6d72bac84eac3169902167c9f15bb794ee954f13379ccb5ab4"
+    },
+    {
+      "file": "failure_cases.png",
+      "cell": 18,
+      "output": 2,
+      "sha256": "d3681aadec4fe50e8f34e9759609d30201638f78bcd557ef8e2eb8f79eb8616c"
+    }
+  ],
+  "tables": [
+    {
+      "title": "VOC2012 · số ảnh và bbox từ nhãn local",
+      "cell": 4,
+      "output": 0,
+      "rows": [
+        {
+          "Split": "train",
+          "Images": "9232",
+          "Regular boxes": "21975",
+          "Difficult boxes": "3267",
+          "Truncated boxes": "13182",
+          "Width min/max": "142/500",
+          "Height min/max": "71/500"
+        },
+        {
+          "Split": "val",
+          "Images": "1154",
+          "Regular boxes": "2788",
+          "Difficult boxes": "468",
+          "Truncated boxes": "1647",
+          "Width min/max": "236/500",
+          "Height min/max": "151/500"
+        },
+        {
+          "Split": "test",
+          "Images": "1154",
+          "Regular boxes": "2687",
+          "Difficult boxes": "376",
+          "Truncated boxes": "1561",
+          "Width min/max": "182/500",
+          "Height min/max": "143/500"
+        }
+      ]
+    },
+    {
+      "title": "Phân bố 20 lớp · không tính difficult",
+      "cell": 4,
+      "output": 1,
+      "rows": [
+        {
+          "Class": "aeroplane",
+          "train": "692",
+          "val": "97",
+          "test": "76"
+        },
+        {
+          "Class": "bicycle",
+          "train": "566",
+          "val": "65",
+          "test": "80"
+        },
+        {
+          "Class": "bird",
+          "train": "933",
+          "val": "98",
+          "test": "88"
+        },
+        {
+          "Class": "boat",
+          "train": "676",
+          "val": "75",
+          "test": "99"
+        },
+        {
+          "Class": "bottle",
+          "train": "1011",
+          "val": "139",
+          "test": "109"
+        },
+        {
+          "Class": "bus",
+          "train": "487",
+          "val": "44",
+          "test": "62"
+        },
+        {
+          "Class": "car",
+          "train": "1624",
+          "val": "189",
+          "test": "204"
+        },
+        {
+          "Class": "cat",
+          "train": "970",
+          "val": "112",
+          "test": "135"
+        },
+        {
+          "Class": "chair",
+          "train": "1929",
+          "val": "250",
+          "test": "175"
+        },
+        {
+          "Class": "cow",
+          "train": "473",
+          "val": "48",
+          "test": "67"
+        },
+        {
+          "Class": "diningtable",
+          "train": "487",
+          "val": "74",
+          "test": "48"
+        },
+        {
+          "Class": "dog",
+          "train": "1213",
+          "val": "143",
+          "test": "159"
+        },
+        {
+          "Class": "horse",
+          "train": "554",
+          "val": "88",
+          "test": "68"
+        },
+        {
+          "Class": "motorbike",
+          "train": "585",
+          "val": "53",
+          "test": "75"
+        },
+        {
+          "Class": "person",
+          "train": "6802",
+          "val": "898",
+          "test": "866"
+        },
+        {
+          "Class": "pottedplant",
+          "train": "804",
+          "val": "97",
+          "test": "72"
+        },
+        {
+          "Class": "sheep",
+          "train": "611",
+          "val": "119",
+          "test": "83"
+        },
+        {
+          "Class": "sofa",
+          "train": "447",
+          "val": "70",
+          "test": "49"
+        },
+        {
+          "Class": "train",
+          "train": "492",
+          "val": "59",
+          "test": "77"
+        },
+        {
+          "Class": "tvmonitor",
+          "train": "619",
+          "val": "70",
+          "test": "95"
+        }
+      ]
+    },
+    {
+      "title": "Shapes thực tế tại input512×512 · train/test resize theo cấu hình",
+      "cell": 6,
+      "output": 0,
+      "rows": [
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "C2",
+          "Channels": "256",
+          "H×W": "128×128",
+          "Stride": "4"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "C3",
+          "Channels": "512",
+          "H×W": "64×64",
+          "Stride": "8"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "C4",
+          "Channels": "1024",
+          "H×W": "32×32",
+          "Stride": "16"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "C5",
+          "Channels": "2048",
+          "H×W": "16×16",
+          "Stride": "32"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "P3",
+          "Channels": "256",
+          "H×W": "64×64",
+          "Stride": "8"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "P4",
+          "Channels": "256",
+          "H×W": "32×32",
+          "Stride": "16"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "P5",
+          "Channels": "256",
+          "H×W": "16×16",
+          "Stride": "32"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "P6",
+          "Channels": "256",
+          "H×W": "8×8",
+          "Stride": "64"
+        },
+        {
+          "Model": "RetinaNet · one-stage",
+          "Stage": "P7",
+          "Channels": "256",
+          "H×W": "4×4",
+          "Stride": "128"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "C2",
+          "Channels": "256",
+          "H×W": "128×128",
+          "Stride": "4"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "C3",
+          "Channels": "512",
+          "H×W": "64×64",
+          "Stride": "8"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "C4",
+          "Channels": "1024",
+          "H×W": "32×32",
+          "Stride": "16"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "C5",
+          "Channels": "2048",
+          "H×W": "16×16",
+          "Stride": "32"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "P2",
+          "Channels": "256",
+          "H×W": "128×128",
+          "Stride": "4"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "P3",
+          "Channels": "256",
+          "H×W": "64×64",
+          "Stride": "8"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "P4",
+          "Channels": "256",
+          "H×W": "32×32",
+          "Stride": "16"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "P5",
+          "Channels": "256",
+          "H×W": "16×16",
+          "Stride": "32"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Stage": "P6",
+          "Channels": "256",
+          "H×W": "8×8",
+          "Stride": "64"
+        }
+      ]
+    },
+    {
+      "title": "Số tham số trainable · FrozenBatchNorm không có tham số trainable",
+      "cell": 6,
+      "output": 1,
+      "rows": [
+        {
+          "Model": "RetinaNet · one-stage",
+          "Backbone": "23454912",
+          "FPN": "7997440",
+          "Head/RPN/RoI": "5218520",
+          "Total": "36670872"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Backbone": "23454912",
+          "FPN": "3344384",
+          "Head/RPN/RoI": "14597240",
+          "Total": "41396536"
+        }
+      ]
+    },
+    {
+      "title": "Huấn luyện · best checkpoint chọn bằng VOC mAP50 validation",
+      "cell": 10,
+      "output": 4,
+      "rows": [
+        {
+          "Model": "RetinaNet · one-stage",
+          "epochs": "23",
+          "best_epoch": "21",
+          "best_val_voc": "0.7501",
+          "updates": "17710",
+          "amp_skips": "0",
+          "batch": "4",
+          "effective_batch": "12",
+          "wall_seconds": "28906.7070",
+          "peak_mib": "6713.1270"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "epochs": "13",
+          "best_epoch": "11",
+          "best_val_voc": "0.7536",
+          "updates": "10010",
+          "amp_skips": "0",
+          "batch": "4",
+          "effective_batch": "12",
+          "wall_seconds": "17844.6229",
+          "peak_mib": "6757.0645"
+        }
+      ]
+    },
+    {
+      "title": "Test holdout · accuracy và chẩn đoán ở ngưỡng cố định",
+      "cell": 14,
+      "output": 0,
+      "rows": [
+        {
+          "Model": "RetinaNet · one-stage",
+          "VOC mAP50": "0.7158",
+          "VOC07 mAP11": "0.6963",
+          "COCO AP50:95": "0.4136",
+          "COCO AP50": "0.7148",
+          "COCO AP75": "0.4149",
+          "Precision@0.30": "0.4625",
+          "Recall@0.30": "0.7983",
+          "F1@0.30": "0.5857",
+          "Macro F1": "0.5714",
+          "Matched IoU": "0.7796"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "VOC mAP50": "0.7307",
+          "VOC07 mAP11": "0.7113",
+          "COCO AP50:95": "0.4075",
+          "COCO AP50": "0.7290",
+          "COCO AP75": "0.4245",
+          "Precision@0.30": "0.4053",
+          "Recall@0.30": "0.8269",
+          "F1@0.30": "0.5440",
+          "Macro F1": "0.5336",
+          "Matched IoU": "0.7776"
+        }
+      ]
+    },
+    {
+      "title": "COCO-style scale AP và average recall · IoU0.50:0.95",
+      "cell": 14,
+      "output": 1,
+      "rows": [
+        {
+          "Model": "RetinaNet · one-stage",
+          "ap_small": "0.1057",
+          "ap_medium": "0.2829",
+          "ap_large": "0.4687",
+          "ar1": "0.3887",
+          "ar10": "0.5349",
+          "ar100": "0.5422",
+          "ar_small": "0.2495",
+          "ar_medium": "0.4296",
+          "ar_large": "0.5896"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "ap_small": "0.1487",
+          "ap_medium": "0.2953",
+          "ap_large": "0.4645",
+          "ar1": "0.3849",
+          "ar10": "0.5382",
+          "ar100": "0.5441",
+          "ar_small": "0.2683",
+          "ar_medium": "0.4359",
+          "ar_large": "0.5937"
+        }
+      ]
+    },
+    {
+      "title": "Chi phí thực đo · cùng GPU/AMP/resize; warmup trước benchmark",
+      "cell": 14,
+      "output": 2,
+      "rows": [
+        {
+          "Model": "RetinaNet · one-stage",
+          "Params (M)": "36.6709",
+          "Peak train VRAM (MiB)": "6713.1270",
+          "Train/val wall (min)": "481.7784",
+          "latency_ms": "47.3509",
+          "latency_p95_ms": "51.5552",
+          "fps_batch1": "21.1189",
+          "fps_throughput": "17.8860",
+          "benchmark_batch": "4",
+          "pipeline_fps": "16.9982"
+        },
+        {
+          "Model": "Faster R-CNN · two-stage",
+          "Params (M)": "41.3965",
+          "Peak train VRAM (MiB)": "6757.0645",
+          "Train/val wall (min)": "297.4104",
+          "latency_ms": "48.9216",
+          "latency_p95_ms": "50.4023",
+          "fps_batch1": "20.4409",
+          "fps_throughput": "16.5063",
+          "benchmark_batch": "4",
+          "pipeline_fps": "16.3088"
+        }
+      ]
+    },
+    {
+      "title": "RetinaNet · one-stage · từng lớp, difficult không tính vào GT",
+      "cell": 16,
+      "output": 0,
+      "rows": [
+        {
+          "Class": "aeroplane",
+          "GT": "76",
+          "VOC AP50": "0.8042",
+          "VOC07 AP11": "0.7851",
+          "COCO AP": "0.4629",
+          "COCO AP50": "0.8016",
+          "COCO AP75": "0.4949",
+          "Precision": "0.6162",
+          "Recall": "0.8026",
+          "F1": "0.6971"
+        },
+        {
+          "Class": "bicycle",
+          "GT": "80",
+          "VOC AP50": "0.7874",
+          "VOC07 AP11": "0.7750",
+          "COCO AP": "0.4903",
+          "COCO AP50": "0.7978",
+          "COCO AP75": "0.4852",
+          "Precision": "0.4459",
+          "Recall": "0.8250",
+          "F1": "0.5789"
+        },
+        {
+          "Class": "bird",
+          "GT": "88",
+          "VOC AP50": "0.8184",
+          "VOC07 AP11": "0.7887",
+          "COCO AP": "0.4375",
+          "COCO AP50": "0.8146",
+          "COCO AP75": "0.4284",
+          "Precision": "0.5362",
+          "Recall": "0.8409",
+          "F1": "0.6549"
+        },
+        {
+          "Class": "boat",
+          "GT": "99",
+          "VOC AP50": "0.6180",
+          "VOC07 AP11": "0.6059",
+          "COCO AP": "0.2891",
+          "COCO AP50": "0.6157",
+          "COCO AP75": "0.2315",
+          "Precision": "0.4182",
+          "Recall": "0.6970",
+          "F1": "0.5227"
+        },
+        {
+          "Class": "bottle",
+          "GT": "109",
+          "VOC AP50": "0.5763",
+          "VOC07 AP11": "0.5594",
+          "COCO AP": "0.2914",
+          "COCO AP50": "0.5749",
+          "COCO AP75": "0.2733",
+          "Precision": "0.4260",
+          "Recall": "0.6606",
+          "F1": "0.5180"
+        },
+        {
+          "Class": "bus",
+          "GT": "62",
+          "VOC AP50": "0.8852",
+          "VOC07 AP11": "0.8422",
+          "COCO AP": "0.6134",
+          "COCO AP50": "0.8826",
+          "COCO AP75": "0.6551",
+          "Precision": "0.4444",
+          "Recall": "0.9032",
+          "F1": "0.5957"
+        },
+        {
+          "Class": "car",
+          "GT": "204",
+          "VOC AP50": "0.7881",
+          "VOC07 AP11": "0.7633",
+          "COCO AP": "0.5070",
+          "COCO AP50": "0.7845",
+          "COCO AP75": "0.5378",
+          "Precision": "0.4985",
+          "Recall": "0.8039",
+          "F1": "0.6154"
+        },
+        {
+          "Class": "cat",
+          "GT": "135",
+          "VOC AP50": "0.8938",
+          "VOC07 AP11": "0.8548",
+          "COCO AP": "0.5618",
+          "COCO AP50": "0.8892",
+          "COCO AP75": "0.5784",
+          "Precision": "0.6010",
+          "Recall": "0.9037",
+          "F1": "0.7219"
+        },
+        {
+          "Class": "chair",
+          "GT": "175",
+          "VOC AP50": "0.4424",
+          "VOC07 AP11": "0.4476",
+          "COCO AP": "0.1994",
+          "COCO AP50": "0.4451",
+          "COCO AP75": "0.1744",
+          "Precision": "0.2660",
+          "Recall": "0.5714",
+          "F1": "0.3630"
+        },
+        {
+          "Class": "cow",
+          "GT": "67",
+          "VOC AP50": "0.7501",
+          "VOC07 AP11": "0.7295",
+          "COCO AP": "0.4456",
+          "COCO AP50": "0.7496",
+          "COCO AP75": "0.4893",
+          "Precision": "0.4309",
+          "Recall": "0.7910",
+          "F1": "0.5579"
+        },
+        {
+          "Class": "diningtable",
+          "GT": "48",
+          "VOC AP50": "0.3852",
+          "VOC07 AP11": "0.4080",
+          "COCO AP": "0.1619",
+          "COCO AP50": "0.3874",
+          "COCO AP75": "0.1098",
+          "Precision": "0.2637",
+          "Recall": "0.5000",
+          "F1": "0.3453"
+        },
+        {
+          "Class": "dog",
+          "GT": "159",
+          "VOC AP50": "0.8585",
+          "VOC07 AP11": "0.8245",
+          "COCO AP": "0.5402",
+          "COCO AP50": "0.8562",
+          "COCO AP75": "0.5952",
+          "Precision": "0.5547",
+          "Recall": "0.8931",
+          "F1": "0.6843"
+        },
+        {
+          "Class": "horse",
+          "GT": "68",
+          "VOC AP50": "0.8309",
+          "VOC07 AP11": "0.7940",
+          "COCO AP": "0.5257",
+          "COCO AP50": "0.8270",
+          "COCO AP75": "0.5445",
+          "Precision": "0.5221",
+          "Recall": "0.8676",
+          "F1": "0.6519"
+        },
+        {
+          "Class": "motorbike",
+          "GT": "75",
+          "VOC AP50": "0.8313",
+          "VOC07 AP11": "0.7949",
+          "COCO AP": "0.4759",
+          "COCO AP50": "0.8313",
+          "COCO AP75": "0.4870",
+          "Precision": "0.4779",
+          "Recall": "0.8667",
+          "F1": "0.6161"
+        },
+        {
+          "Class": "person",
+          "GT": "866",
+          "VOC AP50": "0.8258",
+          "VOC07 AP11": "0.7998",
+          "COCO AP": "0.4166",
+          "COCO AP50": "0.8259",
+          "COCO AP75": "0.3563",
+          "Precision": "0.4947",
+          "Recall": "0.8626",
+          "F1": "0.6288"
+        },
+        {
+          "Class": "pottedplant",
+          "GT": "72",
+          "VOC AP50": "0.2969",
+          "VOC07 AP11": "0.3060",
+          "COCO AP": "0.1247",
+          "COCO AP50": "0.2984",
+          "COCO AP75": "0.0845",
+          "Precision": "0.2105",
+          "Recall": "0.4444",
+          "F1": "0.2857"
+        },
+        {
+          "Class": "sheep",
+          "GT": "83",
+          "VOC AP50": "0.7446",
+          "VOC07 AP11": "0.7208",
+          "COCO AP": "0.4693",
+          "COCO AP50": "0.7421",
+          "COCO AP75": "0.4981",
+          "Precision": "0.4681",
+          "Recall": "0.7952",
+          "F1": "0.5893"
+        },
+        {
+          "Class": "sofa",
+          "GT": "49",
+          "VOC AP50": "0.6306",
+          "VOC07 AP11": "0.6205",
+          "COCO AP": "0.3526",
+          "COCO AP50": "0.6289",
+          "COCO AP75": "0.2935",
+          "Precision": "0.2692",
+          "Recall": "0.8571",
+          "F1": "0.4098"
+        },
+        {
+          "Class": "train",
+          "GT": "77",
+          "VOC AP50": "0.8135",
+          "VOC07 AP11": "0.7875",
+          "COCO AP": "0.4874",
+          "COCO AP50": "0.8110",
+          "COCO AP75": "0.5821",
+          "Precision": "0.6813",
+          "Recall": "0.8052",
+          "F1": "0.7381"
+        },
+        {
+          "Class": "tvmonitor",
+          "GT": "95",
+          "VOC AP50": "0.7349",
+          "VOC07 AP11": "0.7192",
+          "COCO AP": "0.4188",
+          "COCO AP50": "0.7327",
+          "COCO AP75": "0.3993",
+          "Precision": "0.5948",
+          "Recall": "0.7263",
+          "F1": "0.6540"
+        }
+      ]
+    },
+    {
+      "title": "Faster R-CNN · two-stage · từng lớp, difficult không tính vào GT",
+      "cell": 16,
+      "output": 1,
+      "rows": [
+        {
+          "Class": "aeroplane",
+          "GT": "76",
+          "VOC AP50": "0.7523",
+          "VOC07 AP11": "0.7291",
+          "COCO AP": "0.4680",
+          "COCO AP50": "0.7502",
+          "COCO AP75": "0.5495",
+          "Precision": "0.4069",
+          "Recall": "0.7763",
+          "F1": "0.5339"
+        },
+        {
+          "Class": "bicycle",
+          "GT": "80",
+          "VOC AP50": "0.8367",
+          "VOC07 AP11": "0.8138",
+          "COCO AP": "0.5215",
+          "COCO AP50": "0.8410",
+          "COCO AP75": "0.6381",
+          "Precision": "0.4080",
+          "Recall": "0.8875",
+          "F1": "0.5591"
+        },
+        {
+          "Class": "bird",
+          "GT": "88",
+          "VOC AP50": "0.7982",
+          "VOC07 AP11": "0.7827",
+          "COCO AP": "0.4198",
+          "COCO AP50": "0.7940",
+          "COCO AP75": "0.4054",
+          "Precision": "0.4868",
+          "Recall": "0.8409",
+          "F1": "0.6167"
+        },
+        {
+          "Class": "boat",
+          "GT": "99",
+          "VOC AP50": "0.6227",
+          "VOC07 AP11": "0.6069",
+          "COCO AP": "0.2849",
+          "COCO AP50": "0.6202",
+          "COCO AP75": "0.2279",
+          "Precision": "0.4762",
+          "Recall": "0.7071",
+          "F1": "0.5691"
+        },
+        {
+          "Class": "bottle",
+          "GT": "109",
+          "VOC AP50": "0.6325",
+          "VOC07 AP11": "0.6199",
+          "COCO AP": "0.3298",
+          "COCO AP50": "0.6313",
+          "COCO AP75": "0.3251",
+          "Precision": "0.3160",
+          "Recall": "0.7248",
+          "F1": "0.4401"
+        },
+        {
+          "Class": "bus",
+          "GT": "62",
+          "VOC AP50": "0.8710",
+          "VOC07 AP11": "0.8368",
+          "COCO AP": "0.5678",
+          "COCO AP50": "0.8680",
+          "COCO AP75": "0.6866",
+          "Precision": "0.4044",
+          "Recall": "0.8871",
+          "F1": "0.5556"
+        },
+        {
+          "Class": "car",
+          "GT": "204",
+          "VOC AP50": "0.8214",
+          "VOC07 AP11": "0.7940",
+          "COCO AP": "0.4538",
+          "COCO AP50": "0.8187",
+          "COCO AP75": "0.4819",
+          "Precision": "0.3046",
+          "Recall": "0.9020",
+          "F1": "0.4554"
+        },
+        {
+          "Class": "cat",
+          "GT": "135",
+          "VOC AP50": "0.9061",
+          "VOC07 AP11": "0.8640",
+          "COCO AP": "0.5354",
+          "COCO AP50": "0.9012",
+          "COCO AP75": "0.5434",
+          "Precision": "0.4794",
+          "Recall": "0.9481",
+          "F1": "0.6368"
+        },
+        {
+          "Class": "chair",
+          "GT": "175",
+          "VOC AP50": "0.4847",
+          "VOC07 AP11": "0.4882",
+          "COCO AP": "0.2381",
+          "COCO AP50": "0.4893",
+          "COCO AP75": "0.1989",
+          "Precision": "0.2274",
+          "Recall": "0.6171",
+          "F1": "0.3323"
+        },
+        {
+          "Class": "cow",
+          "GT": "67",
+          "VOC AP50": "0.7069",
+          "VOC07 AP11": "0.6921",
+          "COCO AP": "0.3608",
+          "COCO AP50": "0.7049",
+          "COCO AP75": "0.3358",
+          "Precision": "0.4167",
+          "Recall": "0.7463",
+          "F1": "0.5348"
+        },
+        {
+          "Class": "diningtable",
+          "GT": "48",
+          "VOC AP50": "0.6225",
+          "VOC07 AP11": "0.6156",
+          "COCO AP": "0.3043",
+          "COCO AP50": "0.6215",
+          "COCO AP75": "0.2605",
+          "Precision": "0.2903",
+          "Recall": "0.7500",
+          "F1": "0.4186"
+        },
+        {
+          "Class": "dog",
+          "GT": "159",
+          "VOC AP50": "0.8465",
+          "VOC07 AP11": "0.8124",
+          "COCO AP": "0.5079",
+          "COCO AP50": "0.8429",
+          "COCO AP75": "0.5616",
+          "Precision": "0.5036",
+          "Recall": "0.8805",
+          "F1": "0.6407"
+        },
+        {
+          "Class": "horse",
+          "GT": "68",
+          "VOC AP50": "0.7675",
+          "VOC07 AP11": "0.7466",
+          "COCO AP": "0.3864",
+          "COCO AP50": "0.7649",
+          "COCO AP75": "0.3705",
+          "Precision": "0.4569",
+          "Recall": "0.7794",
+          "F1": "0.5761"
+        },
+        {
+          "Class": "motorbike",
+          "GT": "75",
+          "VOC AP50": "0.7985",
+          "VOC07 AP11": "0.7741",
+          "COCO AP": "0.4620",
+          "COCO AP50": "0.7959",
+          "COCO AP75": "0.5357",
+          "Precision": "0.5263",
+          "Recall": "0.8000",
+          "F1": "0.6349"
+        },
+        {
+          "Class": "person",
+          "GT": "866",
+          "VOC AP50": "0.8587",
+          "VOC07 AP11": "0.8308",
+          "COCO AP": "0.4457",
+          "COCO AP50": "0.8565",
+          "COCO AP75": "0.4354",
+          "Precision": "0.4669",
+          "Recall": "0.8961",
+          "F1": "0.6139"
+        },
+        {
+          "Class": "pottedplant",
+          "GT": "72",
+          "VOC AP50": "0.3360",
+          "VOC07 AP11": "0.3505",
+          "COCO AP": "0.1451",
+          "COCO AP50": "0.3379",
+          "COCO AP75": "0.0746",
+          "Precision": "0.2071",
+          "Recall": "0.4861",
+          "F1": "0.2905"
+        },
+        {
+          "Class": "sheep",
+          "GT": "83",
+          "VOC AP50": "0.7514",
+          "VOC07 AP11": "0.7354",
+          "COCO AP": "0.4539",
+          "COCO AP50": "0.7488",
+          "COCO AP75": "0.4931",
+          "Precision": "0.3873",
+          "Recall": "0.8072",
+          "F1": "0.5234"
+        },
+        {
+          "Class": "sofa",
+          "GT": "49",
+          "VOC AP50": "0.6010",
+          "VOC07 AP11": "0.5899",
+          "COCO AP": "0.3458",
+          "COCO AP50": "0.5986",
+          "COCO AP75": "0.4205",
+          "Precision": "0.3696",
+          "Recall": "0.6939",
+          "F1": "0.4823"
+        },
+        {
+          "Class": "train",
+          "GT": "77",
+          "VOC AP50": "0.8400",
+          "VOC07 AP11": "0.8110",
+          "COCO AP": "0.4677",
+          "COCO AP50": "0.8370",
+          "COCO AP75": "0.4418",
+          "Precision": "0.4367",
+          "Recall": "0.8961",
+          "F1": "0.5872"
+        },
+        {
+          "Class": "tvmonitor",
+          "GT": "95",
+          "VOC AP50": "0.7586",
+          "VOC07 AP11": "0.7317",
+          "COCO AP": "0.4523",
+          "COCO AP50": "0.7565",
+          "COCO AP75": "0.5044",
+          "Precision": "0.5873",
+          "Recall": "0.7789",
+          "F1": "0.6697"
+        }
+      ]
+    }
+  ]
+}

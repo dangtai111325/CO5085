@@ -3,29 +3,29 @@
 \begin{document}
 \begin{titlepage}
 \centering
-{\large\bfseries ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH\\[3pt]
+{\large\bfseries ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH\\[3 pt]
 TRƯỜNG ĐẠI HỌC BÁCH KHOA\\[3 pt]
 KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH\par}
-\vspace{13mm}
-\includegraphics[width=31mm]{assets/logos/Im0.png}\par
-\vspace{14mm}
+\vspace{13 mm}
+\includegraphics[width=31 mm]{assets/logos/Im0.png}\par
+\vspace{14 mm}
 {\Large\bfseries BÁO CÁO BÀI TẬP\par}
-\vspace{6mm}
+\vspace{6 mm}
 {\large\bfseries Môn: Học sâu và ứng dụng trong thị giác máy tính\par}
-\vspace{8mm}
-{\LARGE\bfseries Phân loại ảnh bằng mạng tuyến tính,\\[3pt]
-CNN, Attention và mạng hồi tiếp\par}
-\vspace{6mm}
-{\Large\bfseries E1 -- E2 -- E3 -- A1\par}
-\vspace{6mm}
+\vspace{8 mm}
+{\LARGE\bfseries Thực nghiệm học sâu cho phân loại ảnh\\[3 pt]
+và phát hiện đối tượng\par}
+\vspace{6 mm}
+{\Large\bfseries E1 -- E2 -- E3 -- A1 -- A2\par}
+\vspace{6 mm}
 {\large CO5085 -- Học kỳ 261 (2026--2027)\par}
-\vspace{12mm}
+\vspace{12 mm}
 {\large Giảng viên: Lê Thành Sách, Nguyễn Quốc Minh\par}
-\vspace{10mm}
+\vspace{10 mm}
 {\large\bfseries Thực hiện\par}
-\vspace{5mm}
+\vspace{5 mm}
 {\large Đặng Nguyễn Tấn Tài \qquad 2570357\par}
-\vspace{4mm}
+\vspace{4 mm}
 {\large Lớp: CH01\par}
 \vfill
 {\large\bfseries Thành phố Hồ Chí Minh, 10/2026\par}
@@ -33,147 +33,167 @@ CNN, Attention và mạng hồi tiếp\par}
 \pagenumbering{roman}
 \chapter*{Tóm tắt}
 \addcontentsline{toc}{chapter}{Tóm tắt}
-Báo cáo trình bày 34 lượt huấn luyện đầy đủ: bốn mô hình E1, tám cấu hình
-attention E2, tám cấu hình recurrent/baseline E3 và 14 cấu hình CNN/Transformer A1.
-E1--E3 cùng dùng Fashion-MNIST với 54.000 ảnh train, 6.000 validation và
-10.000 test. A1 dùng GTSRB với 43 lớp, chia train/validation theo track biển báo
-và giữ tập test nguồn. Mỗi notebook độc lập, tự viết vòng lặp PyTorch và lưu
-kết quả trong output cell. Số liệu, learning curves, ma trận nhầm lẫn và ảnh lỗi
-được lấy từ các output đã lưu; sơ đồ TikZ mô tả kiến trúc trong code.
+Báo cáo khảo sát năm nhóm thực nghiệm qua 36 lượt huấn luyện: bốn mô hình E1,
+tám cấu hình attention E2, tám cấu hình hồi tiếp/baseline E3, 14 cấu hình
+CNN/Transformer A1 và hai detector A2. E1--E3 dùng Fashion-MNIST với
+54.000 ảnh train, 6.000 validation và 10.000 test. A1 dùng GTSRB 43 lớp,
+tách validation theo track biển báo. A2 dùng toàn bộ 11.540 ảnh VOC2012
+trainval có nhãn, chia 9.232/1.154/1.154 thành train/validation/test nội bộ.
+Mỗi notebook độc lập, có vòng lặp PyTorch và lưu kết quả ngay trong output cell.
 
 Trên Fashion-MNIST, CNN-B đạt test accuracy 91,97\% với 94.186 tham số;
-MSA PyTorch với CNN-stem đạt 90,78\%; GRU đọc theo hàng đạt 90,06\%.
-Trên GTSRB, fine-tune toàn bộ pretrained ResNet-50 và DeiT-Small/16 đạt
-98,37\% và 98,92\% ở seed 42. Trung bình ba seed tương ứng là
-$98,44\pm0,29\%$ và $98,95\pm0,33\%$. Các so sánh được diễn giải cùng
-chi phí huấn luyện, lỗi theo lớp và giới hạn dữ liệu.
-
-Phạm vi thực nghiệm của bản báo cáo này là E1--E3 và A1. A2 có notebook và
-nguồn chương riêng trong project, chưa được đưa vào phần kết quả khi chưa có
-full run được kiểm chứng.
+MSA PyTorch với CNN-stem đạt 90,78\%; GRU theo hàng đạt 90,06\%.
+Trên GTSRB, pretrained full ResNet-50 và DeiT-Small/16 ở seed 42 đạt
+98,37\% và 98,92\%; trung bình ba seed là $98,44\pm0,29\%$ và
+$98,95\pm0,33\%$. Trên VOC2012, RetinaNet/Faster R-CNN đạt mAP50
+71,58\%/73,07\% và COCO-style AP50:95 41,36\%/40,75\%.
+Không có kiến trúc tốt nhất trên mọi tiêu chí: kết quả được phân tích cùng
+chi phí, chất lượng từng lớp và các trường hợp sai. Sơ đồ TikZ thể hiện
+luồng tensor, kích thước feature map và cấu trúc head; số liệu/hình kết quả
+được lấy từ output notebook đã lưu.
 \tableofcontents
 \listoffigures
 \begingroup\small\listoftables\endgroup
 \clearpage\pagenumbering{arabic}
 \chapter{Bài toán và thiết kế thực nghiệm}
-\section{Mục tiêu và đối chiếu đề bài}
-Các bài tập khảo sát cách biểu diễn cùng một ảnh thành vector, feature map,
-token và chuỗi. A1 mở rộng sang dữ liệu biển báo nhiều lớp để so sánh
-CNN/Transformer và mức độ sử dụng trọng số pretrained. Nội dung mỗi chương
-gồm dữ liệu, kiến trúc, huấn luyện, kết quả định lượng, phân tích lỗi và giới hạn,
-theo bố cục báo cáo mẫu được cung cấp.
-\begin{table}[H]\centering\caption{Đối chiếu yêu cầu đề bài và bằng chứng thực nghiệm.}
-\small\begin{tabularx}{\linewidth}{lXX}\toprule
-Bài & Yêu cầu bắt buộc & Cách đáp ứng\\\midrule
+\section{Mục tiêu và phạm vi}
+E1--E3 khảo sát cách biểu diễn cùng một ảnh thành vector, feature map, token
+và chuỗi. A1 mở rộng sang ảnh RGB biển báo để so sánh CNN/Transformer và
+các mức sử dụng trọng số pretrained. A2 chuyển sang phát hiện nhiều đối
+tượng trong ảnh, so sánh detector một/hai giai đoạn và phân tích hai paper
+FPN, Focal Loss. Mỗi chương trình bày dữ liệu, phương pháp, huấn luyện,
+kết quả và giới hạn theo bố cục báo cáo mẫu.
+
+\begin{table}[H]\centering\caption{Đối chiếu nội dung kỹ thuật với đề E1--E3, A1 và A2.}
+\small\begin{tabularx}{\linewidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\toprule
+Bài & Yêu cầu & Nội dung thực nghiệm\\\midrule
 E1 & Softmax, MLP, CNN; loop tự viết; accuracy, capacity, curves, lỗi
-& 4 model; bảng metric/chi phí, 2 CNN, confusion matrix và gallery.\\
-E2 & MSA thủ công/PyTorch; ít nhất 2 tokenizer; so sánh cùng tokenizer và giữa tokenizer
-& 2 implementations $\times$ 3 tokenizer; parity gradient; thêm H=2/4/8.\\
-E3 & LSTM và GRU; biểu diễn chuỗi; so sánh MLP/CNN
-& 2 cell $\times$ 3 cách quét; 2 baseline tự train trên cùng split.\\
-A1 & Dataset khác tập toy; CNN/Transformer; scratch/pretrained; 3 mức freeze;
-accuracy/F1, thời gian, trainable và lỗi
-& GTSRB 43 lớp; 8 cấu hình chính, 2 no-augmentation, 4 seed repeats;
-VRAM và throughput bổ sung.\\\bottomrule
+& 4 mô hình, 2 CNN; bảng metric/chi phí, ma trận và ảnh sai.\\
+E2 & MSA thủ công/PyTorch; $\geq2$ tokenizer; so sánh từng cặp
+& 2 cách cài đặt $\times$ 3 tokenizer, kiểm tra forward/gradient, H=2/4/8.\\
+E3 & LSTM/GRU, biểu diễn chuỗi và baseline MLP/CNN
+& 2 cell $\times$ 3 cách quét, 2 baseline train độc lập trên cùng split.\\
+A1 & CNN/Transformer, scratch/pretrained, 3 mức freeze; metric/chi phí/lỗi
+& GTSRB 43 lớp, 8 cấu hình chính, 2 no-augmentation, 4 seed repeats.\\
+A2 & Detection, $\geq2$ phương pháp; mAP50, AP50:95 nếu được; phân tích paper
+& VOC2012, RetinaNet/Faster R-CNN, FPN/Focal Loss, AP/AR/F1/FPS và failure cases.\\\bottomrule
 \end{tabularx}\end{table}
-Các yêu cầu công bố repository, GitHub Pages và link PDF là phần sản phẩm nộp
-riêng; bảng trên đối chiếu nội dung kỹ thuật và báo cáo, không xác nhận việc
-đã nộp online.
-\section{Dữ liệu dùng chung cho E1--E3}
-Fashion-MNIST \cite{fashion} gồm ảnh grayscale $28\times 28$ của10 loại sản phẩm:
-T-shirt/top, Trouser, Pullover, Dress, Coat, Sandal, Shirt, Sneaker, Bag và Ankle boot.
-Độ tương tự giữa các loại áo tạo bài toán khó hơn nhận diện chữ số nhưng vẫn
-phù hợp quy mô các bài Ei. Từ 60.000 ảnh train gốc, mỗi lớp lấy 600 ảnh
-validation bằng seed 42; official test 10.000 ảnh được giữ riêng.
-\begin{table}[H]\centering\caption{Split Fashion-MNIST, giống nhau trong E1--E3.}
-\begin{tabular}{lrrl}\toprule Tập & Số ảnh & Mỗi lớp & Vai trò\\\midrule
-Train & 54.000 & 5.400 & Cập nhật trọng số\\
-Validation & 6.000 & 600 & Checkpoint, dừng sớm, lựa chọn cấu hình\\
-Test & 10.000 & 1.000 & Đánh giá sau lựa chọn\\\bottomrule\end{tabular}\end{table}
-Pixel chuyển sang $[0,1]$ và chuẩn hóa bằng mean $0,285886$, std
-$0,352960$ chỉ tính từ train. Không augmentation trong E1--E3.
-Fingerprint split giống nhau trong cả ba output:
+Các nội dung kỹ thuật được tổng hợp trong PDF này; video demo và việc công
+bố repository/Pages là các sản phẩm nộp riêng. Trang public cung cấp đường
+dẫn tới notebook, đề bài, báo cáo và nguồn LaTeX.
+
+\section{Dữ liệu và cách chia tập}
+Fashion-MNIST \cite{fashion} gồm ảnh grayscale $28\times28$ của 10 loại
+sản phẩm: T-shirt/top, Trouser, Pullover, Dress, Coat, Sandal, Shirt, Sneaker,
+Bag và Ankle boot. Từ 60.000 ảnh train nguồn, lấy 600 ảnh/lớp làm validation
+với seed 42; giữ nguyên official test 10.000 ảnh.
+\begin{table}[H]\centering\caption{Ba tập dữ liệu sử dụng trong báo cáo.}
+\small\begin{tabular}{llrrrr}\toprule
+Bài & Dataset & Lớp & Train & Val & Test\\\midrule
+E1--E3 &Fashion-MNIST&10&54.000&6.000&10.000\\
+A1 &GTSRB&43&31.380&7.829&12.630\\
+A2 &VOC2012&20&9.232&1.154&1.154\\\bottomrule
+\end{tabular}\end{table}
+Fashion-MNIST có 5.400/600/1.000 ảnh mỗi lớp ở train/val/test. Pixel chuyển
+về $[0,1]$, chuẩn hóa bằng mean 0,285886 và std 0,352960 tính từ train;
+không augmentation. E1--E3 dùng cùng split fingerprint:
 \begin{center}\footnotesize\ttfamily
 bd9f3884131e411a26892e15ff685f2849\\
 216340505ea615f3fb3b901e30fe80
 \end{center}
-\ReportFigure{assets/e1/dataset_overview.png}{Fashion-MNIST: một ảnh đại diện mỗi lớp và phân bố train/validation cân bằng.}
-\section{Môi trường, loop và quy tắc đánh giá}
-Máy chạy Python 3.14.7, PyTorch 2.11.0+cu128, torchvision 0.26.0+cu128,
-NumPy 2.5.2, Matplotlib 3.11.2, Pillow 12.3.0; GPU NVIDIA RTX A3000
-12GB Laptop, CUDA 12.8. Windows dùng DataLoader workers=0.
-Các notebook kiểm tra tensor/model/logit/gradient trên CUDA, xử lý batch cuối,
-và tự thực hiện forward, cross-entropy, backward, optimizer step.
+\ReportFigure{assets/e1/dataset_overview.png}{Fashion-MNIST: ảnh đại diện và phân bố train/validation cân bằng.}
+GTSRB chia theo track để hạn chế các frame cùng biển vật lý rơi vào cả
+train và validation. VOC2012 chia theo ảnh; test là holdout nội bộ.
+Chi tiết nhãn, augmentation, nguồn tải và giới hạn độc lập dữ liệu được
+trình bày ở từng chương và README dataset.
 
-Loss được tính trực tiếp trên logits:
+\section{Môi trường và quy tắc đánh giá}
+Python 3.14.7, PyTorch 2.11.0+cu128, torchvision 0.26.0+cu128,
+NumPy 2.5.2, Matplotlib 3.11.2 và Pillow 12.3.0 chạy trên Windows,
+GPU NVIDIA RTX A3000 12 GB Laptop, CUDA 12.8. DataLoader workers 0.
+Training loop thực hiện forward, loss, backward và optimizer step;
+AMP/GradScaler hỗ trợ train, validation/test không tính gradient.
+
+Với các bài phân loại E1--E3/A1, cross-entropy tính trực tiếp trên logits:
 \begin{equation}
-\mathcal{L}=-\frac{1}{N}\sum_{i=1}^N
-\log\frac{\exp z_{i,y_i}}{\sum_{c=1}^{C}\exp z_{i,c}}.
+\mathcal L=-\frac1 N\sum_{i=1}^N
+\log\frac{\exp z_{i,y_i}}{\sum_{c=1}^C\exp z_{i,c}}.
 \end{equation}
-Softmax chuyển logits thành xác suất khi diễn giải dự đoán;
-$\arg\max z$ và $\arg\max\operatorname{softmax}(z)$ cho cùng nhãn.
-Loss tổng hợp theo số ảnh. Accuracy là tỷ lệ dự đoán đúng;
-$F1_c=2P_cR_c/(P_c+R_c)$ và macro-F1 là trung bình không trọng số của
-$F1_c$ trên mọi lớp. Ma trận nhầm lẫn dùng hàng là nhãn thật, cột là dự đoán;
-phần trăm mỗi ô chia cho tổng số ảnh của lớp thật.
+Softmax chỉ cần khi diễn giải xác suất; argmax logits cho cùng nhãn.
+Loss được tổng hợp theo số ảnh. Accuracy là tỷ lệ dự đoán đúng;
+$F1_c=2 P_cR_c/(P_c+R_c)$, macro-F1 trung bình đều qua các lớp.
+Ma trận có hàng là GT, cột là prediction; phần trăm chuẩn hóa theo hàng.
 
-Training dùng AMP và GradScaler; validation/test dùng eval mode, no-grad.
-Checkpoint có validation loss nhỏ nhất được sao chép vào CPU RAM rồi nạp
-lại để đánh giá. Early stopping có ngưỡng cải thiện $10^{-4}$; counter dừng
-sớm và checkpoint tối ưu tuyệt đối được quản lý riêng. Model đại diện và
-ablation được chọn bằng validation accuracy, macro-F1, rồi loss; test không
-được dùng để lựa chọn cấu hình. Mỗi notebook tự dựng dataset/model/loop,
-không đọc checkpoint hoặc notebook khác.
-\Evidence{Số liệu E1--E3 được tạo bởi full run ngày 07/10/2026, với
-patience=10 theo log output. Code hiện tại có patience=4 cho lần Run All tiếp
-theo; báo cáo giữ cấu hình đã sinh số liệu và không gán kết quả cũ cho cấu hình
-mới. Full run A1 ngày 07--08/10/2026 dùng patience=4.}
-\begin{table}[H]\centering\caption{Audit các lần chạy tạo ra số liệu trong báo cáo.}
-\begin{tabular}{lrrrr}\toprule Bài & Run & Epoch & CUDA updates & AMP skips\\\midrule
-E1 & 4 & 108 & 45.574 & 2\\
-E2 & 8 & 259 & 109.290 & 8\\
-E3 & 8 & 238 & 100.434 & 2\\
-A1 & 14 & 208 & 51.168 & 0\\\bottomrule\end{tabular}\end{table}
-AMP skips là các bước optimizer bị scaler bỏ qua để tránh cập nhật gradient
-không hữu hạn; chúng được trừ khỏi số updates. Tất cả run vẫn xử lý đầy đủ
-ảnh train/validation/test. Train accuracy tại best được đo trong train mode
-khi weights đang cập nhật, vì vậy chênh lệch train--validation cần đọc cùng
-dropout/augmentation, không coi là hai phép đo eval hoàn toàn tương đương.
-Thời gian train+val loại test và vẽ hình; peak MiB là
-\texttt{torch.cuda.max\_memory\_allocated}, không phải tổng VRAM toàn máy.
+Checkpoint phân loại chọn validation loss nhỏ nhất; dừng sớm dùng
+min-delta $10^{-4}$. E1--E3 dùng patience 10 trong thực nghiệm, A1 dùng
+patience 4. Đại diện/ablation chọn bằng validation accuracy, macro-F1 rồi
+loss. A2 chọn weights và dừng sớm theo validation VOC mAP50, patience 2,
+min-delta 0,001; cách matching và detection metrics được trình bày ở
+Chương~\ref{chap:a2}. Cấu hình được chốt bằng validation trước khi đánh giá test.
+
+\begin{table}[H]\centering\caption{Quy mô các lượt huấn luyện tạo ra số liệu báo cáo.}
+\begin{tabular}{lrrrr}\toprule
+Bài & Lượt train & Epoch & CUDA updates & AMP skips\\\midrule
+E1 &4&108&45.574&2\\
+E2 &8&259&109.290&8\\
+E3 &8&238&100.434&2\\
+A1 &14&208&51.168&0\\
+A2 &2&36&27.720&0\\\midrule
+Tổng &36&849&334.186&12\\\bottomrule
+\end{tabular}\end{table}
+AMP skips là các optimizer steps bị scaler bỏ qua khi gradient không hữu
+hạn; không tính chúng vào updates thực tế. Train accuracy được đo khi
+weights đang cập nhật, có dropout/augmentation; không xem chênh lệch
+train--validation như hai phép đo eval hoàn toàn tương đương.
+Thời gian train + validation không gồm test/vẽ hình.
+Peak memory dùng \texttt{torch.cuda.max\_memory\_allocated}, không phải
+reserved hoặc tổng VRAM máy.
+
+Mỗi notebook tự dựng dataset, model và loop, không đọc code/checkpoint
+của notebook khác. Best weights chỉ giữ trong RAM cho cùng lần chạy;
+notebook không xuất thêm file kết quả. Kích thước tensor trên sơ đồ
+dùng thứ tự $H\times W\times C$ cho ảnh/feature map, $N\times D$ cho token;
+batch được lược để dễ đọc. Mặt trước biểu diễn không gian, phần sâu và
+độ dày nét gợi số channels; sơ đồ không dùng một tỷ lệ hình học chung.
+
 \input{chapters/e1}
 \input{chapters/e2}
 \input{chapters/e3}
 \input{chapters/a1}
+\input{chapters/a2}
 \chapter{Kết luận}
-E1 cho thấy MLP phi tuyến cải thiện rõ so với classifier tuyến tính;
-CNN tiếp tục tăng accuracy bằng locality và chia sẻ trọng số. CNN-B dùng
-ít tham số hơn CNN-A nhưng chất lượng test tương đương trong một seed.
-E2 xác nhận MSA thủ công đúng qua parity forward/gradient; CNN-stem hữu ích
-trong cả hai implementation. Tăng số head không tạo cải thiện đơn điệu.
-E3 cho thấy rows tốt nhất trong các cách biểu diễn đã thử; GRU dùng ít
-tham số và chạy nhanh hơn LSTM cùng representation, nhưng CNN-B vẫn có
-accuracy cao hơn và thời gian/epoch thấp hơn.
+E1 cho thấy MLP phi tuyến cải thiện so với classifier tuyến tính;
+CNN tăng accuracy bằng locality và chia sẻ trọng số. CNN-B ít tham số
+hơn CNN-A nhưng test accuracy tương đương trong một seed.
+E2 xác nhận MSA thủ công qua forward/gradient; CNN-stem hữu ích trong
+cả hai cách cài đặt. Tăng số head không tạo cải thiện đơn điệu.
+E3 cho thấy rows tốt nhất trong các biểu diễn đã thử; GRU dùng ít tham
+số và chạy nhanh hơn LSTM cùng representation, nhưng CNN-B vẫn hiệu
+quả hơn về độ chính xác/thời gian ở bài toán ảnh tĩnh.
 
-A1 cho thấy fine-tune toàn bộ pretrained backbone cho kết quả tốt nhất theo
-validation trong hai family. Head-only tiết kiệm bộ nhớ nhưng accuracy thấp;
-partial là điểm cân bằng tùy family và phạm vi unfreeze. DeiT pretrained full
-có test accuracy trung bình ba seed cao hơn ResNet trong protocol này,
-trong khi ResNet suy luận nhanh hơn và dùng ít peak memory hơn ở full mode.
-Kết quả không thay thế kiểm chứng trên dataset khác hoặc nhiều seed hơn.
+A1 cho thấy pretrained full cho kết quả validation tốt nhất trong
+hai họ. Head-only tiết kiệm bộ nhớ nhưng accuracy thấp; partial phụ
+thuộc phạm vi unfreeze. DeiT pretrained full có test accuracy trung
+bình ba seed cao hơn ResNet; ResNet suy luận nhanh hơn và dùng ít peak
+memory hơn. Tác dụng augmentation không giống nhau giữa hai họ.
 
-Hướng mở rộng gồm nhiều seed cho E1--E3, đối chiếu matched capacity và cùng
-ngân sách cập nhật; kiểm tra balanced sampling/class-weight cho GTSRB và
-độ ổn định theo track. Các hướng này là đề xuất, chưa được dùng để thay đổi
-protocol sau khi quan sát test trong báo cáo.
-\section{AI hỗ trợ và trách nhiệm kiểm chứng}
-Công cụ AI hỗ trợ hiện thực/kiểm tra code, tổng hợp output, đối chiếu đề bài,
-biên tập LaTeX và vẽ sơ đồ TikZ. Người thực hiện chạy full notebook A1 và
-cung cấp báo cáo mẫu; các số liệu được trích từ output lưu trên máy.
-Việc hiểu, giải thích và xác nhận phần đóng góp cá nhân của sản phẩm nộp
-thuộc người thực hiện. Khai báo này nêu phạm vi hỗ trợ thực tế, không tự nhận
-phần code hay phân tích do AI hỗ trợ là đóng góp độc lập của người học;
-tuân theo mục 1.6 của đề E1--E3.
+A2 cho thấy thứ tự detector phụ thuộc metric: Faster R-CNN hơn ở mAP50,
+recall và APsmall; RetinaNet hơn ở COCO-style AP50:95, F1 tại score 0,30
+và latency batch 1. FPN tạo feature đa tỉ lệ, nhưng vẫn khó với vật thể
+nhỏ/nội thất; Focal Loss không thay thế phân tích FP/FN hoặc lựa chọn
+confidence trên validation.
+
+Các kết luận gắn với dataset, split, seed và ngân sách thực nghiệm.
+Hướng tiếp theo là nhiều seed cho E1--E3/A2, so sánh cùng capacity/ngân
+sách cập nhật, ablation neck/anchors ở detection và kiểm tra độ ổn định
+theo track ở GTSRB. Những hướng này chưa nằm trong số liệu báo cáo.
+
+\section{Ghi nhận hỗ trợ của công cụ AI}
+Công cụ AI được dùng để hỗ trợ lập trình, kiểm tra code, tổng hợp output,
+đối chiếu tài liệu và biên tập LaTeX/TikZ. Số liệu thực nghiệm lấy từ các
+notebook đã chạy và lưu output, không được tạo để minh họa kết quả.
+Người thực hiện chịu trách nhiệm hiểu, kiểm chứng và bảo vệ code, số liệu
+và phần phân tích; phạm vi hỗ trợ được ghi nhận theo mục 1.6 đề E1--E3.
 \bibliographystyle{plainnat}\bibliography{references}
 \appendix
 \input{chapters/appendix_results}

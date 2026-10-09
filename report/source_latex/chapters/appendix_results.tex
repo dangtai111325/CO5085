@@ -1,11 +1,11 @@
 \chapter{Kết quả chi tiết và tái lập}
-\section{Audit huấn luyện E1--E3}
+\section{Chi tiết huấn luyện E1--E3 và A1}
 Các bảng dưới ghi số epoch đã chạy, best epoch, optimizer updates thực tế,
 AMP skips và peak allocated MiB. Chúng đối chiếu trực tiếp output cell,
 không suy số updates chỉ từ số epoch.
-\DataTable{assets/e1/audit.tex}{Audit E1.}
-\DataTable{assets/e2/audit.tex}{Audit E2; ký hiệu M/T và R/P/C như Chương E2.}
-\DataTable{assets/e3/audit.tex}{Audit E3.}
+\DataTable{assets/e1/audit.tex}{Chi tiết lượt train E1.}
+\DataTable{assets/e2/audit.tex}{Chi tiết lượt train E2; ký hiệu M/T và R/P/C như Chương E2.}
+\DataTable{assets/e3/audit.tex}{Chi tiết lượt train E3.}
 \DataTable{assets/a1/extended_cost.tex}{Epoch, cập nhật và peak memory của sáu run mở rộng A1.}
 \section{Metric theo lớp và độ nhạy A1}
 Hai cột model là full pretrained seed 42, được chọn bằng validation.
@@ -16,17 +16,17 @@ Support là số ảnh test nguồn. ID tra bằng bảng tên lớp dưới đ�
 
 \begin{table}[H]\centering\caption{Độ nhạy A1 với 8 ảnh test trùng train.}
 \small\begin{tabular}{lrrrrr}\toprule Run & Full acc & Clean acc & $\Delta$ (điểm\%) & Full F1 & Clean F1\\\midrule
-R-S/42 & 96.33 & 96.33 & -0.002 & 0.9447 & 0.9447\\
-R-H/42 & 70.35 & 70.33 & -0.019 & 0.6143 & 0.6143\\
-R-P/42 & 96.05 & 96.05 & -0.003 & 0.9438 & 0.9438\\
-R-F/42 & 98.37 & 98.37 & -0.001 & 0.9743 & 0.9743\\
-D-S/42 & 96.14 & 96.13 & -0.002 & 0.9350 & 0.9350\\
-D-H/42 & 69.73 & 69.71 & -0.019 & 0.6125 & 0.6125\\
-D-P/42 & 87.85 & 87.85 & -0.008 & 0.8063 & 0.8063\\
-D-F/42 & 98.92 & 98.91 & -0.001 & 0.9790 & 0.9790\\
+R-S/42 & 96,33 & 96,33 & -0,002 & 0,9447 & 0,9447\\
+R-H/42 & 70,35 & 70,33 & -0,019 & 0,6143 & 0,6143\\
+R-P/42 & 96,05 & 96,05 & -0,003 & 0,9438 & 0,9438\\
+R-F/42 & 98,37 & 98,37 & -0,001 & 0,9743 & 0,9743\\
+D-S/42 & 96,14 & 96,13 & -0,002 & 0,9350 & 0,9350\\
+D-H/42 & 69,73 & 69,71 & -0,019 & 0,6125 & 0,6125\\
+D-P/42 & 87,85 & 87,85 & -0,008 & 0,8063 & 0,8063\\
+D-F/42 & 98,92 & 98,91 & -0,001 & 0,9790 & 0,9790\\
 
 \bottomrule\end{tabular}\end{table}
-Full test có 12.630 ảnh, clean test có 12.622; mọi accuracy là\%.
+Full test có 12.630 ảnh, clean test có 12.622; mọi accuracy tính bằng \%.
 Bảng ghi mức làm tròn trong output; delta tính trên giá trị chưa làm tròn nên
 không nhất thiết bằng phép trừ hai cột accuracy hiển thị.
 
@@ -37,42 +37,70 @@ Toàn bộ 10.000 ảnh test mỗi model được đưa vào ma trận. Các mod
 chọn/tune lại theo lỗi test ở các hình này.
 \begin{figure}[H]\centering
 \includegraphics[width=.98\linewidth,height=.67\textheight,keepaspectratio]{assets/e2/confusion_test_pair_1.png}
-\caption{E2: confusion matrix test, cặp1; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E2: confusion matrix test, cặp 1; tên model ghi trên từng panel.}\end{figure}\end{landscape}
 \begin{landscape}\begin{figure}[p]\centering
 \includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e2/confusion_test_pair_2.png}
-\caption{E2: confusion matrix test, cặp2; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E2: confusion matrix test, cặp 2; tên model ghi trên từng panel.}\end{figure}\end{landscape}
 \begin{landscape}\begin{figure}[p]\centering
 \includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e2/confusion_test_pair_3.png}
-\caption{E2: confusion matrix test, cặp3; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E2: confusion matrix test, cặp 3; tên model ghi trên từng panel.}\end{figure}\end{landscape}
 \begin{landscape}\begin{figure}[p]\centering
 \includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e2/confusion_test_pair_4.png}
-\caption{E2: confusion matrix test, cặp4; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E2: confusion matrix test, cặp 4; tên model ghi trên từng panel.}\end{figure}\end{landscape}
 \begin{landscape}\begin{figure}[p]\centering
 \includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_1.png}
-\caption{E3: confusion matrix test, cặp1; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E3: confusion matrix test, cặp 1; tên model ghi trên từng panel.}\end{figure}\end{landscape}
 \begin{landscape}\begin{figure}[p]\centering
 \includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_2.png}
-\caption{E3: confusion matrix test, cặp2; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E3: confusion matrix test, cặp 2; tên model ghi trên từng panel.}\end{figure}\end{landscape}
 \begin{landscape}\begin{figure}[p]\centering
 \includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_3.png}
-\caption{E3: confusion matrix test, cặp3; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E3: confusion matrix test, cặp 3; tên model ghi trên từng panel.}\end{figure}\end{landscape}
 \begin{landscape}\begin{figure}[p]\centering
 \includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_4.png}
-\caption{E3: confusion matrix test, cặp4; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\caption{E3: confusion matrix test, cặp 4; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+
+
+\section{Dữ liệu và chỉ số theo lớp A2}
+\DataTable{assets/a2/labels.tex}{Số bbox thường của từng lớp VOC2012; difficult không nằm trong các cột này.}
+\DataTable{assets/a2/per_class_pr.tex}{P/R/F1 tại score 0,30; R=RetinaNet, F=Faster R-CNN, Rec là recall.}
+\DataTable{assets/a2/per_class_coco.tex}{AP50/AP75 COCO-style và AP11 VOC07 từng lớp; metric ở thang 0--1.}
+
+\section{Ma trận chẩn đoán A2}
+Hàng là ground truth, cột là prediction. Background ở hàng biểu diễn false
+positives, ở cột biểu diễn false negatives. Số đếm và tỷ lệ theo hàng được
+tách trang để đọc rõ từng ô; cùng một ảnh output nguồn được hiển thị theo
+từng panel, không thay đổi các số trong ma trận.
+\begin{landscape}\begin{figure}[p]\centering
+\includegraphics[trim=0.0000bp 831.8713bp 878.9954bp 0.0000bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
+\caption{A2 RetinaNet: số đếm, IoU $\geq0,5$, confidence $\geq0,30$.}
+\end{figure}\end{landscape}
+\begin{landscape}\begin{figure}[p]\centering
+\includegraphics[trim=0.0000bp 0.0000bp 878.9954bp 831.8713bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
+\caption{A2 RetinaNet: tỷ lệ theo hàng, IoU $\geq0,5$, confidence $\geq0,30$.}
+\end{figure}\end{landscape}
+\begin{landscape}\begin{figure}[p]\centering
+\includegraphics[trim=878.9954bp 831.8713bp 0.0000bp 0.0000bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
+\caption{A2 Faster R-CNN: số đếm, IoU $\geq0,5$, confidence $\geq0,30$.}
+\end{figure}\end{landscape}
+\begin{landscape}\begin{figure}[p]\centering
+\includegraphics[trim=878.9954bp 0.0000bp 0.0000bp 831.8713bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
+\caption{A2 Faster R-CNN: tỷ lệ theo hàng, IoU $\geq0,5$, confidence $\geq0,30$.}
+\end{figure}\end{landscape}
 
 \section{Nguồn số liệu và hướng dẫn tái lập}
-Nguồn số liệu là output đã lưu của E1.ipynb, E2.ipynb, E3.ipynb và A1.ipynb
+Nguồn số liệu là output đã lưu của E1.ipynb, E2.ipynb, E3.ipynb, A1.ipynb và A2.ipynb
 trong source\_code. Manifest dưới assets/e1, e2, e3, a1 ghi cell/output và
-bảng Markdown nguồn; PNG trích từ ảnh embedded trong notebook, không chạy
-training để tạo lại số liệu. Notebook không tự ghi assets của báo cáo.
+bảng Markdown nguồn; assets/a2 có cùng thông tin truy nguồn cho A2. PNG được trích
+trực tiếp từ ảnh trong output; sơ đồ kiến trúc được vẽ bằng TikZ từ định nghĩa mạng.
 
 Chuẩn bị dữ liệu theo README trong thư mục datasets. Mở notebook tương ứng,
 chọn Python 3.14 có CUDA, Restart Kernel và Run All, sau đó Save. Mỗi notebook
-chạy độc lập; không cần thứ tự. Để tái hiện đúng số liệu lịch sử E1--E3,
-cần dùng cấu hình patience10 ghi trong output; mặc định code hiện tại là 4.
-A1 sử dụng patience 4 như số liệu đã báo cáo. Seed cố định không đảm bảo
+chạy độc lập; không cần thứ tự. Các tham số thực nghiệm cần giữ là patience 10 cho E1--E3, patience 4 cho A1;
+A2 batch 4, accumulation 3, tối đa 30 epoch, patience 2/min-delta 0,001.
+Các lựa chọn weights và nguồn split được mô tả trong từng chương. Seed cố định không đảm bảo
 tái lập bitwise qua mọi GPU, phiên bản thư viện hoặc đường thực thi AMP.
 
 Báo cáo biên dịch bằng XeLaTeX và BibTeX từ report/source\_latex/main.tex;
-các sơ đồ kiến trúc là mã TikZ trong từng chương, ảnh kết quả nằm ở assets.
+các sơ đồ TikZ được định nghĩa trong architectures.tex, ảnh kết quả nằm ở assets.
 Sản phẩm PDF chung giữ tại report/CO5085\_Report.pdf.
