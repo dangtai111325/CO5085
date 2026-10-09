@@ -114,7 +114,7 @@ biên tập báo cáo.
 
 ## Trang public và Git
 
-[Trang GitHub Pages](https://dangtai111325.github.io/CO5085/) tổng hợp kết quả,
+[Trang GitHub Pages](https://dangtai111325.github.io/CO5085/public/) tổng hợp kết quả,
 liên kết xem/tải năm notebook, báo cáo PDF, đề bài và thông tin dataset.
 HTML nguồn ở [public/index.html](public/index.html). Xem trên máy:
 
@@ -122,24 +122,14 @@ HTML nguồn ở [public/index.html](public/index.html). Xem trên máy:
 python -m http.server 5085 --bind 127.0.0.1
 ```
 
-Mở `http://127.0.0.1:5085/public/`. Các file phục vụ website và công cụ publish
-đều nằm trong `public`. Sau khi commit và push `main`, publish bằng:
+Mở `http://127.0.0.1:5085/public/`. Các file dành cho website nằm trong
+`public`; project không chứa workflow hoặc script tự deploy. Người thực hiện
+tự cấu hình và deploy GitHub Pages.
 
-```powershell
-& .\public\publish.ps1
-```
-
-Script lấy các file đã commit, tạo bản website trong thư mục tạm rồi push lên
-nhánh `gh-pages`; không đổi notebook hoặc nhánh đang làm việc. Trong
-Settings → Pages, Source là **Deploy from a branch**, nhánh **gh-pages**, folder
-**/(root)**. GitHub tự deploy khi nhánh này được cập nhật, không cần thư mục
-`.github` trong project. Chạy `& .\public\publish.ps1 -Preview` nếu chỉ muốn
-dựng bản xem thử trong thư mục tạm, chưa push.
-
-Trang gốc `/CO5085/` và `/CO5085/public/` dùng cùng HTML; script điều chỉnh
-liên kết tương đối cho trang gốc. Bản public chỉ chứa trang, notebook, PDF và
-README; không chứa dataset local hoặc file build LaTeX. Nguồn LaTeX được xem
-trên GitHub. Lần push `main` tiếp theo cần chạy lệnh publish để cập nhật website.
+Nếu publish trực tiếp từ `main` với folder `/(root)`, trang nằm tại
+`/CO5085/public/`. Giữ cấu trúc tương đối giữa `public`, `assignment`,
+`source_code` và `report` để các liên kết tải tài liệu hoạt động. Nguồn LaTeX
+được xem trên GitHub.
 
 Git chỉ chứa đề bài, notebook/output, HTML, README, PDF và nguồn/assets LaTeX.
 Toàn bộ raw data, pretrained cache và file build bị ignore; trong `datasets`
