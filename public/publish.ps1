@@ -23,7 +23,7 @@ New-Item -ItemType Directory -Path $work | Out-Null
 try {
     # Export committed files only: raw datasets and local caches are excluded.
     $archive = Join-Path $work 'source.zip'
-    Invoke-Git -C $project archive --format=zip "--output=$archive" HEAD -- `
+    Invoke-Git -C $project -c core.autocrlf=false archive --format=zip "--output=$archive" HEAD -- `
         public assignment source_code report/CO5085_Report.pdf datasets/README.md README.md
     Expand-Archive -LiteralPath $archive -DestinationPath $site
     Remove-Item -LiteralPath (Join-Path $site 'public/publish.ps1')
