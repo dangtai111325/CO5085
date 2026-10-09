@@ -9,7 +9,6 @@
 *.py[cod]
 .venv/
 .vscode/
-/_site/
 
 # LaTeX build intermediates; keep PDF, source, bibliography and report assets.
 *.aux
