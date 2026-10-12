@@ -1,103 +1,307 @@
 {
   "source_notebook": "source_code/E3.ipynb",
+  "source_sha256": "057eecef30253d54c2bfe9eb3c0f9c70d82a732d5a48f1a312fea289301426a9",
   "images": [
     {
-      "cell": 22,
-      "output": 4,
-      "asset": "comparison.png"
+      "cell": 8,
+      "output": 0,
+      "asset": "dataset_gallery.png",
+      "sha256": "5f7745a195bd99323936e02ca48f4489c91c56e34d7548abd994df7bc654d529"
     },
     {
-      "cell": 22,
-      "output": 5,
-      "asset": "recurrent_representation_comparison.png"
-    },
-    {
-      "cell": 22,
-      "output": 6,
-      "asset": "learning_curves_loss.png"
-    },
-    {
-      "cell": 22,
-      "output": 7,
-      "asset": "learning_curves_accuracy.png"
-    },
-    {
-      "cell": 22,
-      "output": 8,
-      "asset": "baseline_curves.png"
-    },
-    {
-      "cell": 24,
+      "cell": 8,
       "output": 1,
-      "asset": "confusion_test_pair_1.png"
+      "asset": "class_distribution.png",
+      "sha256": "368506b27a9b05a00a774ab2644d12be4fdde742871d97e2697a35cc81ebebff"
     },
     {
-      "cell": 24,
+      "cell": 21,
       "output": 2,
-      "asset": "confusion_test_pair_2.png"
+      "asset": "comparison_quality.png",
+      "sha256": "8159058a73a6b856420117cef424b1c7ba3b6dbd248df904e9d533ee9c6acda9"
     },
     {
-      "cell": 24,
+      "cell": 21,
       "output": 3,
-      "asset": "confusion_test_pair_3.png"
+      "asset": "comparison_capacity.png",
+      "sha256": "b2cb60b3a30a787d88a02aaa8808050e8dfb24851d925ff05d7743494f9c7b58"
     },
     {
-      "cell": 24,
+      "cell": 21,
       "output": 4,
-      "asset": "confusion_test_pair_4.png"
+      "asset": "time_total.png",
+      "sha256": "16dd7f11d56b6250cc417e5e6d4f1394aecb92706bc0108b0d6c216fd4819a69"
     },
     {
-      "cell": 24,
+      "cell": 21,
       "output": 5,
-      "asset": "failure_examples_test.png"
+      "asset": "paired_accuracy.png",
+      "sha256": "6c901f4e35d675b9076603b98bf3b6223fce816477d592bca9c2966af1634864"
     },
     {
-      "cell": 26,
+      "cell": 21,
+      "output": 6,
+      "asset": "paired_capacity.png",
+      "sha256": "5341230c0711c724a0b98f88119f651a2514c42182ba745d5cf7c32fe56e2122"
+    },
+    {
+      "cell": 21,
+      "output": 7,
+      "asset": "paired_time.png",
+      "sha256": "8094c3e1465f10bcb4626a5e945fdd555565b0b19ea4b112bcf0730a6b5f8e97"
+    },
+    {
+      "cell": 21,
+      "output": 8,
+      "asset": "loss_rows.png",
+      "sha256": "7cc0ebf35fa9ca733577a5452982b70a7651277ea08226e1fe50dd65ea4ce7ec"
+    },
+    {
+      "cell": 21,
+      "output": 9,
+      "asset": "loss_columns.png",
+      "sha256": "6ac52eb7ec56dc7e2f0f7a7285982c39303341b6d30ac912583631f9e2166c88"
+    },
+    {
+      "cell": 21,
+      "output": 10,
+      "asset": "loss_patch.png",
+      "sha256": "da204bba80e18f605adf772f81d4c7c5b5f0912971d22ac9a74a9d6a270b68b3"
+    },
+    {
+      "cell": 21,
+      "output": 11,
+      "asset": "accuracy_rows.png",
+      "sha256": "4834f786cc6ca532ac606ac2f1e519f9ee47cdab3b28408d3a7632c182c39920"
+    },
+    {
+      "cell": 21,
+      "output": 12,
+      "asset": "accuracy_columns.png",
+      "sha256": "cf4e50bfba575d373df6e609cb7bccb51f41312148a00ff22186cdc3aaf43913"
+    },
+    {
+      "cell": 21,
+      "output": 13,
+      "asset": "accuracy_patch.png",
+      "sha256": "bf1e109ae923bba0ecd01decf17e5e6c600802c4c8f7e98c79b13760237f9954"
+    },
+    {
+      "cell": 21,
+      "output": 14,
+      "asset": "baseline_loss.png",
+      "sha256": "fa26e76ac697cbe794b6fb93f32779c2b88ebf4dfc6b0ebdca4d3aec4c040e10"
+    },
+    {
+      "cell": 21,
+      "output": 15,
+      "asset": "baseline_accuracy.png",
+      "sha256": "175254d4b4a8351cfe93432230e7821739c2195c0b61897d4e89fe26e4ec04ec"
+    },
+    {
+      "cell": 23,
+      "output": 0,
+      "asset": "confusion_l_r.png",
+      "sha256": "fa0f7c788b88c3571c3bdfa3e9308268c125fce35d1eeba57c928acdacecb50f"
+    },
+    {
+      "cell": 23,
       "output": 1,
-      "asset": "sequence_representations.png"
+      "asset": "confusion_g_r.png",
+      "sha256": "d389c8f59189029294426d1e95259edc280f1c72ea2eee1628b72d8d81fb610d"
+    },
+    {
+      "cell": 23,
+      "output": 2,
+      "asset": "confusion_l_c.png",
+      "sha256": "f220ac799a88976d548b84402ca48099fdbe24506204c3d85b5758c614d379c9"
+    },
+    {
+      "cell": 23,
+      "output": 3,
+      "asset": "confusion_g_c.png",
+      "sha256": "931cde3d408a120aa416f9f4947a1cfa9f30dfdb801cd7ba318886525497fb20"
+    },
+    {
+      "cell": 23,
+      "output": 4,
+      "asset": "confusion_l_p.png",
+      "sha256": "de1cb3a9adaaf6d9429ad37514f2001d46e7b9fdd0e76b2d53e40e45820c87ff"
+    },
+    {
+      "cell": 23,
+      "output": 5,
+      "asset": "confusion_g_p.png",
+      "sha256": "46707a29f7266b865452766e03068b927adbcc3404675dc1201e51c589454332"
+    },
+    {
+      "cell": 23,
+      "output": 6,
+      "asset": "confusion_mlp.png",
+      "sha256": "df06ef66d6a5e99d518f8193902414713c62a1e7ac333e4e8520dd9aefda3d19"
+    },
+    {
+      "cell": 23,
+      "output": 7,
+      "asset": "confusion_cnn_b.png",
+      "sha256": "1852a87f68e703bc40b71a99fe4931f49b2394a074d9f213644ba1fbdbecbaec"
+    },
+    {
+      "cell": 23,
+      "output": 8,
+      "asset": "errors_l_r.png",
+      "sha256": "bd8042a61ec3cbf6218037118773d1fc987c422bccbbd8b25b6a9b2583549ce1"
+    },
+    {
+      "cell": 23,
+      "output": 9,
+      "asset": "errors_g_r.png",
+      "sha256": "2109e4daa790f8aa4bc1cec845a9de08997256418598b071c82da2ab53edae5e"
+    },
+    {
+      "cell": 23,
+      "output": 10,
+      "asset": "errors_mlp.png",
+      "sha256": "43635d3e8a81b1e1aedc9c8e26313f78423697711f0d09ba4c23666b89ae0214"
+    },
+    {
+      "cell": 23,
+      "output": 11,
+      "asset": "errors_cnn_b.png",
+      "sha256": "6b2b5c0bee37c007e19ce48c95745e8d92badfc4957397085f9930605668e186"
+    },
+    {
+      "cell": 25,
+      "output": 0,
+      "asset": "scan_rows.png",
+      "sha256": "93590c888e5c94570f2b8282e4df443e836cf83fcad23bc768a28436a57bf9bf"
+    },
+    {
+      "cell": 25,
+      "output": 1,
+      "asset": "scan_columns.png",
+      "sha256": "15624114a9c406607f8d0e24bd2143dabd80d773e63ea009f9d75aabaa28fa3c"
+    },
+    {
+      "cell": 25,
+      "output": 2,
+      "asset": "scan_patch.png",
+      "sha256": "1fbdb6a270f1e02c4fa87ac497ff9244d21fc42209d2f5ce92d6913f91f0f2ff"
+    },
+    {
+      "cell": 25,
+      "output": 3,
+      "asset": "sequence_rows.png",
+      "sha256": "af4a01acac5bdb6c8ddfda349f92f85268f274884b089a0770b6523ca2a335ce"
+    },
+    {
+      "cell": 25,
+      "output": 4,
+      "asset": "sequence_columns.png",
+      "sha256": "d2909fab744f44271bdbe44f840aec73fe0e1bf5dce2fdb82ae804ce509ed0c7"
+    },
+    {
+      "cell": 25,
+      "output": 5,
+      "asset": "sequence_patch.png",
+      "sha256": "f543ed6c92f75259d5258633b702d403b395ef65c4084fca4a51d82f2926e044"
     }
   ],
   "markdown_outputs": [
     {
-      "cell": 7,
-      "output": 1,
-      "text": "| Tập | Đầy đủ | Dùng lần này | Vai trò |\n|---|---:|---:|---|\n| Train | 54.000 | 54,000 | Cập nhật trọng số |\n| Validation | 6.000 | 6,000 | Chọn checkpoint, early stopping |\n| Test | 10.000 | 10,000 | Đánh giá sau chọn checkpoint |"
+      "cell": 6,
+      "output": 0,
+      "text": "| Tập | Số ảnh | Vai trò |\n|---|---:|---|\n| Train | 54,000 | Cập nhật trọng số |\n| Validation | 6,000 | Chọn best weights, early stopping |\n| Test | 10,000 | Đánh giá |"
     },
     {
-      "cell": 13,
-      "output": 1,
+      "cell": 12,
+      "output": 0,
       "text": "| Model | T × feature | Số tham số | Gradient clipping |\n|---|---|---:|---|\n| LSTM · Rows | 28 × 28 | 82,186 | norm 1.0 |\n| LSTM · Columns | 28 × 28 | 82,186 | norm 1.0 |\n| LSTM · Patch 4×4 | 49 × 16 | 76,042 | norm 1.0 |\n| GRU · Rows | 28 × 28 | 61,962 | norm 1.0 |\n| GRU · Columns | 28 × 28 | 61,962 | norm 1.0 |\n| GRU · Patch 4×4 | 49 × 16 | 57,354 | norm 1.0 |\n| MLP | flatten | 235,146 | Không |\n| CNN-B | spatial | 94,186 | Không |"
     },
     {
-      "cell": 22,
+      "cell": 14,
+      "output": 0,
+      "text": "| Cell | Sai số forward lớn nhất | Forward / gradient |\n|---|---:|---|\n| ManualLSTMCell | 5.551e-17 | Khớp |\n| ManualGRUCell | 3.331e-16 | Khớp |"
+    },
+    {
+      "cell": 21,
+      "output": 0,
+      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| LSTM · Rows | 18 | 14 | 7,596 | 0 | Early stopping | 27 |\n| LSTM · Columns | 23 | 19 | 9,706 | 0 | Early stopping | 27 |\n| LSTM · Patch 4×4 | 20 | 16 | 8,440 | 0 | Early stopping | 33 |\n| GRU · Rows | 20 | 20 | 8,440 | 0 | Early stopping | 28 |\n| GRU · Columns | 23 | 19 | 9,706 | 0 | Early stopping | 28 |\n| GRU · Patch 4×4 | 24 | 20 | 10,128 | 0 | Early stopping | 35 |\n| MLP | 20 | 16 | 8,440 | 0 | Early stopping | 22 |\n| CNN-B | 20 | 16 | 8,440 | 0 | Early stopping | 56 |"
+    },
+    {
+      "cell": 21,
       "output": 1,
-      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| LSTM · Rows | 24 | 14 | 10,128 | 0 | Early stopping | 27 |\n| LSTM · Columns | 29 | 19 | 12,238 | 0 | Early stopping | 27 |\n| LSTM · Patch 4×4 | 34 | 24 | 14,348 | 0 | Early stopping | 34 |\n| GRU · Rows | 26 | 20 | 10,972 | 0 | Early stopping | 28 |\n| GRU · Columns | 29 | 19 | 12,238 | 0 | Early stopping | 28 |\n| GRU · Patch 4×4 | 30 | 20 | 12,660 | 0 | Early stopping | 35 |\n| MLP | 26 | 16 | 10,972 | 0 | Early stopping | 23 |\n| CNN-B | 40 | 30 | 16,878 | 2 | Early stopping | 57 |"
+      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| LSTM · Rows | 91.95 | 89.95 | 0.8990 | 89.70 | 0.8965 | 0.2940 | 82,186 | 472.13 | 26.230 |\n| LSTM · Columns | 92.79 | 88.72 | 0.8881 | 88.81 | 0.8885 | 0.3260 | 82,186 | 625.00 | 27.174 |\n| LSTM · Patch 4×4 | 90.10 | 87.63 | 0.8769 | 87.55 | 0.8761 | 0.3444 | 76,042 | 928.90 | 46.445 |\n| GRU · Rows | 93.95 | 90.47 | 0.9044 | 90.06 | 0.9001 | 0.2882 | 61,962 | 576.49 | 28.824 |\n| GRU · Columns | 93.16 | 89.83 | 0.8983 | 89.51 | 0.8951 | 0.3137 | 61,962 | 642.46 | 27.933 |\n| GRU · Patch 4×4 | 92.36 | 89.05 | 0.8900 | 88.44 | 0.8841 | 0.3352 | 57,354 | 1171.26 | 48.802 |\n| MLP | 91.58 | 89.47 | 0.8951 | 89.45 | 0.8948 | 0.3142 | 235,146 | 69.09 | 3.455 |\n| CNN-B | 93.63 | 91.93 | 0.9195 | 91.45 | 0.9144 | 0.2333 | 94,186 | 76.78 | 3.839 |"
     },
     {
-      "cell": 22,
-      "output": 2,
-      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| LSTM · Rows | 91.95 | 89.95 | 0.8990 | 89.70 | 0.8965 | 0.2940 | 82,186 | 410.70 | 17.113 |\n| LSTM · Columns | 92.79 | 88.72 | 0.8881 | 88.81 | 0.8885 | 0.3260 | 82,186 | 452.70 | 15.610 |\n| LSTM · Patch 4×4 | 92.40 | 88.62 | 0.8861 | 88.22 | 0.8823 | 0.3414 | 76,042 | 853.58 | 25.105 |\n| GRU · Rows | 93.95 | 90.47 | 0.9044 | 90.06 | 0.9001 | 0.2882 | 61,962 | 393.42 | 15.132 |\n| GRU · Columns | 93.16 | 89.83 | 0.8983 | 89.51 | 0.8951 | 0.3137 | 61,962 | 407.87 | 14.064 |\n| GRU · Patch 4×4 | 92.36 | 89.05 | 0.8900 | 88.44 | 0.8841 | 0.3352 | 57,354 | 696.60 | 23.220 |\n| MLP | 91.58 | 89.47 | 0.8951 | 89.45 | 0.8948 | 0.3142 | 235,146 | 49.98 | 1.922 |\n| CNN-B | 95.82 | 91.92 | 0.9190 | 91.97 | 0.9193 | 0.2320 | 94,186 | 100.38 | 2.509 |"
+      "cell": 21,
+      "output": 16,
+      "text": "| Model | Val acc (%) | Test acc (%) | Tham số | Train + val (s/epoch) |\n|---|---:|---:|---:|---:|\n| LSTM · Rows | 89.95 | 89.70 | 82,186 | 26.230 |\n| GRU · Rows | 90.47 | 90.06 | 61,962 | 28.824 |\n| MLP | 89.47 | 89.45 | 235,146 | 3.455 |\n| CNN-B | 91.93 | 91.45 | 94,186 | 3.839 |"
     },
     {
-      "cell": 22,
-      "output": 3,
-      "text": "Train accuracy được đo trong train mode khi cập nhật trọng số; validation/test được đo trong eval mode. Thời gian gồm training và validation, không gồm vẽ hình hay test."
+      "cell": 23,
+      "output": 12,
+      "text": "| Model | Nhầm nhiều nhất: thật → dự đoán | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| LSTM · Rows | Shirt → T-shirt/top | 133 | 13.3% |\n| LSTM · Columns | T-shirt/top → Shirt | 141 | 14.1% |\n| LSTM · Patch 4×4 | T-shirt/top → Shirt | 141 | 14.1% |\n| GRU · Rows | Shirt → T-shirt/top | 125 | 12.5% |\n| GRU · Columns | Shirt → T-shirt/top | 126 | 12.6% |\n| GRU · Patch 4×4 | Shirt → T-shirt/top | 135 | 13.5% |\n| MLP | T-shirt/top → Shirt | 124 | 12.4% |\n| CNN-B | Shirt → Coat | 103 | 10.3% |"
     },
     {
-      "cell": 22,
-      "output": 9,
-      "text": "| Model | Val acc (%) | Test acc (%) | Tham số | Train + val (s/epoch) |\n|---|---:|---:|---:|---:|\n| LSTM · Rows | 89.95 | 89.70 | 82,186 | 17.113 |\n| GRU · Rows | 90.47 | 90.06 | 61,962 | 15.132 |\n| MLP | 89.47 | 89.45 | 235,146 | 1.922 |\n| CNN-B | 91.92 | 91.97 | 94,186 | 2.509 |"
-    },
-    {
-      "cell": 24,
-      "output": 6,
-      "text": "| Model | Nhầm nhiều nhất: thật → dự đoán | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| LSTM · Rows | Shirt → T-shirt/top | 133 | 13.3% |\n| LSTM · Columns | T-shirt/top → Shirt | 141 | 14.1% |\n| LSTM · Patch 4×4 | T-shirt/top → Shirt | 132 | 13.2% |\n| GRU · Rows | Shirt → T-shirt/top | 125 | 12.5% |\n| GRU · Columns | Shirt → T-shirt/top | 126 | 12.6% |\n| GRU · Patch 4×4 | Shirt → T-shirt/top | 135 | 13.5% |\n| MLP | T-shirt/top → Shirt | 124 | 12.4% |\n| CNN-B | Shirt → T-shirt/top | 103 | 10.3% |"
-    },
-    {
-      "cell": 28,
-      "output": 1,
-      "text": "**Toàn bộ dữ liệu:** 54.000 train / 6.000 validation / 10.000 test; huấn luyện 8 model trong 238 epoch / 100434 updates trên CUDA.\n\n**Recurrent có validation accuracy cao nhất:** GRU · Rows 90.47%; test 90.06%. **Baseline validation cao nhất:** CNN-B 91.92%. Chênh lệch recurrent − baseline: -1.45 điểm %.\n\n**Diễn giải:** Rows/Columns cùng T=28 và feature28 nhưng đổi thứ tự/phụ thuộc; patch có T=49, feature16. LSTM mang cả hidden và cell state, GRU mang hidden; trong code này đều unroll theo từng token, hidden128. Số gates/tham số và chiều dài chuỗi ảnh hưởng capacity/tốc độ. MLP không dùng cấu trúc không gian trực tiếp; CNN có locality và chia sẻ trọng số. Khác biệt accuracy không tự chứng minh model đã học phụ thuộc xa; cần đối chiếu biểu diễn, learning curves và lỗi. Gradient clipping norm1 chỉ dùng recurrent; baseline giữ protocol tương ứng. Thời gian tổng bị ảnh hưởng early stopping; xem thêm giây/epoch."
+      "cell": 27,
+      "output": 0,
+      "text": "| So sánh | Recurrent | Baseline | Chênh lệch val (điểm %) |\n|---|---|---|---:|\n| Chọn bằng validation | GRU · Rows | CNN-B | -1.47 |"
     }
   ],
-  "source_sha256": "c0daf053b9e2badba2a325c97508c923a469afb27a8e9022f8b3ac78a07007bf"
+  "derived_tables": [
+    "audit.tex",
+    "baselines.tex",
+    "cost.tex",
+    "errors.tex",
+    "paired.tex",
+    "results.tex"
+  ],
+  "generated_figures": [
+    {
+      "asset": "representation_rows.png",
+      "sha256": "4b8bd4ea49dceec1c21ca851ebfe4d603ab44af8dd50f4c64412cbdf4b7acf8a",
+      "method": "Drawn from original dataset and the notebook representation definition; no raster cropping.",
+      "inputs": [
+        {
+          "path": "datasets/fashion_mnist/val/images.npy",
+          "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+        },
+        {
+          "path": "datasets/fashion_mnist/val/labels.npy",
+          "sha256": "101660f17f1f000966f553ac234bb3156158aec1ba505edb1c8da7413a2991f1"
+        }
+      ]
+    },
+    {
+      "asset": "representation_columns.png",
+      "sha256": "e290c7ee44107d90d536cbcc630da8df65c3fa2a3ea6c590c3e9206dfe271b76",
+      "method": "Drawn from original dataset and the notebook representation definition; no raster cropping.",
+      "inputs": [
+        {
+          "path": "datasets/fashion_mnist/val/images.npy",
+          "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+        },
+        {
+          "path": "datasets/fashion_mnist/val/labels.npy",
+          "sha256": "101660f17f1f000966f553ac234bb3156158aec1ba505edb1c8da7413a2991f1"
+        }
+      ]
+    },
+    {
+      "asset": "representation_patch.png",
+      "sha256": "4650daf5f772880a3950af4df8026e73fbb7bade8ef8624dd0b7b122d4bd7507",
+      "method": "Drawn from original dataset and the notebook representation definition; no raster cropping.",
+      "inputs": [
+        {
+          "path": "datasets/fashion_mnist/val/images.npy",
+          "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+        },
+        {
+          "path": "datasets/fashion_mnist/val/labels.npy",
+          "sha256": "101660f17f1f000966f553ac234bb3156158aec1ba505edb1c8da7413a2991f1"
+        }
+      ]
+    }
+  ]
 }

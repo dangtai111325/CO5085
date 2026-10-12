@@ -1,123 +1,311 @@
 {
   "source_notebook": "source_code/E2.ipynb",
+  "source_sha256": "f4f065da4637a3c94fb161bfe79a71a9a505031823d95ce16202f222c73d370f",
   "images": [
     {
-      "cell": 20,
-      "output": 4,
-      "asset": "comparison.png"
+      "cell": 8,
+      "output": 0,
+      "asset": "dataset_gallery.png",
+      "sha256": "5f7745a195bd99323936e02ca48f4489c91c56e34d7548abd994df7bc654d529"
     },
     {
-      "cell": 20,
-      "output": 5,
-      "asset": "implementation_tokenizer_comparison.png"
-    },
-    {
-      "cell": 20,
-      "output": 6,
-      "asset": "learning_curves_loss.png"
-    },
-    {
-      "cell": 20,
-      "output": 7,
-      "asset": "learning_curves_accuracy.png"
-    },
-    {
-      "cell": 20,
-      "output": 8,
-      "asset": "head_ablation_curves.png"
-    },
-    {
-      "cell": 22,
+      "cell": 8,
       "output": 1,
-      "asset": "confusion_test_pair_1.png"
+      "asset": "class_distribution.png",
+      "sha256": "368506b27a9b05a00a774ab2644d12be4fdde742871d97e2697a35cc81ebebff"
     },
     {
-      "cell": 22,
+      "cell": 19,
       "output": 2,
-      "asset": "confusion_test_pair_2.png"
+      "asset": "comparison_quality.png",
+      "sha256": "862a19d487219aea0073d57ee13be279ba2dd7568df24de10bc056f857314845"
     },
     {
-      "cell": 22,
+      "cell": 19,
       "output": 3,
-      "asset": "confusion_test_pair_3.png"
+      "asset": "comparison_capacity.png",
+      "sha256": "80cccafe7caa370c1a7fb610479091d6c79488bdda43b9259aedd40c8e9323f6"
     },
     {
-      "cell": 22,
+      "cell": 19,
       "output": 4,
-      "asset": "confusion_test_pair_4.png"
+      "asset": "time_total.png",
+      "sha256": "5b2bc85d050786f0185afced367385c987c6ceec9787e30089c4202026b8b9fe"
     },
     {
-      "cell": 22,
+      "cell": 19,
       "output": 5,
-      "asset": "failure_examples_test.png"
+      "asset": "paired_accuracy.png",
+      "sha256": "f22897636e5fe4f52fd8cb272379d03a09c149128531ef4115eb8276b91a9bdf"
     },
     {
-      "cell": 24,
+      "cell": 19,
+      "output": 6,
+      "asset": "paired_capacity.png",
+      "sha256": "454bd9894222312ecb189184bfc37bdb83a635660a441592a731cd8b7d2c6d95"
+    },
+    {
+      "cell": 19,
+      "output": 7,
+      "asset": "paired_time.png",
+      "sha256": "509476f739f7cc73a089d605492d4890eb47aa4e4940e3c12be616b4ada5c723"
+    },
+    {
+      "cell": 19,
+      "output": 8,
+      "asset": "loss_rows.png",
+      "sha256": "d94d2c7efd8de94bfd6bf18c749805993971cf03571fe31d1d0ef73377ffe6c8"
+    },
+    {
+      "cell": 19,
+      "output": 9,
+      "asset": "loss_patch.png",
+      "sha256": "b1ac522f32eaf0a2dbf997abbfb1dd1366cf40d906acefc917f3fe272d52bc5c"
+    },
+    {
+      "cell": 19,
+      "output": 10,
+      "asset": "loss_stem.png",
+      "sha256": "79fab180001fcab0ee5e96fea03a4a6981e7f301dbdeee3f9a3a5638ea1ebb89"
+    },
+    {
+      "cell": 19,
+      "output": 11,
+      "asset": "accuracy_rows.png",
+      "sha256": "da8ec7b4dd4c0812e6f5154f906ad58f9a2f935dbe47f1bb49827d94f95cff5f"
+    },
+    {
+      "cell": 19,
+      "output": 12,
+      "asset": "accuracy_patch.png",
+      "sha256": "3467d4bf516d6c26a3a66fc2f6b7cb2ccc6151f89eb509cf6b710689b4e5daf7"
+    },
+    {
+      "cell": 19,
+      "output": 13,
+      "asset": "accuracy_stem.png",
+      "sha256": "0f460bad250d785b71927ea30c8f16e2c5f415cd1226eb7921085ab3297ab20b"
+    },
+    {
+      "cell": 19,
+      "output": 14,
+      "asset": "head_loss.png",
+      "sha256": "1f5a3695905f18a03b227f7231003c53f4e5dc5d792ed88d4106f59bfdc6c3fd"
+    },
+    {
+      "cell": 19,
+      "output": 15,
+      "asset": "head_accuracy.png",
+      "sha256": "234708926ccc1ba445144d0938e9db39ba7d62bcdfde1da290ffe54632114877"
+    },
+    {
+      "cell": 21,
+      "output": 0,
+      "asset": "confusion_m_r4.png",
+      "sha256": "f4ee2389c864f7cc16fb751604f73b4140c942ecd38a6fe16946b90a6f19d9a5"
+    },
+    {
+      "cell": 21,
       "output": 1,
-      "asset": "attention_best_manual.png"
+      "asset": "confusion_t_r4.png",
+      "sha256": "0bbdfe36b781192c64bb23671beed67aece4ca50ea253dc4e16d668c3e4a26cc"
+    },
+    {
+      "cell": 21,
+      "output": 2,
+      "asset": "confusion_m_p4.png",
+      "sha256": "2bd58f592d3632c2baf7b203d3cc744dca2625c174519f7a4ac7fb6101a19764"
+    },
+    {
+      "cell": 21,
+      "output": 3,
+      "asset": "confusion_t_p4.png",
+      "sha256": "3073ae7ce75376d62754d594d33d4c5328091a481339b449412b7d4f183f38ba"
+    },
+    {
+      "cell": 21,
+      "output": 4,
+      "asset": "confusion_m_c4.png",
+      "sha256": "5f81248e3ae7ce260e16f32fde4e2ffc941efa830d89bf11e94a931d1e8dfa19"
+    },
+    {
+      "cell": 21,
+      "output": 5,
+      "asset": "confusion_t_c4.png",
+      "sha256": "f21db0810c05de320be7f8a9129cd1c58bc1dcb0ea45e947d6d08f5b8cce85e8"
+    },
+    {
+      "cell": 21,
+      "output": 6,
+      "asset": "confusion_m_c2.png",
+      "sha256": "f0b5042b1534bf33de232c3dff2fd58cf46e91972ac4aff5340cf44ac2316d30"
+    },
+    {
+      "cell": 21,
+      "output": 7,
+      "asset": "confusion_m_c8.png",
+      "sha256": "bbb2c23e38bce401a58e7734ef282881ecffc7291b0d096ba80331e2b831c1fd"
+    },
+    {
+      "cell": 21,
+      "output": 8,
+      "asset": "errors_m_c4.png",
+      "sha256": "f489b60d1da61ebdcf73718deda0bfaab19771e1fea2e074e79bb5336e45b552"
+    },
+    {
+      "cell": 21,
+      "output": 9,
+      "asset": "errors_t_c4.png",
+      "sha256": "35a10fbfa36c275cbfc1693b5975643f2c71d771b5738f10b41d94066e755145"
+    },
+    {
+      "cell": 21,
+      "output": 10,
+      "asset": "errors_m_c2.png",
+      "sha256": "e9796b66d381492bbacce9b4eb85005e5b8783018cea9f37c99e5a297495cf4c"
+    },
+    {
+      "cell": 21,
+      "output": 11,
+      "asset": "errors_m_c8.png",
+      "sha256": "43f16f793a9a4f9339e13f508f2a9a8662d57942f2f92b3e24e8b97ac0842fa7"
+    },
+    {
+      "cell": 23,
+      "output": 0,
+      "asset": "sample_shirt.png",
+      "sha256": "e98f1c0ae2a22c3980513437488a33caecbd330ef2809af8e7221e978f95c0bf"
+    },
+    {
+      "cell": 23,
+      "output": 1,
+      "asset": "attention_shirt.png",
+      "sha256": "effe5f1e417c88f53080da15467dc40d9464e2ec743660f1a7a0bf9b35741a7f"
+    },
+    {
+      "cell": 23,
+      "output": 2,
+      "asset": "entropy_shirt.png",
+      "sha256": "7df4a0fa9a9b5240257fc126184208110e7b588730391a98fe2d5c27d81aca37"
+    },
+    {
+      "cell": 23,
+      "output": 3,
+      "asset": "sample_boot.png",
+      "sha256": "452c0d4571d9059acf2ded2d7ab4fb2edb0cfa1bfb78a1041102562834110757"
+    },
+    {
+      "cell": 23,
+      "output": 4,
+      "asset": "attention_boot.png",
+      "sha256": "5a890b6fee4bfc2c567710b719835ca6a7a11937eee1326b7b6d674c551790a8"
+    },
+    {
+      "cell": 23,
+      "output": 5,
+      "asset": "entropy_boot.png",
+      "sha256": "8d1880e2206f4a45dee99ba704ffc2987150dec5475a7ff2a7bd9f333f190add"
     }
   ],
   "markdown_outputs": [
     {
-      "cell": 7,
-      "output": 1,
-      "text": "| Tập | Đầy đủ | Dùng lần này | Vai trò |\n|---|---:|---:|---|\n| Train | 54.000 | 54,000 | Cập nhật trọng số |\n| Validation | 6.000 | 6,000 | Chọn checkpoint, early stopping |\n| Test | 10.000 | 10,000 | Đánh giá sau chọn checkpoint |"
+      "cell": 6,
+      "output": 0,
+      "text": "| Tập | Số ảnh | Vai trò |\n|---|---:|---|\n| Train | 54,000 | Cập nhật trọng số |\n| Validation | 6,000 | Chọn best weights, early stopping |\n| Test | 10,000 | Đánh giá |"
     },
     {
-      "cell": 11,
-      "output": 1,
+      "cell": 10,
+      "output": 0,
       "text": "| Model | Token × feature | D / head | Số tham số |\n|---|---|---|---:|\n| Manual MSA · Rows · H=4 | 28 × 28 | 64 / 4 | 71,370 |\n| Manual MSA · Patch 4×4 · H=4 | 49 × 16 | 64 / 4 | 71,946 |\n| Manual MSA · CNN-stem · H=4 | 49 × 16 | 64 / 4 | 74,426 |\n| PyTorch MSA · Rows · H=4 | 28 × 28 | 64 / 4 | 71,370 |\n| PyTorch MSA · Patch 4×4 · H=4 | 49 × 16 | 64 / 4 | 71,946 |\n| PyTorch MSA · CNN-stem · H=4 | 49 × 16 | 64 / 4 | 74,426 |"
     },
     {
-      "cell": 20,
+      "cell": 12,
+      "output": 0,
+      "text": "| MSA tự viết / PyTorch | Sai số forward lớn nhất | Gradient |\n|---|---:|---|\n| Cùng trọng số, dropout=0 | 1.665e-16 | Khớp |"
+    },
+    {
+      "cell": 19,
+      "output": 0,
+      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| Manual MSA · Rows · H=4 | 20 | 16 | 8,440 | 0 | Early stopping | 43 |\n| Manual MSA · Patch 4×4 · H=4 | 23 | 19 | 9,706 | 0 | Early stopping | 69 |\n| Manual MSA · CNN-stem · H=4 | 24 | 20 | 10,127 | 1 | Early stopping | 78 |\n| PyTorch MSA · Rows · H=4 | 20 | 16 | 8,440 | 0 | Early stopping | 47 |\n| PyTorch MSA · Patch 4×4 · H=4 | 23 | 19 | 9,706 | 0 | Early stopping | 79 |\n| PyTorch MSA · CNN-stem · H=4 | 23 | 19 | 9,706 | 0 | Early stopping | 89 |\n| Manual MSA · CNN-stem · H=2 | 22 | 18 | 9,284 | 0 | Early stopping | 70 |\n| Manual MSA · CNN-stem · H=8 | 22 | 18 | 9,284 | 0 | Early stopping | 99 |"
+    },
+    {
+      "cell": 19,
       "output": 1,
-      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| Manual MSA · Rows · H=4 | 26 | 16 | 10,972 | 0 | Early stopping | 44 |\n| Manual MSA · Patch 4×4 · H=4 | 40 | 30 | 16,879 | 1 | Early stopping | 69 |\n| Manual MSA · CNN-stem · H=4 | 30 | 20 | 12,658 | 2 | Early stopping | 78 |\n| PyTorch MSA · Rows · H=4 | 26 | 16 | 10,972 | 0 | Early stopping | 47 |\n| PyTorch MSA · Patch 4×4 · H=4 | 34 | 24 | 14,348 | 0 | Early stopping | 79 |\n| PyTorch MSA · CNN-stem · H=4 | 34 | 24 | 14,346 | 2 | Early stopping | 89 |\n| Manual MSA · CNN-stem · H=2 | 41 | 31 | 17,299 | 3 | Early stopping | 70 |\n| Manual MSA · CNN-stem · H=8 | 28 | 18 | 11,816 | 0 | Early stopping | 98 |"
+      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| Manual MSA · Rows · H=4 | 91.61 | 89.97 | 0.8988 | 89.51 | 0.8941 | 0.3050 | 71,370 | 189.93 | 9.497 |\n| Manual MSA · Patch 4×4 · H=4 | 90.39 | 88.60 | 0.8861 | 88.35 | 0.8837 | 0.3305 | 71,946 | 243.28 | 10.577 |\n| Manual MSA · CNN-stem · H=4 | 92.18 | 90.65 | 0.9063 | 90.50 | 0.9048 | 0.2717 | 74,426 | 243.08 | 10.128 |\n| PyTorch MSA · Rows · H=4 | 91.75 | 89.90 | 0.8983 | 89.22 | 0.8913 | 0.3054 | 71,370 | 186.63 | 9.332 |\n| PyTorch MSA · Patch 4×4 · H=4 | 90.33 | 88.35 | 0.8833 | 88.47 | 0.8849 | 0.3292 | 71,946 | 242.75 | 10.554 |\n| PyTorch MSA · CNN-stem · H=4 | 92.09 | 90.47 | 0.9049 | 90.17 | 0.9021 | 0.2733 | 74,426 | 198.74 | 8.641 |\n| Manual MSA · CNN-stem · H=2 | 91.42 | 90.33 | 0.9037 | 90.21 | 0.9023 | 0.2792 | 74,426 | 213.65 | 9.711 |\n| Manual MSA · CNN-stem · H=8 | 92.13 | 90.35 | 0.9031 | 90.23 | 0.9020 | 0.2752 | 74,426 | 215.44 | 9.793 |"
     },
     {
-      "cell": 20,
-      "output": 2,
-      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| Manual MSA · Rows · H=4 | 91.61 | 89.97 | 0.8988 | 89.51 | 0.8941 | 0.3050 | 71,370 | 161.65 | 6.217 |\n| Manual MSA · Patch 4×4 · H=4 | 91.89 | 89.17 | 0.8916 | 88.85 | 0.8882 | 0.3302 | 71,946 | 293.87 | 7.347 |\n| Manual MSA · CNN-stem · H=4 | 92.18 | 90.65 | 0.9063 | 90.50 | 0.9048 | 0.2717 | 74,426 | 194.62 | 6.487 |\n| PyTorch MSA · Rows · H=4 | 91.75 | 89.90 | 0.8983 | 89.22 | 0.8913 | 0.3054 | 71,370 | 159.69 | 6.142 |\n| PyTorch MSA · Patch 4×4 · H=4 | 90.90 | 88.47 | 0.8844 | 88.67 | 0.8865 | 0.3266 | 71,946 | 234.66 | 6.902 |\n| PyTorch MSA · CNN-stem · H=4 | 92.79 | 90.68 | 0.9068 | 90.78 | 0.9078 | 0.2695 | 74,426 | 232.01 | 6.824 |\n| Manual MSA · CNN-stem · H=2 | 92.84 | 90.50 | 0.9056 | 90.74 | 0.9079 | 0.2789 | 74,426 | 269.20 | 6.566 |\n| Manual MSA · CNN-stem · H=8 | 92.13 | 90.35 | 0.9031 | 90.23 | 0.9020 | 0.2752 | 74,426 | 188.28 | 6.724 |"
+      "cell": 19,
+      "output": 16,
+      "text": "| Tokenizer | Manual val acc (%) | PyTorch val acc (%) | Manual − PyTorch (điểm %) | Manual / PyTorch s/epoch |\n|---|---:|---:|---:|---|\n| Rows | 89.97 | 89.90 | +0.07 | 9.497 / 9.332 |\n| Patch 4×4 | 88.60 | 88.35 | +0.25 | 10.577 / 10.554 |\n| CNN-stem | 90.65 | 90.47 | +0.18 | 10.128 / 8.641 |"
     },
     {
-      "cell": 20,
-      "output": 3,
-      "text": "Train accuracy được đo trong train mode khi cập nhật trọng số; validation/test được đo trong eval mode. Thời gian gồm training và validation, không gồm vẽ hình hay test."
+      "cell": 21,
+      "output": 12,
+      "text": "| Model | Nhầm nhiều nhất: thật → dự đoán | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| Manual MSA · Rows · H=4 | Shirt → T-shirt/top | 139 | 13.9% |\n| Manual MSA · Patch 4×4 · H=4 | T-shirt/top → Shirt | 120 | 12.0% |\n| Manual MSA · CNN-stem · H=4 | Shirt → T-shirt/top | 94 | 9.4% |\n| PyTorch MSA · Rows · H=4 | Shirt → T-shirt/top | 129 | 12.9% |\n| PyTorch MSA · Patch 4×4 · H=4 | T-shirt/top → Shirt | 126 | 12.6% |\n| PyTorch MSA · CNN-stem · H=4 | T-shirt/top → Shirt | 151 | 15.1% |\n| Manual MSA · CNN-stem · H=2 | T-shirt/top → Shirt | 141 | 14.1% |\n| Manual MSA · CNN-stem · H=8 | Shirt → T-shirt/top | 119 | 11.9% |"
     },
     {
-      "cell": 20,
-      "output": 9,
-      "text": "| Tokenizer | Manual val acc (%) | PyTorch val acc (%) | Manual − PyTorch (điểm %) | Manual / PyTorch s/epoch |\n|---|---:|---:|---:|---|\n| Rows | 89.97 | 89.90 | +0.07 | 6.217 / 6.142 |\n| Patch 4×4 | 89.17 | 88.47 | +0.70 | 7.347 / 6.902 |\n| CNN-stem | 90.65 | 90.68 | -0.03 | 6.487 / 6.824 |"
+      "cell": 25,
+      "output": 0,
+      "text": "**Train/validation gap tại checkpoint chọn**\n\n| Model | Train acc tại best (%) | Val acc (%) | Train − val (điểm %) |\n|---|---:|---:|---:|\n| Manual MSA · Rows · H=4 | 91.61 | 89.97 | +1.65 |\n| Manual MSA · Patch 4×4 · H=4 | 90.39 | 88.60 | +1.79 |\n| Manual MSA · CNN-stem · H=4 | 92.18 | 90.65 | +1.53 |\n| PyTorch MSA · Rows · H=4 | 91.75 | 89.90 | +1.85 |\n| PyTorch MSA · Patch 4×4 · H=4 | 90.33 | 88.35 | +1.98 |\n| PyTorch MSA · CNN-stem · H=4 | 92.09 | 90.47 | +1.62 |\n| Manual MSA · CNN-stem · H=2 | 91.42 | 90.33 | +1.09 |\n| Manual MSA · CNN-stem · H=8 | 92.13 | 90.35 | +1.78 |"
     },
     {
-      "cell": 22,
-      "output": 6,
-      "text": "| Model | Nhầm nhiều nhất: thật → dự đoán | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| Manual MSA · Rows · H=4 | Shirt → T-shirt/top | 139 | 13.9% |\n| Manual MSA · Patch 4×4 · H=4 | Coat → Pullover | 127 | 12.7% |\n| Manual MSA · CNN-stem · H=4 | Shirt → T-shirt/top | 94 | 9.4% |\n| PyTorch MSA · Rows · H=4 | Shirt → T-shirt/top | 129 | 12.9% |\n| PyTorch MSA · Patch 4×4 · H=4 | Coat → Pullover | 132 | 13.2% |\n| PyTorch MSA · CNN-stem · H=4 | T-shirt/top → Shirt | 97 | 9.7% |\n| Manual MSA · CNN-stem · H=2 | T-shirt/top → Shirt | 130 | 13.0% |\n| Manual MSA · CNN-stem · H=8 | Shirt → T-shirt/top | 119 | 11.9% |"
-    },
-    {
-      "cell": 26,
+      "cell": 25,
       "output": 1,
-      "text": "**Toàn bộ dữ liệu:** 54.000 train / 6.000 validation / 10.000 test. Huấn luyện 8 model, 259 epoch / 109290 updates trên CUDA.\n\n**Validation accuracy cao nhất:** PyTorch MSA · CNN-stem · H=4 90.68%; test tại checkpoint đó 90.78%. **Thời gian/epoch thấp nhất:** PyTorch MSA · Rows · H=4 6.142s.\n\n**Head ablation:** tokenizer CNN-stem chọn bằng validation trước test; validation tốt nhất trong H=2/4/8 là 4 head (90.65%). Giữ D=64 nên số tham số projection không tăng theo số head.\n\n**Diễn giải:** Rows N=28, patch/CNN-stem N=49; attention có chi phí theo N². CNN-stem thay đổi cả đặc trưng và capacity. Cặp Manual/PyTorch khởi tạo cùng weights. Parity forward/gradient khi cùng weights và tắt dropout không đảm bảo hai run training giống nhau: RNG/dropout và đường tối ưu có thể khác. Thời gian tổng còn phụ thuộc số epoch early stopping; xem thêm giây/epoch. Attention biểu thị trọng số trong phép kết hợp token; không tự chứng minh quan hệ nhân quả."
-    },
-    {
-      "cell": 26,
-      "output": 2,
-      "text": "**Train/validation gap tại checkpoint chọn**\n\n| Model | Train acc tại best (%) | Val acc (%) | Train − val (điểm %) |\n|---|---:|---:|---:|\n| Manual MSA · Rows · H=4 | 91.61 | 89.97 | +1.65 |\n| Manual MSA · Patch 4×4 · H=4 | 91.89 | 89.17 | +2.72 |\n| Manual MSA · CNN-stem · H=4 | 92.18 | 90.65 | +1.53 |\n| PyTorch MSA · Rows · H=4 | 91.75 | 89.90 | +1.85 |\n| PyTorch MSA · Patch 4×4 · H=4 | 90.90 | 88.47 | +2.44 |\n| PyTorch MSA · CNN-stem · H=4 | 92.79 | 90.68 | +2.10 |\n| Manual MSA · CNN-stem · H=2 | 92.84 | 90.50 | +2.34 |\n| Manual MSA · CNN-stem · H=8 | 92.13 | 90.35 | +1.78 |"
-    },
-    {
-      "cell": 26,
-      "output": 3,
-      "text": "Train accuracy là số đo trong train mode khi cập nhật weights; validation dùng eval mode. Gap được đọc cùng learning curves và tác động của dropout, không đồng nhất với gap khi đánh giá lại train trong eval mode."
-    },
-    {
-      "cell": 26,
-      "output": 4,
-      "text": "**Các cặp lớp nhầm nhiều nhất trên test**\n\n| Model | Nhầm nhiều nhất (thật → dự đoán) | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| Manual MSA · Rows · H=4 | Shirt → T-shirt/top | 139 | 13.9% |\n| Manual MSA · Patch 4×4 · H=4 | Coat → Pullover | 127 | 12.7% |\n| Manual MSA · CNN-stem · H=4 | Shirt → T-shirt/top | 94 | 9.4% |\n| PyTorch MSA · Rows · H=4 | Shirt → T-shirt/top | 129 | 12.9% |\n| PyTorch MSA · Patch 4×4 · H=4 | Coat → Pullover | 132 | 13.2% |\n| PyTorch MSA · CNN-stem · H=4 | T-shirt/top → Shirt | 97 | 9.7% |\n| Manual MSA · CNN-stem · H=2 | T-shirt/top → Shirt | 130 | 13.0% |\n| Manual MSA · CNN-stem · H=8 | Shirt → T-shirt/top | 119 | 11.9% |"
-    },
-    {
-      "cell": 26,
-      "output": 5,
-      "text": "Tần suất nhầm lẫn được đo trên toàn bộ 10.000 ảnh test của từng model. Ảnh trong gallery minh họa những lỗi cụ thể, không đại diện cho phân bố lỗi. Thí nghiệm dùng một seed; chênh lệch nhỏ giữa các cấu hình chưa cho biết độ ổn định qua nhiều lần huấn luyện."
+      "text": "**Các cặp lớp nhầm nhiều nhất trên test**\n\n| Model | Nhầm nhiều nhất (thật → dự đoán) | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| Manual MSA · Rows · H=4 | Shirt → T-shirt/top | 139 | 13.9% |\n| Manual MSA · Patch 4×4 · H=4 | T-shirt/top → Shirt | 120 | 12.0% |\n| Manual MSA · CNN-stem · H=4 | Shirt → T-shirt/top | 94 | 9.4% |\n| PyTorch MSA · Rows · H=4 | Shirt → T-shirt/top | 129 | 12.9% |\n| PyTorch MSA · Patch 4×4 · H=4 | T-shirt/top → Shirt | 126 | 12.6% |\n| PyTorch MSA · CNN-stem · H=4 | T-shirt/top → Shirt | 151 | 15.1% |\n| Manual MSA · CNN-stem · H=2 | T-shirt/top → Shirt | 141 | 14.1% |\n| Manual MSA · CNN-stem · H=8 | Shirt → T-shirt/top | 119 | 11.9% |"
     }
   ],
-  "source_sha256": "0b61d48e61ef09ddc0b740a77337145cc688940e6ce7bff3c9d795667801f0e6"
+  "derived_tables": [
+    "audit.tex",
+    "cost.tex",
+    "errors.tex",
+    "heads.tex",
+    "implementation.tex",
+    "results.tex"
+  ],
+  "generated_figures": [
+    {
+      "asset": "sample_shirt_report.png",
+      "sha256": "b5c704204d973d9725cacdf40f2c4e38f06b9a530dab5e6e505d9a10f0c5b4db",
+      "method": "Original validation image redrawn with report-sized typography; prediction and confidence transcribed from saved notebook output.",
+      "validation_index": 0,
+      "source_output": {
+        "cell": 23,
+        "output": 0,
+        "asset": "sample_shirt.png",
+        "sha256": "e98f1c0ae2a22c3980513437488a33caecbd330ef2809af8e7221e978f95c0bf"
+      },
+      "inputs": [
+        {
+          "path": "datasets/fashion_mnist/val/images.npy",
+          "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+        },
+        {
+          "path": "datasets/fashion_mnist/val/labels.npy",
+          "sha256": "101660f17f1f000966f553ac234bb3156158aec1ba505edb1c8da7413a2991f1"
+        }
+      ]
+    },
+    {
+      "asset": "sample_boot_report.png",
+      "sha256": "aef48f930faede853a3c18778df02a947dba21050f3b38a5ce4690e6fed06472",
+      "method": "Original validation image redrawn with report-sized typography; prediction and confidence transcribed from saved notebook output.",
+      "validation_index": 31,
+      "source_output": {
+        "cell": 23,
+        "output": 3,
+        "asset": "sample_boot.png",
+        "sha256": "452c0d4571d9059acf2ded2d7ab4fb2edb0cfa1bfb78a1041102562834110757"
+      },
+      "inputs": [
+        {
+          "path": "datasets/fashion_mnist/val/images.npy",
+          "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+        },
+        {
+          "path": "datasets/fashion_mnist/val/labels.npy",
+          "sha256": "101660f17f1f000966f553ac234bb3156158aec1ba505edb1c8da7413a2991f1"
+        }
+      ]
+    }
+  ]
 }

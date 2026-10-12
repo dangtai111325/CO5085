@@ -6,6 +6,7 @@ không suy số updates chỉ từ số epoch.
 \DataTable{assets/e1/audit.tex}{Chi tiết lượt train E1.}
 \DataTable{assets/e2/audit.tex}{Chi tiết lượt train E2; ký hiệu M/T và R/P/C như Chương E2.}
 \DataTable{assets/e3/audit.tex}{Chi tiết lượt train E3.}
+\DataTable{assets/a1/audit.tex}{Chi tiết tám lượt train chính A1.}
 \DataTable{assets/a1/extended_cost.tex}{Epoch, cập nhật và peak memory của sáu run mở rộng A1.}
 \section{Metric theo lớp và độ nhạy A1}
 Hai cột model là full pretrained seed 42, được chọn bằng validation.
@@ -14,93 +15,143 @@ Support là số ảnh test nguồn. ID tra bằng bảng tên lớp dưới đ�
 \DataTable{assets/a1/perclass_1.tex}{Precision/recall/F1 trên test GTSRB, lớp 0--21.}
 \DataTable{assets/a1/perclass_2.tex}{Precision/recall/F1 trên test GTSRB, lớp 22--42.}
 
-\begin{table}[H]\centering\caption{Độ nhạy A1 với 8 ảnh test trùng train.}
-\small\begin{tabular}{lrrrrr}\toprule Run & Full acc & Clean acc & $\Delta$ (điểm\%) & Full F1 & Clean F1\\\midrule
-R-S/42 & 96,33 & 96,33 & -0,002 & 0,9447 & 0,9447\\
-R-H/42 & 70,35 & 70,33 & -0,019 & 0,6143 & 0,6143\\
-R-P/42 & 96,05 & 96,05 & -0,003 & 0,9438 & 0,9438\\
-R-F/42 & 98,37 & 98,37 & -0,001 & 0,9743 & 0,9743\\
-D-S/42 & 96,14 & 96,13 & -0,002 & 0,9350 & 0,9350\\
-D-H/42 & 69,73 & 69,71 & -0,019 & 0,6125 & 0,6125\\
-D-P/42 & 87,85 & 87,85 & -0,008 & 0,8063 & 0,8063\\
-D-F/42 & 98,92 & 98,91 & -0,001 & 0,9790 & 0,9790\\
-
-\bottomrule\end{tabular}\end{table}
+\DataTable{assets/a1/sensitivity.tex}{Độ nhạy A1 với 8 ảnh test trùng train; accuracy tính bằng \%.}
 Full test có 12.630 ảnh, clean test có 12.622; mọi accuracy tính bằng \%.
 Bảng ghi mức làm tròn trong output; delta tính trên giá trị chưa làm tròn nên
 không nhất thiết bằng phép trừ hai cột accuracy hiển thị.
 
-\begin{landscape}
-\section{Ma trận nhầm lẫn E2 và E3}
-Mỗi cặp dùng cùng thang màu 0--100\%, ghi cả count và tỷ lệ theo hàng.
-Toàn bộ 10.000 ảnh test mỗi model được đưa vào ma trận. Các model không được
-chọn/tune lại theo lỗi test ở các hình này.
-\begin{figure}[H]\centering
-\includegraphics[width=.98\linewidth,height=.67\textheight,keepaspectratio]{assets/e2/confusion_test_pair_1.png}
-\caption{E2: confusion matrix test, cặp 1; tên model ghi trên từng panel.}\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e2/confusion_test_pair_2.png}
-\caption{E2: confusion matrix test, cặp 2; tên model ghi trên từng panel.}\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e2/confusion_test_pair_3.png}
-\caption{E2: confusion matrix test, cặp 3; tên model ghi trên từng panel.}\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e2/confusion_test_pair_4.png}
-\caption{E2: confusion matrix test, cặp 4; tên model ghi trên từng panel.}\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_1.png}
-\caption{E3: confusion matrix test, cặp 1; tên model ghi trên từng panel.}\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_2.png}
-\caption{E3: confusion matrix test, cặp 2; tên model ghi trên từng panel.}\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_3.png}
-\caption{E3: confusion matrix test, cặp 3; tên model ghi trên từng panel.}\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[width=.98\linewidth,height=.86\textheight,keepaspectratio]{assets/e3/confusion_test_pair_4.png}
-\caption{E3: confusion matrix test, cặp 4; tên model ghi trên từng panel.}\end{figure}\end{landscape}
+\PortraitFigureIntro{\section{Đường cong theo tokenizer và biểu diễn chuỗi}
+Các hình dùng cùng split và protocol với các bảng kết quả; mỗi đồ thị
+được trình bày độc lập để đọc rõ tên mô hình và legend.}{assets/e2/loss_rows.png}{Loss E2: Manual/PyTorch với Rows, H=4.}
+\PortraitFigure{assets/e2/accuracy_rows.png}{Accuracy E2: Manual/PyTorch với Rows, H=4.}
+\PortraitFigure{assets/e2/loss_patch.png}{Loss E2: Manual/PyTorch với Patch, H=4.}
+\PortraitFigure{assets/e2/accuracy_patch.png}{Accuracy E2: Manual/PyTorch với Patch, H=4.}
+\PortraitFigure{assets/e2/head_loss.png}{Loss E2: Manual CNN-stem với H=2, 4 và 8.}
+\PortraitFigure{assets/e3/loss_rows.png}{Loss E3: LSTM/GRU với Rows.}
+\PortraitFigure{assets/e3/accuracy_rows.png}{Accuracy E3: LSTM/GRU với Rows.}
+\PortraitFigure{assets/e3/loss_columns.png}{Loss E3: LSTM/GRU với Columns.}
+\PortraitFigure{assets/e3/accuracy_columns.png}{Accuracy E3: LSTM/GRU với Columns.}
+\PortraitFigure{assets/e3/loss_patch.png}{Loss E3: LSTM/GRU với Patch.}
+\PortraitFigure{assets/e3/accuracy_patch.png}{Accuracy E3: LSTM/GRU với Patch.}
 
+\section{Ma trận nhầm lẫn E1--E3}
+Mỗi ma trận dùng toàn bộ 10.000 ảnh test; hàng là lớp thật, cột là
+lớp dự đoán. Ô ghi phần trăm theo hàng, làm tròn số nguyên nên tổng
+một hàng có thể khác 100\%. Thang màu thống nhất 0--100\%.
+\PortraitFigure{assets/e1/confusion_softmax.png}{E1: ma trận test của Softmax.}
+\PortraitFigure{assets/e1/confusion_mlp.png}{E1: ma trận test của MLP.}
+\PortraitFigure{assets/e1/confusion_cnn_a.png}{E1: ma trận test của CNN-A.}
+\PortraitFigure{assets/e1/confusion_cnn_b.png}{E1: ma trận test của CNN-B.}
+\PortraitFigure{assets/e2/confusion_m_r4.png}{E2: ma trận test của Manual Rows H=4.}
+\PortraitFigure{assets/e2/confusion_t_r4.png}{E2: ma trận test của PyTorch Rows H=4.}
+\PortraitFigure{assets/e2/confusion_m_p4.png}{E2: ma trận test của Manual Patch H=4.}
+\PortraitFigure{assets/e2/confusion_t_p4.png}{E2: ma trận test của PyTorch Patch H=4.}
+\PortraitFigure{assets/e2/confusion_m_c4.png}{E2: ma trận test của Manual CNN-stem H=4.}
+\PortraitFigure{assets/e2/confusion_t_c4.png}{E2: ma trận test của PyTorch CNN-stem H=4.}
+\PortraitFigure{assets/e2/confusion_m_c2.png}{E2: ma trận test của Manual CNN-stem H=2.}
+\PortraitFigure{assets/e2/confusion_m_c8.png}{E2: ma trận test của Manual CNN-stem H=8.}
+\PortraitFigure{assets/e3/confusion_l_r.png}{E3: ma trận test của LSTM Rows.}
+\PortraitFigure{assets/e3/confusion_g_r.png}{E3: ma trận test của GRU Rows.}
+\PortraitFigure{assets/e3/confusion_l_c.png}{E3: ma trận test của LSTM Columns.}
+\PortraitFigure{assets/e3/confusion_g_c.png}{E3: ma trận test của GRU Columns.}
+\PortraitFigure{assets/e3/confusion_l_p.png}{E3: ma trận test của LSTM Patch.}
+\PortraitFigure{assets/e3/confusion_g_p.png}{E3: ma trận test của GRU Patch.}
+\PortraitFigure{assets/e3/confusion_mlp.png}{E3: ma trận test của MLP.}
+\PortraitFigure{assets/e3/confusion_cnn_b.png}{E3: ma trận test của CNN-B.}
 
 \section{Dữ liệu và chỉ số theo lớp A2}
-\DataTable{assets/a2/labels.tex}{Số bbox thường của từng lớp VOC2012; difficult không nằm trong các cột này.}
+\DataTable{assets/a2/labels.tex}{Số bbox thường từng lớp VOC2012; difficult không nằm trong các cột này.}
 \DataTable{assets/a2/per_class_pr.tex}{P/R/F1 tại score 0,30; R=RetinaNet, F=Faster R-CNN, Rec là recall.}
 \DataTable{assets/a2/per_class_coco.tex}{AP50/AP75 COCO-style và AP11 VOC07 từng lớp; metric ở thang 0--1.}
 
 \section{Ma trận chẩn đoán A2}
-Hàng là ground truth, cột là prediction. Background ở hàng biểu diễn false
-positives, ở cột biểu diễn false negatives. Số đếm và tỷ lệ theo hàng được
-tách trang để đọc rõ từng ô; cùng một ảnh output nguồn được hiển thị theo
-từng panel, không thay đổi các số trong ma trận.
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[trim=0.0000bp 831.8713bp 878.9954bp 0.0000bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
-\caption{A2 RetinaNet: số đếm, IoU $\geq0,5$, confidence $\geq0,30$.}
-\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[trim=0.0000bp 0.0000bp 878.9954bp 831.8713bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
-\caption{A2 RetinaNet: tỷ lệ theo hàng, IoU $\geq0,5$, confidence $\geq0,30$.}
-\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[trim=878.9954bp 831.8713bp 0.0000bp 0.0000bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
-\caption{A2 Faster R-CNN: số đếm, IoU $\geq0,5$, confidence $\geq0,30$.}
-\end{figure}\end{landscape}
-\begin{landscape}\begin{figure}[p]\centering
-\includegraphics[trim=878.9954bp 0.0000bp 0.0000bp 831.8713bp,clip,width=.88\linewidth,height=.84\textheight,keepaspectratio]{assets/a2/confusion.png}
-\caption{A2 Faster R-CNN: tỷ lệ theo hàng, IoU $\geq0,5$, confidence $\geq0,30$.}
-\end{figure}\end{landscape}
+Hàng là ground truth, cột là prediction. Hàng background biểu diễn false
+positives, cột background biểu diễn false negatives. Ô ghi tỷ lệ theo hàng
+làm tròn số nguyên; tổng một hàng có thể khác 100\%. Matching class-agnostic
+dùng IoU $\geq0,5$, confidence $\geq0,30$; các chỉ số class-wise được tính riêng.
+\PortraitFigure{assets/a2/confusion_retina.png}{A2 RetinaNet: ma trận chẩn đoán chuẩn hóa theo hàng.}
+\PortraitFigure{assets/a2/confusion_faster.png}{A2 Faster R-CNN: ma trận chẩn đoán chuẩn hóa theo hàng.}
+
+\section{Precision--recall theo lớp A2}
+Mỗi hình dùng cùng lớp và tập test cho hai model. AP trong legend là
+VOC AP50 all-point; đường cong cho thấy cả đánh đổi theo confidence,
+không chỉ điểm đo P/R/F1 ở score 0,30.
+\ReportFigure{assets/a2/pr_aeroplane.png}{A2: precision--recall của lớp aeroplane.}
+\ReportFigure{assets/a2/pr_bicycle.png}{A2: precision--recall của lớp bicycle.}
+\ReportFigure{assets/a2/pr_bird.png}{A2: precision--recall của lớp bird.}
+\ReportFigure{assets/a2/pr_boat.png}{A2: precision--recall của lớp boat.}
+\ReportFigure{assets/a2/pr_bottle.png}{A2: precision--recall của lớp bottle.}
+\ReportFigure{assets/a2/pr_bus.png}{A2: precision--recall của lớp bus.}
+\ReportFigure{assets/a2/pr_car.png}{A2: precision--recall của lớp car.}
+\ReportFigure{assets/a2/pr_cat.png}{A2: precision--recall của lớp cat.}
+\ReportFigure{assets/a2/pr_chair.png}{A2: precision--recall của lớp chair.}
+\ReportFigure{assets/a2/pr_cow.png}{A2: precision--recall của lớp cow.}
+\ReportFigure{assets/a2/pr_diningtable.png}{A2: precision--recall của lớp diningtable.}
+\ReportFigure{assets/a2/pr_dog.png}{A2: precision--recall của lớp dog.}
+\ReportFigure{assets/a2/pr_horse.png}{A2: precision--recall của lớp horse.}
+\ReportFigure{assets/a2/pr_motorbike.png}{A2: precision--recall của lớp motorbike.}
+\ReportFigure{assets/a2/pr_person.png}{A2: precision--recall của lớp person.}
+\ReportFigure{assets/a2/pr_pottedplant.png}{A2: precision--recall của lớp pottedplant.}
+\ReportFigure{assets/a2/pr_sheep.png}{A2: precision--recall của lớp sheep.}
+\ReportFigure{assets/a2/pr_sofa.png}{A2: precision--recall của lớp sofa.}
+\ReportFigure{assets/a2/pr_train.png}{A2: precision--recall của lớp train.}
+\ReportFigure{assets/a2/pr_tvmonitor.png}{A2: precision--recall của lớp tvmonitor.}
+
+\section{Ảnh test và dự đoán A2}
+Cùng một ảnh được trình bày theo GT, RetinaNet và Faster R-CNN.
+GT difficult dùng nét đứt; predictions chỉ vẽ score từ 0,30, tối đa 15 boxes.
+Các ảnh được giữ độc lập từ output notebook để đọc rõ nhãn và bbox.
+\ReportFigure{assets/a2/preview_1_gt.png}{Ảnh test \texttt{2012\_2008\_000016}: ground truth.}
+\ReportFigure{assets/a2/preview_1_retina.png}{Ảnh test \texttt{2012\_2008\_000016}: RetinaNet.}
+\ReportFigure{assets/a2/preview_1_faster.png}{Ảnh test \texttt{2012\_2008\_000016}: Faster R-CNN.}
+\ReportFigure{assets/a2/preview_2_gt.png}{Ảnh test \texttt{2012\_2009\_002530}: ground truth.}
+\ReportFigure{assets/a2/preview_2_retina.png}{Ảnh test \texttt{2012\_2009\_002530}: RetinaNet.}
+\ReportFigure{assets/a2/preview_2_faster.png}{Ảnh test \texttt{2012\_2009\_002530}: Faster R-CNN.}
+\ReportFigure{assets/a2/preview_3_gt.png}{Ảnh test \texttt{2012\_2011\_003253}: ground truth.}
+\ReportFigure{assets/a2/preview_3_retina.png}{Ảnh test \texttt{2012\_2011\_003253}: RetinaNet.}
+\ReportFigure{assets/a2/preview_3_faster.png}{Ảnh test \texttt{2012\_2011\_003253}: Faster R-CNN.}
+
+\section{Trường hợp sai A2}
+Các ảnh có lỗi được đối chiếu cùng GT; số TP/nhầm lớp/FP/FN trong tiêu đề
+tính trên mọi detection vượt ngưỡng, còn hình chỉ hiển thị tối đa 15 boxes.
+\ReportFigure{assets/a2/failure_1_gt.png}{Trường hợp sai \texttt{2012\_2008\_004581}: ground truth.}
+\ReportFigure{assets/a2/failure_1_retina.png}{Trường hợp sai \texttt{2012\_2008\_004581}: RetinaNet.}
+\ReportFigure{assets/a2/failure_1_faster.png}{Trường hợp sai \texttt{2012\_2008\_004581}: Faster R-CNN.}
+\ReportFigure{assets/a2/failure_2_gt.png}{Trường hợp sai \texttt{2012\_2011\_000666}: ground truth.}
+\ReportFigure{assets/a2/failure_2_retina.png}{Trường hợp sai \texttt{2012\_2011\_000666}: RetinaNet.}
+\ReportFigure{assets/a2/failure_2_faster.png}{Trường hợp sai \texttt{2012\_2011\_000666}: Faster R-CNN.}
+\ReportFigure{assets/a2/failure_3_gt.png}{Trường hợp sai \texttt{2012\_2011\_000839}: ground truth.}
+\ReportFigure{assets/a2/failure_3_retina.png}{Trường hợp sai \texttt{2012\_2011\_000839}: RetinaNet.}
+\ReportFigure{assets/a2/failure_3_faster.png}{Trường hợp sai \texttt{2012\_2011\_000839}: Faster R-CNN.}
 
 \section{Nguồn số liệu và hướng dẫn tái lập}
-Nguồn số liệu là output đã lưu của E1.ipynb, E2.ipynb, E3.ipynb, A1.ipynb và A2.ipynb
-trong source\_code. Manifest dưới assets/e1, e2, e3, a1 ghi cell/output và
-bảng Markdown nguồn; assets/a2 có cùng thông tin truy nguồn cho A2. PNG được trích
-trực tiếp từ ảnh trong output; sơ đồ kiến trúc được vẽ bằng TikZ từ định nghĩa mạng.
+Nguồn số liệu là output đã lưu của E1.ipynb, E2.ipynb, E3.ipynb, A1.ipynb
+và A2.kaggle.ipynb trong source\_code. Manifest của từng bài dưới assets
+ghi notebook nguồn, cell/output và bảng Markdown. Các ảnh là output độc lập
+hoặc được vẽ trực tiếp từ số liệu/dữ liệu gốc, không cắt từ hình ghép.
+Sơ đồ kiến trúc được vẽ bằng TikZ từ định nghĩa mạng.
 
-Chuẩn bị dữ liệu theo README trong thư mục datasets. Mở notebook tương ứng,
-chọn Python 3.14 có CUDA, Restart Kernel và Run All, sau đó Save. Mỗi notebook
-chạy độc lập; không cần thứ tự. Các tham số thực nghiệm cần giữ là patience 10 cho E1--E3, patience 4 cho A1;
-A2 batch 4, accumulation 3, tối đa 30 epoch, patience 2/min-delta 0,001.
-Các lựa chọn weights và nguồn split được mô tả trong từng chương. Seed cố định không đảm bảo
-tái lập bitwise qua mọi GPU, phiên bản thư viện hoặc đường thực thi AMP.
+E1--E3/A1: chuẩn bị dữ liệu theo README trong datasets, chọn Python 3.14
+có CUDA, Restart Kernel và Run All, sau đó Save. Không cần thứ tự giữa các bài.
+E1--E3 dùng patience 4, min-delta $10^{-4}$; A1 dùng patience 2, min-delta $10^{-3}$.
+
+A2: mở A2.kaggle.ipynb trên Kaggle, gắn dataset \texttt{a2-voc2012} đúng đường
+dẫn trong cell cấu hình và chọn accelerator T4 x2. Bật Internet nếu cần tải
+ResNet-50 ImageNet hoặc cài thư viện còn thiếu. Run All chạy hai worker train
+đồng thời rồi test/benchmark lần lượt. Cấu hình code và bảng train là batch 8,
+accumulation 3, effective batch 24, tối đa 30 epoch, patience 2, min-delta 0,001.
+Metadata notebook ghi Python 3.13.15; phiên bản PyTorch/torchvision không có
+trong output đã lưu, nên cần ghi lại môi trường khi tái lập.
+Notebook xuất thêm PNG/CSV vào \texttt{/kaggle/working/report/A2},
+checkpoint/lịch sử dưới \texttt{/kaggle/working/model/A2}; lưu notebook có output
+và tải các sản phẩm này khi kết thúc phiên Kaggle.
+
+Để chạy từ khởi tạo, dùng CHECKPOINT\_ROOT trống. Nếu có latest.pt,
+notebook tiếp tục train từ weights đó với optimizer và bộ đếm mới.
+Seed cố định không đảm bảo tái lập bitwise qua GPU, phiên bản thư viện
+hoặc đường thực thi AMP. A2.ipynb là notebook chạy local; các số liệu A2
+trong báo cáo lấy riêng từ A2.kaggle.ipynb và điều kiện đo ở Chương~\ref{chap:a2}.
 
 Báo cáo biên dịch bằng XeLaTeX và BibTeX từ report/source\_latex/main.tex;
-các sơ đồ TikZ được định nghĩa trong architectures.tex, ảnh kết quả nằm ở assets.
-Sản phẩm PDF chung giữ tại report/CO5085\_Report.pdf.
+TikZ định nghĩa trong architectures.tex, ảnh kết quả nằm ở assets.
+PDF chung giữ tại report/CO5085\_Report.pdf.

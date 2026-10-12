@@ -1,0 +1,9 @@
+* text=auto
+*.ipynb text eol=lf
+*.tex text eol=lf
+*.bib text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.pdf binary
+*.png binary

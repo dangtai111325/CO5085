@@ -1,88 +1,166 @@
 {
   "source_notebook": "source_code/E1.ipynb",
+  "source_sha256": "4e8bdd6033f7939506e598195fadb6432d3c79f35051b9bda2e14f1219b7808b",
   "images": [
     {
-      "cell": 9,
+      "cell": 8,
+      "output": 0,
+      "asset": "dataset_gallery.png",
+      "sha256": "5f7745a195bd99323936e02ca48f4489c91c56e34d7548abd994df7bc654d529"
+    },
+    {
+      "cell": 8,
       "output": 1,
-      "asset": "dataset_overview.png"
+      "asset": "class_distribution.png",
+      "sha256": "368506b27a9b05a00a774ab2644d12be4fdde742871d97e2697a35cc81ebebff"
     },
     {
-      "cell": 20,
-      "output": 4,
-      "asset": "comparison.png"
-    },
-    {
-      "cell": 20,
-      "output": 5,
-      "asset": "learning_curves.png"
-    },
-    {
-      "cell": 22,
-      "output": 1,
-      "asset": "confusion_test_pair_1.png"
-    },
-    {
-      "cell": 22,
+      "cell": 17,
       "output": 2,
-      "asset": "confusion_test_pair_2.png"
+      "asset": "comparison_quality.png",
+      "sha256": "925aea6d87f27a48f237c8ff3edc1422913e4c9d3bc9f7055e85e716b8e5170c"
     },
     {
-      "cell": 22,
+      "cell": 17,
       "output": 3,
-      "asset": "failure_examples_test.png"
+      "asset": "comparison_capacity.png",
+      "sha256": "1e7092567d274f012df647dacd56edad81004e4bb1291f9bf97b913a2f5110cb"
+    },
+    {
+      "cell": 17,
+      "output": 4,
+      "asset": "time_total.png",
+      "sha256": "6fbce24518281152b2ec66e4abe405a5ace11c4a5d4bdd22fe5bfaad71455e4c"
+    },
+    {
+      "cell": 17,
+      "output": 5,
+      "asset": "learning_loss.png",
+      "sha256": "26813b52d35f4b851f72514eeee1b008839ad42b3f321c58ac87ca815d2194e6"
+    },
+    {
+      "cell": 17,
+      "output": 6,
+      "asset": "learning_accuracy.png",
+      "sha256": "08bdae69fb690c03a71bd98803357374e2c9be430352271cfa6466db50f632ad"
+    },
+    {
+      "cell": 19,
+      "output": 0,
+      "asset": "confusion_softmax.png",
+      "sha256": "b338e4b8ee63fb8083e280e03c51dec7599b4931c45f3ffdeaabc94b21e7db88"
+    },
+    {
+      "cell": 19,
+      "output": 1,
+      "asset": "confusion_mlp.png",
+      "sha256": "df06ef66d6a5e99d518f8193902414713c62a1e7ac333e4e8520dd9aefda3d19"
+    },
+    {
+      "cell": 19,
+      "output": 2,
+      "asset": "confusion_cnn_a.png",
+      "sha256": "502648ce610019051a0c5b68fea5d23d3cb1e5a8854dc8ef8ca4720f3134a712"
+    },
+    {
+      "cell": 19,
+      "output": 3,
+      "asset": "confusion_cnn_b.png",
+      "sha256": "1852a87f68e703bc40b71a99fe4931f49b2394a074d9f213644ba1fbdbecbaec"
+    },
+    {
+      "cell": 19,
+      "output": 4,
+      "asset": "errors_softmax.png",
+      "sha256": "827152f252b840b9d1e88b7914b05fa6b1caa85e5c3958d2e5dddf0345c18c30"
+    },
+    {
+      "cell": 19,
+      "output": 5,
+      "asset": "errors_mlp.png",
+      "sha256": "e3a62eed82c543a02db42cc8e4b8a4ab1cbfa54bf5e23a2b2e304e13020057a9"
+    },
+    {
+      "cell": 19,
+      "output": 6,
+      "asset": "errors_cnn_a.png",
+      "sha256": "45353733893e91e4ad3aaba3f80059ebe0fc50e5ac7abaa61b54ca4c347c2a9b"
+    },
+    {
+      "cell": 19,
+      "output": 7,
+      "asset": "errors_cnn_b.png",
+      "sha256": "7a08b3c1231f45a14c4b0c932705e522f3326096dc54304626e9eaa6571d95fb"
     }
   ],
   "markdown_outputs": [
     {
-      "cell": 7,
-      "output": 1,
-      "text": "| Tập | Đầy đủ | Dùng lần này | Vai trò |\n|---|---:|---:|---|\n| Train | 54.000 | 54,000 | Cập nhật trọng số |\n| Validation | 6.000 | 6,000 | Chọn checkpoint, early stopping |\n| Test | 10.000 | 10,000 | Đánh giá sau chọn checkpoint |"
+      "cell": 6,
+      "output": 0,
+      "text": "| Tập | Số ảnh | Vai trò |\n|---|---:|---|\n| Train | 54,000 | Cập nhật trọng số |\n| Validation | 6,000 | Chọn best weights, early stopping |\n| Test | 10,000 | Đánh giá |"
     },
     {
-      "cell": 11,
-      "output": 1,
+      "cell": 10,
+      "output": 0,
       "text": "| Model | Số tham số | Input | Output |\n|---|---:|---|---|\n| Softmax classifier | 7,850 | 1×28×28 | 10 logits |\n| MLP | 235,146 | 1×28×28 | 10 logits |\n| CNN-A | 421,642 | 1×28×28 | 10 logits |\n| CNN-B | 94,186 | 1×28×28 | 10 logits |"
     },
     {
-      "cell": 20,
+      "cell": 17,
+      "output": 0,
+      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| Softmax classifier | 12 | 8 | 5,064 | 0 | Early stopping | 18 |\n| MLP | 20 | 16 | 8,440 | 0 | Early stopping | 22 |\n| CNN-A | 12 | 8 | 5,064 | 0 | Early stopping | 50 |\n| CNN-B | 20 | 16 | 8,440 | 0 | Early stopping | 56 |"
+    },
+    {
+      "cell": 17,
       "output": 1,
-      "text": "**Huấn luyện trên CUDA**\n\n| Model | Epoch | Best epoch | Optimizer updates | AMP skips | Dừng huấn luyện | GPU peak (MiB) |\n|---|---:|---:|---:|---:|---|---:|\n| Softmax classifier | 24 | 14 | 10,128 | 0 | Early stopping | 19 |\n| MLP | 26 | 16 | 10,972 | 0 | Early stopping | 23 |\n| CNN-A | 18 | 8 | 7,596 | 0 | Early stopping | 52 |\n| CNN-B | 40 | 30 | 16,878 | 2 | Early stopping | 57 |"
+      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| Softmax classifier | 86.04 | 85.05 | 0.8495 | 84.11 | 0.8401 | 0.4431 | 7,850 | 16.35 | 1.363 |\n| MLP | 91.58 | 89.47 | 0.8951 | 89.45 | 0.8948 | 0.3142 | 235,146 | 44.87 | 2.244 |\n| CNN-A | 94.61 | 92.00 | 0.9203 | 91.66 | 0.9169 | 0.2339 | 421,642 | 38.76 | 3.230 |\n| CNN-B | 93.63 | 91.93 | 0.9195 | 91.45 | 0.9144 | 0.2333 | 94,186 | 78.04 | 3.902 |"
     },
     {
-      "cell": 20,
-      "output": 2,
-      "text": "**Kết quả tại checkpoint chọn bằng validation loss**\n\n| Model | Train acc tại best (%) | Val acc (%) | Val macro-F1 | Test acc (%) | Test macro-F1 | Test loss | Tham số | Train + val (s) | s/epoch |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n| Softmax classifier | 86.51 | 84.88 | 0.8481 | 84.27 | 0.8418 | 0.4408 | 7,850 | 28.58 | 1.191 |\n| MLP | 91.58 | 89.47 | 0.8951 | 89.45 | 0.8948 | 0.3142 | 235,146 | 50.52 | 1.943 |\n| CNN-A | 94.61 | 92.00 | 0.9203 | 91.66 | 0.9169 | 0.2339 | 421,642 | 38.19 | 2.121 |\n| CNN-B | 95.82 | 91.92 | 0.9190 | 91.97 | 0.9193 | 0.2320 | 94,186 | 126.33 | 3.158 |"
+      "cell": 21,
+      "output": 0,
+      "text": "**Train/validation gap tại checkpoint chọn**\n\n| Model | Train acc tại best (%) | Val acc (%) | Train − val (điểm %) |\n|---|---:|---:|---:|\n| Softmax classifier | 86.04 | 85.05 | +0.99 |\n| MLP | 91.58 | 89.47 | +2.11 |\n| CNN-A | 94.61 | 92.00 | +2.61 |\n| CNN-B | 93.63 | 91.93 | +1.70 |"
     },
     {
-      "cell": 20,
-      "output": 3,
-      "text": "Train accuracy được đo trong train mode khi cập nhật trọng số; validation/test được đo trong eval mode. Thời gian gồm training và validation, không gồm vẽ hình hay test."
-    },
-    {
-      "cell": 24,
+      "cell": 21,
       "output": 1,
-      "text": "**Chất lượng phân loại.** CNN-A có validation accuracy cao nhất (92.00%). Checkpoint từng model được chọn bằng validation loss. Trên test, MLP đạt 89.45%, tăng 5.18 điểm phần trăm so với Softmax. CNN-A đạt 91.66% và CNN-B đạt 91.97%. Kết quả phù hợp với lợi ích của phi tuyến ở MLP và đặc trưng không gian ở CNN trong thí nghiệm này.\n\n**Capacity và chi phí.** CNN-A có 421,642 tham số; CNN-B có 94,186, tỷ lệ 4.48×. Accuracy test của CNN-B − CNN-A là +0.31 điểm phần trăm. Số tham số riêng lẻ không giải thích toàn bộ chất lượng hoặc tốc độ: hai CNN còn khác pooling/head/batch normalization, và thời gian tổng phụ thuộc early stopping."
-    },
-    {
-      "cell": 24,
-      "output": 2,
-      "text": "**Train/validation gap tại checkpoint chọn**\n\n| Model | Train acc tại best (%) | Val acc (%) | Train − val (điểm %) |\n|---|---:|---:|---:|\n| Softmax classifier | 86.51 | 84.88 | +1.62 |\n| MLP | 91.58 | 89.47 | +2.11 |\n| CNN-A | 94.61 | 92.00 | +2.61 |\n| CNN-B | 95.82 | 91.92 | +3.91 |"
-    },
-    {
-      "cell": 24,
-      "output": 3,
-      "text": "Train accuracy ở đây là số đo trong train mode khi cập nhật weights; validation dùng eval mode. Đọc gap cùng learning curves: training loss tiếp tục giảm trong khi validation loss dao động là dấu hiệu cần dừng và chọn checkpoint. Early stopping giữ weights có validation loss thấp nhất."
-    },
-    {
-      "cell": 24,
-      "output": 4,
-      "text": "**Các cặp lớp nhầm nhiều nhất trên test**\n\n| Model | Nhầm nhiều nhất (thật → dự đoán) | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| Softmax classifier | Shirt → T-shirt/top | 154 | 15.4% |\n| MLP | T-shirt/top → Shirt | 124 | 12.4% |\n| CNN-A | T-shirt/top → Shirt | 137 | 13.7% |\n| CNN-B | Shirt → T-shirt/top | 103 | 10.3% |"
-    },
-    {
-      "cell": 24,
-      "output": 5,
-      "text": "Confusion matrix và ảnh lỗi cho thấy các nhầm lẫn giữa nhóm áo có hình dáng gần nhau cần được phân tích riêng với lớp giày hoặc túi. Gallery lấy lỗi đầu tiên theo lớp/model; tần suất lỗi được đánh giá bằng toàn bộ confusion matrix. Thí nghiệm dùng một seed, vì vậy chênh lệch nhỏ giữa hai model cần được đọc cùng giới hạn biến thiên giữa các lần huấn luyện."
+      "text": "**Các cặp lớp nhầm nhiều nhất trên test**\n\n| Model | Nhầm nhiều nhất (thật → dự đoán) | Số ảnh | % lớp thật |\n|---|---|---:|---:|\n| Softmax classifier | Pullover → Coat | 136 | 13.6% |\n| MLP | T-shirt/top → Shirt | 124 | 12.4% |\n| CNN-A | T-shirt/top → Shirt | 137 | 13.7% |\n| CNN-B | Shirt → Coat | 103 | 10.3% |"
     }
   ],
-  "source_sha256": "06d76d48f81fadd49d786879756ce9a1593125d961f9710b18716b29f16491e1"
+  "derived_tables": [
+    "audit.tex",
+    "cost.tex",
+    "errors.tex",
+    "results.tex"
+  ],
+  "generated_figures": [
+    {
+      "asset": "dataset_gallery_report.png",
+      "sha256": "287c5dba2650e241a4d44c2e752122fa2e7b606af473001b2787331dad222146",
+      "method": "Drawn from original dataset and the notebook representation definition; no raster cropping.",
+      "inputs": [
+        {
+          "path": "datasets/fashion_mnist/train/images.npy",
+          "sha256": "688c39370d4f9ae647c192ceb8f97965598984d879a119f0e41e427ec1eac23f"
+        },
+        {
+          "path": "datasets/fashion_mnist/train/labels.npy",
+          "sha256": "b52df3384dacaf0687f208cf2f92ff643f453c015dd6e42b75b5cb02377246a4"
+        }
+      ]
+    },
+    {
+      "asset": "class_distribution_report.png",
+      "sha256": "c19002dff2f8b19f8f665d8adee431b195a3285e13fd627f478632f741b2ee46",
+      "method": "Drawn from original dataset and the notebook representation definition; no raster cropping.",
+      "inputs": [
+        {
+          "path": "datasets/fashion_mnist/train/images.npy",
+          "sha256": "688c39370d4f9ae647c192ceb8f97965598984d879a119f0e41e427ec1eac23f"
+        },
+        {
+          "path": "datasets/fashion_mnist/train/labels.npy",
+          "sha256": "b52df3384dacaf0687f208cf2f92ff643f453c015dd6e42b75b5cb02377246a4"
+        }
+      ]
+    }
+  ]
 }

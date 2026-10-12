@@ -1,207 +1,211 @@
 \chapter{A1: CNN và Transformer trên GTSRB}
 \section{Dữ liệu, phân bố lớp và cách chia tập}
-GTSRB \cite{gtsrb,gtsrb2011} là bộ ảnh 43 loại biển giao thông, khác
-Fashion-MNIST/CIFAR-10 và phù hợp ràng buộc A1 về nhiều lớp, quy mô hàng
-chục nghìn ảnh, biến đổi góc nhìn/ánh sáng và lớp gần nhau. Nguồn là archive
-tác giả trên ERDA \cite{gtsrbarchive}, gồm 39.209 ảnh train nguồn và 12.630
-test. Nhãn ClassId là số nguyên 0--42; filename train chứa class/track/frame,
-metadata local chứa path, kích thước, nhãn và SHA256. PPM được chuyển thành
-PNG lossless với kiểm tra pixel; ảnh không được phân phối qua Git.
-
-Trang metadata archive chưa nêu mã giấy phép SPDX; báo cáo ghi đúng nguồn,
-tác giả và điều kiện/README nguồn, không tự gán MIT/CC cho dataset.
-Việc dùng học tập/nghiên cứu và trích dẫn được mô tả trong hồ sơ dữ liệu local;
-thông tin giấy phép chuẩn hóa chưa được xác nhận từ metadata công khai.
+GTSRB \cite{gtsrb,gtsrb2011} gồm 43 loại biển giao thông, với 39.209 ảnh
+train nguồn và 12.630 ảnh test. Dataset khác Fashion-MNIST/CIFAR-10, có
+quy mô hàng chục nghìn ảnh, lớp gần nhau và biến đổi ánh sáng/góc nhìn,
+phù hợp yêu cầu A1. Nguồn tải là archive tác giả trên ERDA
+\cite{gtsrbarchive}; metadata archive chưa xác nhận mã giấy phép SPDX.
+Project ghi nguồn, tác giả và điều kiện/README nguồn, không tự gán MIT/CC.
+Nhãn ClassId là số nguyên 0--42; ảnh PPM được chuẩn bị thành PNG lossless.
 
 Train/validation chia theo nhóm \texttt{class\_id + physical\_sign\_track},
-seed 42, giữ khoảng 20\% track mỗi lớp cho validation. Cách chia này hạn chế
-frame cùng biển vật lý rơi vào hai tập. Số ảnh thực tế:
+seed 42, giữ khoảng 20\% track mỗi lớp cho validation. Cách chia hạn chế
+các frame của cùng biển vật lý xuất hiện trong cả hai tập.
 \begin{table}[H]\centering\caption{Split GTSRB sử dụng toàn bộ dữ liệu.}
 \begin{tabular}{lrrl}\toprule Tập & Ảnh & Lớp & Vai trò\\\midrule
 Train &31.380&43&Huấn luyện\\
-Validation &7.829&43&Checkpoint, freeze/augmentation protocol\\
+Validation &7.829&43&Chọn weights và protocol\\
 Official-source test &12.630&43&Đánh giá cuối\\
-Test không trùng SHA256 &12.622&43&Phân tích độ nhạy bổ sung\\\bottomrule\end{tabular}\end{table}
-Fingerprint:
+Test không trùng SHA256 &12.622&43&Phân tích độ nhạy\\\bottomrule\end{tabular}\end{table}
+Fingerprint của split:
 \begin{center}\footnotesize\ttfamily
 c1c1759f478eeeeaac0faddf424717574\\
 f6f1895f6a5511ed77964c34eb2c7ac
 \end{center}
-Output xác nhận không có trùng SHA256 train--val/val--test, nhưng có 8 ảnh
-test lớp Stop (ID 14) trùng train. Giữ full test nguồn để đối chiếu và báo
-thêm test không trùng; full test có giới hạn độc lập, không coi là hoàn toàn sạch.
-
-\ReportFigure{assets/a1/eda.png}{Phân bố 43 lớp trên các split và kích thước ảnh train gốc.}
-\ReportFigure{assets/a1/class_gallery.png}{Một ảnh train đại diện cho mỗi lớp GTSRB; ID dùng để tra ma trận nhầm lẫn.}
-Train mất cân bằng: lớp Speed limit 50 có 1.800 ảnh, trong khi Speed limit 20,
-Pedestrians và nhiều lớp hiếm có 180 ảnh. Validation lớp Turn right ahead có 149
-ảnh, phản ánh split track không ép tỷ lệ ảnh chính xác 20\%. Resize không
-làm tăng thông tin ảnh nhỏ, vì vậy mờ/thiếu sáng vẫn là khó khăn thực tế.
+Đối chiếu SHA256 trong metadata không ghi nhận trùng train--validation
+hoặc validation--test; có 8 ảnh test lớp Stop (ID 14) trùng train.
+Giữ test nguồn và báo thêm kết quả trên test không trùng. SHA256 chỉ
+phát hiện trùng byte, không loại mọi ảnh gần giống.
+\PortraitFigure{assets/a1/class_distribution.png}{Số ảnh theo 43 lớp trong train, validation và test; ID tra theo bảng lớp ở Phụ lục.}
+\PortraitFigure{assets/a1/image_sizes.png}{Kích thước gốc của 39.209 ảnh train nguồn, trước khi chia train/validation.}
+Train mất cân bằng: Speed limit 50 có 1.800 ảnh, trong khi Speed limit 20,
+Pedestrians và một số lớp hiếm có 180 ảnh. Validation Turn right ahead
+có 149 ảnh, phản ánh split theo track không ép đúng tỷ lệ ảnh 20\%.
+\PortraitFigure{assets/a1/class_gallery_1.png}{Ảnh train đại diện cho lớp 0--9, bố cục $2\times5$.}
+\PortraitFigure{assets/a1/class_gallery_2.png}{Ảnh train đại diện cho lớp 10--19.}
+\PortraitFigure{assets/a1/class_gallery_3.png}{Ảnh train đại diện cho lớp 20--29.}
+\PortraitFigure{assets/a1/class_gallery_4.png}{Ảnh train đại diện cho lớp 30--39.}
+\PortraitFigure{assets/a1/class_gallery_5.png}{Ảnh train đại diện cho ba lớp 40--42.}
 
 \section{DataLoader, augmentation và kiến trúc}
-Ảnh RGB được resize toàn ảnh 224$\times $224, không center-crop, rồi chuẩn hóa
-ImageNet mean $(0{,}485;0{,}456;0{,}406)$, std $(0{,}229;0{,}224;0{,}225)$ cho mọi regime.
-Augmentation train gồm RandomAffine góc trong $\pm 10^\circ $, translate
-tối đa 5\% theo mỗi trục, ColorJitter brightness/contrast 0,2 và saturation 0,1.
-Không flip vì có thể đảo ý nghĩa biển; val/test chỉ resize và normalize.
-DataLoader shuffle train, seed cố định, workers 0, không bỏ batch cuối.
-Notebook đọc ảnh và kiểm tra SHA256 trong Dataset; thời gian train+val vì
-vậy gồm cả xử lý dữ liệu và kiểm tra integrity của cài đặt trong notebook.
+Ảnh RGB resize toàn ảnh về $224\times224$, không center-crop, rồi chuẩn hóa
+ImageNet mean $(0{,}485;0{,}456;0{,}406)$, std $(0{,}229;0{,}224;0{,}225)$.
+Augmentation train gồm RandomAffine góc $\pm10^\circ$, translate tối đa
+5\% mỗi trục và ColorJitter brightness/contrast 0,2, saturation 0,1.
+Không flip vì có thể đảo ý nghĩa biển; validation/test chỉ resize và
+normalize. Dataset đọc ảnh theo samples.csv; DataLoader shuffle train,
+workers 0, seed cố định và không bỏ batch cuối.
 
-ResNet-50 dùng Bottleneck 3/4/6/3, expansion 4, stride tại Conv 3$\times $3,
-khớp convention torchvision \cite{resnet}. DeiT-Small/16 non-distilled dùng
-patch 16, embedding 384, depth 12, 6 head, MLP ratio 4 và LayerNorm
-eps $10^{-6}$ \cite{deit}. Cả hai tự định nghĩa trong notebook, nạp pretrained
-ImageNet backbone tương thích rồi thay head 43 lớp. ResNet dùng ImageNet-1K V1
-của torchvision, DeiT dùng checkpoint ImageNet-1K chính thức non-distilled. DeiT ở đây không dùng
-distillation token/teacher hoặc loss distillation.
-
+ResNet-50 dùng Bottleneck 3/4/6/3, expansion 4, stride tại Conv $3\times3$
+theo convention torchvision \cite{resnet}. DeiT-Small/16 non-distilled
+dùng patch 16, embedding 384, depth 12, 6 head, FFN $384\to1536\to384$
+và LayerNorm eps $10^{-6}$ \cite{deit}. Hai mạng được định nghĩa trong
+notebook, dùng head 43 lớp. Pretrained ResNet lấy ImageNet-1K V1 của
+torchvision; DeiT lấy checkpoint ImageNet-1K chính thức non-distilled,
+không dùng distillation token/teacher hoặc loss distillation.
 \begin{figure}[H]\centering
 \resizebox{.97\linewidth}{!}{\ArchResNet}
-\caption{A1 ResNet-50: backbone thể hiện bằng một khối, chỉ thay một FC 43 lớp. Head có 88.107 tham số; tổng 23.596.139.}
+\caption{ResNet-50: backbone gom khối, global average pooling và FC 43 lớp. Head 88.107 tham số; toàn mạng 23.596.139.}
 \end{figure}
 \begin{figure}[H]\centering
 \resizebox{.97\linewidth}{!}{\ArchDeiT}
-\caption{A1 DeiT-Small/16: backbone gom khối, thể hiện token và kích thước FFN; head 16.555 tham số, tổng 21.682.219.}
+\caption{DeiT-Small/16: 196 patch và CLS, 12 encoder block, một head 43 lớp. Head 16.555 tham số; toàn mạng 21.682.219.}
 \end{figure}
-Kiểm tra forward ResNet cùng weights khớp torchvision; attention DeiT khớp
-forward/input/QKV-output gradients của PyTorch float64. Head được kiểm tra
-thay đổi sau optimizer step, còn frozen parameters/BN buffers giữ nguyên.
+Pretrained chỉ nạp backbone, giữ head 43 lớp của bài toán GTSRB;
+code đối chiếu đầy đủ tên/kích thước trọng số khi nạp.
 
 \section{Các cấu hình và thiết lập huấn luyện}
 Ký hiệu bảng: R=ResNet-50, D=DeiT-Small/16; S=scratch, H=head-only,
-P=partial, F=full pretrained. Số sau dấu/ là seed.
+P=partial, F=full pretrained; số sau dấu/ là seed.
 \begin{table}[H]\centering\caption{Các mức freeze và số tham số được tối ưu.}
 \small\begin{tabularx}{\linewidth}{llXrr}\toprule
-Họ & Chế độ & Thành phần trainable & Số tham số & \% tổng\\\midrule
+Họ & Chế độ & Thành phần trainable & Tham số & \% tổng\\\midrule
 ResNet & Scratch/full & Toàn bộ mạng &23.596.139&100,00\\
 ResNet & Head-only & FC 43 &88.107&0,37\\
 ResNet & Partial & layer4 và FC 43 &15.052.843&63,79\\
 DeiT & Scratch/full & Toàn bộ mạng &21.682.219&100,00\\
 DeiT & Head-only & FC 43 &16.555&0,08\\
-DeiT & Partial & 2 block cuối, norm, head &3.566.251&16,45\\\bottomrule
+DeiT & Partial & Hai block cuối, norm, head &3.566.251&16,45\\\bottomrule
 \end{tabularx}\end{table}
-Partial không tương đương về tỷ lệ trainable giữa hai họ kiến trúc, nên đây là
-so sánh hai chiến lược thực tế, không phải ablation matched capacity.
-Frozen BN giữ eval mode và running buffers bất biến.
+Partial mở 63,79\% tham số ResNet và 16,45\% DeiT; vì vậy phép so sánh này
+không giữ capacity trainable ngang nhau. BatchNorm bị freeze dùng eval
+mode, không cập nhật running statistics.
 
-AdamW WD 0,01; scratch LR $3\times 10^{-4}$ cho toàn mạng, tối đa 40 epoch;
+AdamW weight decay 0,01; scratch LR $3\times10^{-4}$, tối đa 40 epoch;
 pretrained backbone LR $10^{-4}$ và head $10^{-3}$, tối đa 25 epoch.
-Warmup 3 epoch rồi cosine; clip gradient norm 1, AMP train, FP32 eval,
-patience 4/min-delta $10^{-4}$. Batch 128 cố định cho train/val/test,
-accumulation 1, effective batch 128; mỗi epoch 246 batch train, giữ batch cuối 20 ảnh.
-Best checkpoint min val loss; regime đại diện chọn theo val accuracy/F1/loss.
+Warmup 3 epoch rồi cosine, clip gradient norm 1, AMP train và FP32 eval.
+Early stopping theo validation loss, patience 2, min-delta $10^{-3}$.
+Best weights lưu khi loss thấp hơn best loss; min-delta dùng riêng cho
+bộ đếm dừng sớm, nên best epoch có thể gần epoch dừng.
+Batch 128, accumulation 1 cho mọi run; train có 246 batch/epoch, batch
+cuối 20 ảnh. Validation/test có 62/99 batch.
 
-Hai họ kiến trúc $\times $4 regime tạo 8 run chính cùng seed 42/augmentation.
-Sau khi chọn full mode cho mỗi họ kiến trúc bằng validation, thêm 1 no-augmentation
-seed 42 và 2 repeat seed 43/44/họ kiến trúc, tổng 14 run. Các seed repeats đổi RNG
-train nhưng giữ seed chia tập 42. Test chỉ đánh giá sau khi khóa mọi lựa chọn.
+Hai họ $\times$ bốn regime tạo tám run chính, cùng seed 42 và augmentation.
+Mỗi họ chọn regime bằng validation accuracy, macro-F1 rồi loss; full được
+chọn ở cả hai. Với regime này, thêm no-augmentation seed 42 và repeat
+seed 43/44 cho mỗi họ, tổng 14 run. Split giữ seed 42; test đánh giá sau
+khi khóa các lựa chọn.
 
-\section{Kết quả chính: CNN vs Transformer và pretraining}
-\DataTable{assets/a1/results.tex}{Tám cấu hình chính A1; mọi F1 là macro-F1.}
-\DataTable{assets/a1/cost.tex}{Capacity, số epoch và peak allocated GPU memory A1.}
-\ReportFigure{assets/a1/comparison.png}{Accuracy validation/test, trainable params và giây/epoch của tám cấu hình chính.}
-Full pretrained được chọn bằng validation ở cả hai họ kiến trúc: ResNet val 99,80\%,
-test 98,37\%; DeiT val 99,39\%, test 98,92\%. DeiT test cao hơn 0,55 điểm,
-trong khi ResNet val cao hơn 0,41 điểm; không dùng test để đảo lựa chọn regime.
+Scratch không nạp ImageNet weights. Mỗi run có đường dẫn latest.pt riêng;
+Run All nạp trọng số này nếu có, rồi tạo optimizer, scheduler và bộ đếm
+mới. Muốn khởi tạo hoàn toàn theo seed, dùng CHECKPOINT\_ROOT trống.
+Epoch, updates và thời gian trong bảng chỉ tính vòng train/validation
+được ghi trong output, không gồm test, vẽ hình hoặc đánh giá trọng số đầu vào.
 
-Pretraining cải thiện full so với scratch: ResNet test từ 96,33\% lên 98,37\%
-(+2,04 điểm), DeiT từ 96,14\% lên 98,92\% (+2,78 điểm).
-DeiT scratch cần 39 epoch/10.347,38 s; full cần 10 epoch/2.510,02 s.
-ResNet scratch 9 epoch/2.334,67 s còn full 11 epoch/2.805,20 s: pretraining
-cải thiện chất lượng nhưng không luôn giảm thời gian tổng, vì early stopping
-và learning-rate protocol khác nhau. DeiT vẫn học scratch đến 96,14\%;
-không kết luận Transformer bắt buộc pretrain để chạy được.
+\section{Kết quả chính: CNN, Transformer và pretraining}
+\DataTable{assets/a1/results.tex}{Accuracy và macro-F1 của tám cấu hình chính; test có 12.630 ảnh.}
+\DataTable{assets/a1/cost.tex}{Capacity, số epoch/best, thời gian mỗi epoch và peak allocated VRAM.}
+\DataTable{assets/a1/implementation.tex}{CNN và Transformer cùng regime; $\Delta$ val là DeiT trừ ResNet, tính theo điểm phần trăm từ giá trị chưa làm tròn.}
+\PortraitFigure{assets/a1/comparison_quality.png}{Validation và test accuracy của tám cấu hình A1, cùng split và augmentation.}
+\PortraitFigure{assets/a1/comparison_capacity.png}{Số tham số được tối ưu trong từng regime; phần backbone freeze không tính vào trainable.}
+Full pretrained đạt validation cao nhất ở cả hai họ: ResNet 99,32\%,
+DeiT 99,39\%. Trên test, tương ứng 97,83\% và 98,92\%; DeiT cao hơn
+1,09 điểm. Chênh lệch validation là 0,06 điểm từ số chưa làm tròn,
+không đủ để suy kết luận mạnh chỉ từ một seed.
+\DataTable{assets/a1/pretraining.tex}{Lợi ích validation của pretraining và unfreeze; mọi chênh lệch tính theo điểm phần trăm.}
+Full pretrained tăng test so với scratch 1,50 điểm với ResNet
+(96,33\% lên 97,83\%) và 10,28 điểm với DeiT (88,64\% lên 98,92\%).
+Trong protocol này, DeiT hưởng lợi rõ hơn từ ImageNet weights; không
+khẳng định Transformer luôn cần pretraining trên mọi dataset.
+Scratch ResNet cao hơn DeiT 7,69 điểm test. Head-only DeiT cao hơn
+ResNet 2,08 điểm; partial ResNet cao hơn DeiT 7,36 điểm, nhưng phạm vi
+unfreeze khác nhau nên không quy chênh lệch này riêng cho họ kiến trúc.
 
-Cùng scratch, test ResNet cao hơn DeiT 0,19 điểm; cùng head-only, ResNet
-cao hơn 0,62 điểm. Cùng partial, ResNet đạt 96,05\% so với 87,85\% của DeiT,
-nhưng phần mạng được mở khác nhau nhiều (63,79\% so với 16,45\% params).
-Không quy chênh lệch này chỉ cho CNN/Transformer. Full mode cho thấy
-DeiT có lợi về độ chính xác trong thí nghiệm, đổi lại chi phí suy luận/bộ nhớ.
+\section{Freeze, chi phí và đường cong học}
+Head-only đạt validation 66,84\%/70,26\% và test 67,33\%/69,41\%
+cho ResNet/DeiT. Train tại best là 86,06\%/89,37\%, tạo gap
+19,22/19,11 điểm. Chỉ tối ưu head chưa thích nghi tốt với GTSRB trong
+thiết lập này. Freeze giảm tham số học và VRAM: head-only dùng
+1.567/636 MiB, so với full 5.827/6.635 MiB. Partial ResNet đạt test
+95,21\% với 1.682 MiB; partial DeiT đạt 87,85\% với 1.373 MiB.
+Nếu ưu tiên accuracy thì full phù hợp hơn; nếu hạn chế bộ nhớ, partial
+ResNet là một lựa chọn trong các cấu hình đã thử.
+\DataTable{assets/a1/times.tex}{Thời gian train+validation và inference FP32; CUDA Events batch 32, tách DataLoader.}
+Full ResNet dùng 890,24 s cho bốn epoch, DeiT 1.894,50 s cho tám epoch.
+Thời gian mỗi epoch là 222,561/236,812 s; thời gian tổng còn phụ thuộc
+early stopping, không chỉ tốc độ kiến trúc. Benchmark GPU-only cho
+427,9/227,8 ảnh/s, tương ứng 74,78/140,50 ms mỗi batch 32;
+throughput ResNet khoảng 1,88 lần DeiT. Test end-to-end dùng batch 128,
+gồm DataLoader/H2D/metric, nên không đồng nhất với benchmark GPU-only.
+Peak là allocated PyTorch, không phải reserved hoặc tổng VRAM máy.
+\PortraitFigure{assets/a1/loss_resnet.png}{Cross-entropy ResNet-50 theo bốn regime; train nét đứt, validation nét liền.}
+\PortraitFigure{assets/a1/loss_deit.png}{Cross-entropy DeiT-Small/16 theo bốn regime.}
+\PortraitFigure{assets/a1/accuracy_resnet.png}{Accuracy train/validation ResNet-50 theo epoch.}
+\PortraitFigure{assets/a1/accuracy_deit.png}{Accuracy train/validation DeiT-Small/16 theo epoch.}
+Head-only có gap lớn; full pretrained sớm đạt validation cao. DeiT scratch
+dừng sau 11 epoch và đạt test 88,64\%, cho thấy kết quả phụ thuộc cả
+khởi tạo và quy tắc dừng. Train accuracy đo trong train mode với
+augmentation, validation trong eval mode; hai đường không phải cùng
+một điều kiện đo.
 
-\section{Freeze, chi phí và đường cong}
-Head-only val 69,22\% / 71,31\%, test 70,35\% / 69,73\%, thấp xa full;
-train tại best vẫn 91,12\% / 91,34\%. Chỉ học head chưa thích nghi tốt
-backbone với split GTSRB này. Freeze có lợi nếu cần tiết kiệm VRAM,
-ít weights phải tối ưu và lượt train ngắn theo mỗi epoch; ở đây không phải
-lựa chọn tốt nếu ưu tiên accuracy. Head-only kéo dài 24/25 epoch nên thời
-gian tổng còn lớn hơn full 11/10 epoch.
+\section{Augmentation và độ biến thiên giữa seed}
+\DataTable{assets/a1/extended.tex}{Sáu thực nghiệm bổ sung trên full pretrained; cấu hình chọn bằng validation.}
+\DataTable{assets/a1/augmentation.tex}{Augmentation ablation, cùng full mode và seed 42; accuracy tính bằng \%.}
+Augmentation tăng validation 0,47/1,29 điểm và test 0,63/1,12 điểm
+cho ResNet/DeiT. Biến đổi đã chọn hữu ích với cả hai họ trong lượt đo
+này; một seed chưa xác lập tác dụng trên mọi split hoặc cách augmentation.
+\PortraitFigure{assets/a1/augmentation.png}{Validation accuracy có/không augmentation, cùng seed 42.}
+\DataTable{assets/a1/seeds.tex}{Full pretrained qua seed 42/43/44, giữ split 42; mean $\pm$ std mẫu, ddof=1.}
+\PortraitFigure{assets/a1/seed_comparison.png}{Accuracy trung bình và độ lệch chuẩn mẫu của ba seed; error bar không phải khoảng tin cậy.}
+Test accuracy trung bình là $97,95\pm0,21\%$ cho ResNet và
+$98,50\pm0,36\%$ cho DeiT; chênh lệch 0,55 điểm. Với $n=3$ trên một
+split, đây là mô tả độ biến thiên, chưa là bằng chứng thống kê mạnh.
+Kết quả đại diện giữ seed 42, không chọn seed tốt nhất theo test.
 
-Partial ResNet đạt gần scratch với peak 1.681 MiB; full đạt accuracy cao
-hơn với 5.823 MiB. Partial DeiT peak 1.374 MiB, full 6.632 MiB; head-only
-chỉ 636 MiB nhưng accuracy thấp. Các peak là allocated PyTorch,
-không phải reserved hoặc tổng VRAM trong Task Manager.
-\DataTable{assets/a1/times.tex}{Thời gian train+val và inference FP32; CUDA Events batch 32, tách DataLoader.}
-ResNet full đạt 415,1 ảnh/s và 77,09 ms/batch 32; DeiT 229,9 ảnh/s,
-139,22 ms/batch 32. Throughput ResNet khoảng 1,81 lần DeiT trong phép
-đo này. Test end-to-end dùng batch 128 và gồm DataLoader/H2D/evaluation,
-nên không đồng nhất với benchmark GPU-only batch 32.
-
-\ReportFigure{assets/a1/learning_curves_loss.png}{Loss của hai họ kiến trúc theo bốn regime; train nét đứt, validation nét liền.}
-\ReportFigure{assets/a1/learning_curves_accuracy.png}{Accuracy theo epoch A1; mỗi panel một họ kiến trúc.}
-Full pretrained nhanh chóng đạt val cao; head-only có gap train--val lớn
-và val loss gần 1. DeiT scratch có quá trình học dài hơn ResNet scratch.
-Training accuracy dùng augmentation/train mode, validation dùng eval mode;
-curves cần được đọc với sự khác biệt này và epoch của checkpoint.
-
-\section{Augmentation và độ ổn định qua seed}
-\DataTable{assets/a1/extended.tex}{Sáu thực nghiệm bổ sung trên full pretrained; cấu hình đã chọn trước test.}
-\begin{table}[H]\centering\caption{Augmentation ablation, cùng full mode và seed 42.}
-\small\begin{tabular}{lrrrr}\toprule Họ & Aug val & No-aug val & Aug test & No-aug test\\\midrule
-ResNet &99,80&98,85&98,37&97,20\\
-DeiT &99,39&99,46&98,92&99,22\\\bottomrule\end{tabular}\end{table}
-Augmentation cải thiện ResNet val 0,95 và test 1,17 điểm; DeiT val thay đổi
-$-0,08$ điểm theo số liệu chưa làm tròn, test $-0,30$ điểm.
-Không khẳng định augmentation luôn tốt: hiệu quả phụ thuộc họ kiến trúc và
-biến đổi đã chọn, ablation này chỉ có seed 42.
-\begin{table}[H]\centering\caption{Full pretrained, 3 seed 42/43/44, giữ split 42; độ lệch chuẩn mẫu (ddof=1), không phải khoảng tin cậy.}
-\small\begin{tabular}{lrrrr}\toprule
-Họ & Val acc(\%) & Test acc(\%) & Val macro-F1 & Test macro-F1\\\midrule
-ResNet &$99,67\pm 0,34$&$98,44\pm 0,29$&$0{,}9951\pm0{,}0061$&$0{,}9736\pm0{,}0102$\\
-DeiT &$99,58\pm 0,24$&$98,95\pm 0,33$&$0{,}9912\pm0{,}0050$&$0{,}9828\pm0{,}0074$\\\bottomrule
-\end{tabular}\end{table}
-\ReportFigure{assets/a1/augmentation_seeds.png}{Augmentation và ba seed của full pretrained; đồ thị dựng từ bảng output, trục tung thu hẹp 97,5--100,6\% để đọc chênh lệch; error bar là std mẫu.}
-DeiT có test trung bình cao hơn 0,51 điểm trong ba seed. Chỉ $ n=3$ trên
-cùng split nên chưa là bằng chứng thống kê mạnh hoặc khả năng tổng quát
-qua split/dataset; không chọn seed 43 theo test 99,29\% làm kết quả đại diện.
-
-\section{Confusion matrix, lỗi và trùng ảnh}
-\ReportFigure{assets/a1/confusion_detail.png}{Trích 10 lớp liên quan nhiều ảnh sai của mỗi full pretrained seed 42; mẫu số vẫn là toàn bộ lớp thật trong 43 lớp.}
-Submatrix chỉ giữ 10 lớp nên tổng hàng hiển thị có thể nhỏ hơn 100\%;
-không chuẩn hóa lại trên 10 lớp. Full 43$\times $43 của cả hai model có
-trong notebook A1; Phụ lục liệt kê precision/recall/F1 của toàn bộ 43 lớp để tra cứu.
-
-ResNet full nhầm 30/60 Pedestrians (ID 27) thành Road work (ID 25), recall
-Pedestrians 0,500, F1 0,667. DeiT full nhầm 30/60 Speed limit 20 (ID 0)
-thành Speed limit 120 (ID 8), recall lớp 0,500, F1 0,667.
-DeiT Pedestrians recall 0,883, F1 0,938, trong khi ResNet Speed 20
-recall/F1 đều 1,000. Accuracy tổng cao không đảm bảo chất lượng mọi lớp hiếm.
-\begin{table}[H]\centering\caption{Một số lớp khó trong hai full model seed 42; test support và recall/F1.}
+\section{Ma trận nhầm lẫn, lỗi và ảnh trùng}
+\PortraitFigure{assets/a1/confusion_resnet.png}{ResNet full seed 42: 10 lớp liên quan nhiều ảnh sai, trích chỉ số từ ma trận 43 lớp.}
+\PortraitFigure{assets/a1/confusion_deit.png}{DeiT full seed 42: 10 lớp liên quan nhiều ảnh sai, cùng thang 0--100\%.}
+Hàng là lớp thật, cột là dự đoán. Phần trăm dùng toàn bộ support lớp
+thật, không chuẩn hóa lại trên 10 lớp; tổng hàng hiển thị có thể dưới
+100\%. Ô làm tròn số nguyên. Ma trận đầy đủ $43\times43$ có trong
+notebook; Phụ lục liệt kê precision/recall/F1 của toàn bộ 43 lớp.
+\DataTable{assets/a1/errors.tex}{Cặp lớp nhầm nhiều nhất của tám cấu hình chính; ID đi cùng tên lớp.}
+ResNet full nhầm 30/60 Pedestrians (ID 27) thành Road work (ID 25),
+recall 0,500 và F1 0,638. DeiT full nhầm 30/60 Speed limit 20 (ID 0)
+thành Speed limit 120 (ID 8), recall 0,500 và F1 0,667.
+DeiT có recall Pedestrians 0,883; ResNet có recall Speed limit 20
+0,967. Accuracy tổng cao vẫn có thể đi cùng lỗi ở lớp hiếm.
+\begin{table}[H]\centering\caption{Một số lớp khó trong hai full model seed 42; support, recall và F1.}
 \small\begin{tabular}{lrrrrr}\toprule
-Lớp & Support & Res recall & Res F1 & DeiT recall & DeiT F1\\\midrule
-Speed 20 &60&1,000&1,000&0,500&0,667\\
-Pedestrians &60&0,500&0,667&0,883&0,938\\
-Bumpy road &120&0,800&0,881&0,950&0,970\\
-Roundabout &90&0,878&0,919&0,844&0,916\\
-Ice/snow &150&0,940&0,913&0,960&0,938\\\bottomrule
+Lớp & Support & R recall & R F1 & D recall & D F1\\\midrule
+Speed 20 &60&0,967&0,983&0,500&0,667\\
+Pedestrians &60&0,500&0,638&0,883&0,938\\
+Bumpy road &120&0,758&0,863&0,950&0,970\\
+Roundabout &90&0,933&0,923&0,844&0,916\\
+Ice/snow &150&0,987&0,961&0,960&0,938\\\bottomrule
 \end{tabular}\end{table}
-\ReportFigure[.85]{assets/a1/failure_examples_test.png}{Các ảnh sai của hai full model seed 42; hàng trên ResNet, hàng dưới DeiT, ghi cả nhãn thật/dự đoán.}
-Ảnh mẫu cho thấy bóng che, mờ, thiếu sáng và ký hiệu có outline gần nhau.
-Đây là các yếu tố nhìn thấy trong ví dụ, chưa là bằng chứng nhân quả hoặc
-tỷ lệ lỗi do từng điều kiện. Nhiều ảnh có thể cùng track nên số ảnh sai
-không đồng nghĩa số biển vật lý độc lập.
+\PortraitFigure{assets/a1/errors_resnet.png}{Ảnh sai ResNet full seed 42, bố cục $2\times5$; ghi nhãn thật và dự đoán.}
+\PortraitFigure{assets/a1/errors_deit.png}{Ảnh sai DeiT full seed 42; các mẫu minh họa không thay thế tần suất lỗi toàn tập.}
+Ví dụ cho thấy mờ, thiếu sáng và ký hiệu gần nhau. Đây là yếu tố nhìn
+thấy trong ảnh, chưa chứng minh nguyên nhân lỗi. Nhiều frame có thể
+cùng track, nên số ảnh sai không đồng nghĩa số biển vật lý độc lập.
 
-Trên 12.622 test không trùng, accuracy 8 run chính thay đổi từ $-0,001$
-đến $-0,019$ điểm phần trăm; macro-F1 không đổi khi làm tròn 4 chữ số.
-Hai full model lần lượt 98,37\% và 98,91\%, so với 98,37\%/98,92\%
-full test. Ảnh trùng ảnh hưởng nhỏ đến metric tổng ở lần chạy này nhưng vẫn
-là giới hạn độc lập; SHA256 chỉ phát hiện trùng byte, không loại mọi ảnh gần giống.
+Loại 8 ảnh trùng khỏi test làm accuracy tám run thay đổi từ $-0,001$
+đến $-0,021$ điểm phần trăm. Hai full model đạt 97,83\%/98,91\%
+trên 12.622 ảnh không trùng. Macro-F1 head-only giảm 0,0001 ở mức làm
+tròn bốn chữ số; các run còn lại giữ cùng mức hiển thị. Độ nhạy tổng
+nhỏ nhưng không loại bỏ giới hạn độc lập của test nguồn.
 
 \section{Kết luận A1 và giới hạn}
-Full pretrained được chọn bằng validation ở cả hai họ. DeiT có test accuracy
-cao hơn, ResNet có throughput tốt hơn trong thiết lập này.
+Full pretrained được chọn bằng validation ở cả hai họ. DeiT đạt test
+accuracy cao hơn ở seed 42 và trung bình ba seed; ResNet có throughput
+suy luận tốt hơn. Head-only tiết kiệm bộ nhớ nhưng accuracy thấp;
+partial cần được đánh giá cùng phạm vi unfreeze. Augmentation cải thiện
+cả hai họ trong phép so sánh seed 42.
 
-Giới hạn gồm dữ liệu mất cân bằng, 8 test trùng train, nhiều frame cùng track,
-chỉ 3 seed cho full và 1 seed cho các regime khác; partial không matched capacity,
-ngân sách 40/25 epoch và learning rate khác scratch/pretrained.
-Các kết quả chỉ áp dụng cho thiết lập và dữ liệu đã khảo sát.
+Giới hạn gồm mất cân bằng lớp, ảnh trùng/gần giống, nhiều frame cùng
+track, ba seed chỉ cho full, partial không matched capacity và ngân
+sách/LR khác scratch--pretrained. Cơ chế nạp latest làm trạng thái
+trọng số đầu run ảnh hưởng khả năng tái lập; số epoch dừng sớm không
+đủ để suy tổng ngân sách học của một checkpoint. Các kết luận áp dụng
+cho dataset, split và protocol đã mô tả.

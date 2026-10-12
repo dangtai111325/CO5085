@@ -4,6 +4,28 @@ Tài liệu mô tả các tập dữ liệu của project, với thống kê t�
 09/10/2026. Ba tập được sử dụng trong thực nghiệm là Fashion-MNIST, GTSRB và VOC2012. Dữ liệu và pretrained cache giữ trên máy; khi push Git, folder này chỉ có
 `README.md`. Không đưa ảnh, nhãn, archive, NumPy arrays hoặc weights lên GitHub.
 
+## Bắt đầu nhanh
+
+Ba dataset dùng để tạo kết quả là **Fashion-MNIST, GTSRB và VOC2012**.
+BDD100K và VisDrone ở phần sau là dữ liệu lưu trên máy, không dùng cho các
+thí nghiệm trong báo cáo.
+
+1. Nếu máy đã có dữ liệu prepared, dùng trực tiếp các folder ở sơ đồ dưới.
+2. Khi dựng trên máy mới, tải nguồn chính thức theo từng mục và chạy các đoạn
+   Python trong phần **Chuẩn bị dữ liệu từ nguồn** ở cuối tài liệu, từ project root.
+3. Chạy kiểm tra prepared một lần trước khi mở notebook. Không kiểm tra hash
+   từng ảnh trong vòng lặp train.
+4. E1–E3/A1 dùng Python 3.14 có CUDA trên máy; A2.kaggle.ipynb dùng kernel
+   Kaggle T4 x2. Run All và Save output. Checkpoint train nằm trong `model`,
+   tách khỏi dataset và pretrained weights.
+
+| Dữ liệu | Notebook | Nhãn | Số mẫu train / val / test |
+|---|---|---|---|
+| Fashion-MNIST | E1–E3 | Integer 0–9 | 54.000 / 6.000 / 10.000 |
+| GTSRB | A1 | ClassId 0–42 | 31.380 / 7.829 / 12.630 |
+| VOC2012 | A2 | Bbox xyxy, class 1–20, difficult/truncated | 9.232 / 1.154 / 1.154 |
+
+
 ## Tổng quan
 
 | Dataset | Notebook | Bài toán | Số lớp foreground | Train | Validation/dev | Test | Tổng ảnh dùng |
@@ -113,12 +135,11 @@ Tải bốn file IDX gzip tại [data/fashion](https://github.com/zalandoresearc
 `t10k-images-idx3-ubyte.gz`, `t10k-labels-idx1-ubyte.gz`.
 Giải mã IDX, stratify source train theo nhãn với seed 42 và 600 val/class, lưu ba
 array của mỗi split; tính normalization chỉ trên train và tạo metadata.
-Để tái tạo **đúng byte/fingerprint hiện tại**, dùng bản copy dataset đã xử lý kèm
-metadata, vì cùng seed nhưng khác thứ tự RNG có thể cho split khác.
+Quy tắc RNG, thứ tự và phép tính normalization được triển khai trong đoạn chuẩn bị ở cuối tài liệu. Chỉ cùng seed mà khác RNG/thứ tự không đủ tái tạo split.
 
 Fingerprint local:
 `bd9f3884131e411a26892e15ff685f2849216340505ea615f3fb3b901e30fe80`.
-Notebook đọc/checksum file và kiểm tra split. Có thể đặt `FASHION_MNIST_ROOT`
+Notebook đọc các array đã chuẩn bị và fingerprint khai báo trong metadata; kiểm tra tính toàn vẹn được thực hiện ở bước chuẩn bị dữ liệu. Có thể đặt `FASHION_MNIST_ROOT`
 trỏ tới folder fashion_mnist đầy đủ ngoài project.
 
 ## GTSRB · A1
@@ -130,8 +151,10 @@ trỏ tới folder fashion_mnist đầy đủ ngoài project.
 Nguồn tải: [kho tác giả GTSRB trên ERDA](https://sid.erda.dk/public/archives/daaeac0d7ce1152aea9b61d9f1e19370/published-archive.html).
 Tải `GTSRB_Final_Training_Images.zip`, `GTSRB_Final_Test_Images.zip` và
 `GTSRB_Final_Test_GT.zip`; không cần HOG/Haar/Hue features.
-Giữ điều kiện sử dụng/README nguồn; trang metadata không công bố mã SPDX cho
-ảnh. Trích dẫn Stallkamp, Schlipsing, Salmen và Igel.
+[Trang benchmark của tác giả](https://benchmark.ini.rub.de/gtsrb_dataset.html)
+cho phép sử dụng dữ liệu miễn phí và đề nghị trích dẫn Stallkamp, Schlipsing,
+Salmen và Igel (IJCNN 2011). Archive không gắn mã SPDX; không suy diễn thành
+MIT/CC hoặc dùng giấy phép phần mềm phân tích cho ảnh.
 
 ### Chia dữ liệu
 
@@ -170,8 +193,7 @@ samples.csv local đã chuẩn hóa tên/cách phân cách như trên.
 Metadata gồm schema, source, seed, group_key, counts, manifest SHA256 và split_hash.
 Fingerprint local:
 `c1c1759f478eeeeaac0faddf424717574f6f1895f6a5511ed77964c34eb2c7ac`.
-Notebook kiểm tra manifest, label range, đủ 43 lớp, file/index không trùng và SHA256 PNG
-khi đọc. Có thể đặt `GTSRB_ROOT` tới bản copy đầy đủ dataset đã xử lý.
+Notebook đọc manifest và ảnh; thống kê overlap dựa trên SHA256 đã ghi trong CSV, không tính hash ảnh lại ở từng epoch. Có thể đặt `GTSRB_ROOT` tới bản copy đầy đủ dataset đã xử lý.
 
 ### Phân bố class ID
 
@@ -309,7 +331,7 @@ việc chia tập cho A2 được quyết định bởi ba manifest VOC2012.
 Ảnh RGB chuyển thành tensor [0,1]. Train dùng flip ngang với xác suất 0,5;
 validation/test không augmentation. Model resize giữ tỷ lệ (cạnh ngắn 600,
 cạnh dài tối đa 1.000), chuẩn hóa ImageNet một lần và pad batch đến bội số 32.
-Batch train/eval là 4; tích lũy gradient qua 3 batch cho effective batch 12.
+Batch train/eval của A2 Kaggle là 8; tích lũy qua 3 batch cho effective batch 24.
 Không chia ảnh thành tiles. Dataset đọc chỉ mục CSV, tải ảnh khi cần và cung
 cấp dữ liệu cho các bảng, đồ thị EDA.
 
@@ -322,15 +344,24 @@ chọn weights và dừng sớm: patience 2, min_delta 0,001, tối đa 30 epoch
 Cả hai lượt train/validation hoàn tất trước khi đánh giá test.
 
 Notebook báo VOC mAP50 all-point, VOC07 AP11, 12 COCO-style AP/AR và P/R/F1
-tại confidence 0,30. Có AP theo lớp, PR curves, ma trận số đếm/tỷ lệ và ảnh
+tại confidence 0,30. Có AP theo lớp, PR curves, ma trận tỷ lệ phần trăm theo hàng và ảnh
 GT/dự đoán/lỗi. Suy luận dùng score floor 0,05, NMS 0,5, tối đa 100 detections/ảnh.
 COCO-style AP lấy 101 mốc recall, IoU 0,50–0,95; AR@1/10/100 và các nhóm
 diện tích theo ngưỡng 32²/96² trên ảnh gốc. Đây là phép đo trên VOC2012,
 không phải kết quả trên dataset COCO hoặc test chính thức VOC2012.
 
 Chi phí gồm thời gian train/validation, latency median/p95, FPS batch 1,
-throughput batch 4, tốc độ toàn pipeline test, peak allocated VRAM và số
+throughput batch 8, tốc độ toàn pipeline test, peak allocated VRAM và số
 tham số. Báo cáo nêu rõ workload và phần xử lý được tính trong từng phép đo.
+
+### Dữ liệu cho Kaggle
+
+A2.kaggle.ipynb đọc `/kaggle/input/datasets/dangtai1720/a2-voc2012`.
+Dataset gắn vào session cần giữ `voc2012/train.csv`, `val.csv`, `test.csv`
+và các JPEG/XML tại đúng đường dẫn tương đối ghi trong CSV. Thư mục input
+chỉ đọc; không nhân bản ảnh theo split. Số liệu báo cáo dùng bản Kaggle,
+batch 8/eval 8, accumulation 3. A2.ipynb chạy local dùng `datasets/voc`,
+batch 4/eval 4, accumulation 3; các split và quy tắc annotation giống nhau.
 
 ### Tái tạo trên máy khác
 
@@ -339,8 +370,7 @@ Tải VOC2012 trainval từ nguồn chính thức, giải nén JPEGImages/Annota
 theo schema trên. Key local có tiền tố `2012_` trước tên file gốc để phân biệt
 VOC2007; phải giữ cùng tập key và thứ tự sắp xếp trước khi shuffle seed 42.
 Chia 9.232/1.154/1.154 rồi cập nhật đường dẫn tới JPEG/XML. Không cần tải test
-VOC2012 không có GT. Để giữ chính xác cách chia đã dùng, sao chép ba manifest
-VOC2012 và metadata cùng dữ liệu nguồn.
+VOC2012 không có GT. Quy tắc chia được triển khai ở phần chuẩn bị từ nguồn: Python `random.Random(42)`, shuffle danh sách ID đã sort, cắt 80/10/10, rồi sort từng split.
 
 ## VisDrone2019-DET · dữ liệu lưu trữ local
 
@@ -633,8 +663,7 @@ không nạp trọng số detection pretrained trên COCO.
 Weights nằm trong `datasets/pretrained/checkpoints`, chỉ tải khi thiếu.
 ResNet-50 có 3/4/6/3 bottleneck; C2–C5 có 256/512/1.024/2.048 channels.
 A2 bỏ FC phân loại ImageNet, dùng FrozenBatchNorm và fine-tune các Conv.
-Best weights chỉ giữ trong CPU RAM trong cùng phiên chạy, không ghi thêm
-file checkpoint ra project.
+Best weights nằm trong `model/<bài>/<thí nghiệm>/latest.pt`. File chỉ thay khi validation cải thiện; không chứa số epoch hoặc trạng thái optimizer. Run All nạp weights có sẵn để tiếp tục train. Không đưa weights lên Git.
 
 ## Dữ liệu ngoài phạm vi thực nghiệm và công bố
 
@@ -655,3 +684,233 @@ Với repo đã track dữ liệu từ trước, cần bỏ raw data khỏi inde
 tự bỏ file đã track. Không dùng git add -f với dữ liệu/cache.
 Đề bài, notebook có output cell và báo cáo được public; raw datasets giữ local.
 Tôn trọng điều kiện sử dụng nguồn và trích dẫn dataset/paper trong báo cáo.
+
+## Chuẩn bị dữ liệu từ nguồn
+
+Chạy từng đoạn bằng Python 3.14 từ project root. Output đặt trong
+`datasets/_prepared` để tránh ghi đè dữ liệu đang dùng. Khi đã kiểm tra, đặt
+`FASHION_MNIST_ROOT`, `GTSRB_ROOT`, `VOC_ROOT` tới các folder tương ứng trước
+khi khởi động Jupyter, hoặc chuyển chúng vào các đường dẫn mặc định khi các
+folder đích chưa tồn tại. Mỗi đoạn chạy độc lập.
+
+### Fashion-MNIST
+
+Torchvision tải bốn file IDX nguồn. NumPy `default_rng(42)` dùng chung qua
+10 lớp theo thứ tự 0–9; 600 mẫu đầu sau shuffle mỗi lớp làm validation, rồi
+sort indices. Mean/std tính trên train bằng tensor float32, std hiệu chỉnh
+mẫu (`correction=1`), trước khi chia 255. Quy tắc indices đã đối chiếu đầy đủ
+với bản local; hash byte còn phụ thuộc định dạng NPY/phiên bản thư viện.
+
+```python
+from pathlib import Path
+import hashlib, json
+import numpy as np
+import torch
+from torchvision.datasets import FashionMNIST
+
+base = Path("datasets/_prepared/fashion_mnist")
+base.mkdir(parents=True, exist_ok=True)
+source = FashionMNIST(base / "source", train=True, download=True)
+test = FashionMNIST(base / "source", train=False, download=True)
+rng = np.random.default_rng(42)
+indices = {"train": [], "val": []}
+for label in range(10):
+    ids = np.flatnonzero(source.targets.numpy() == label)
+    rng.shuffle(ids)
+    indices["val"].extend(ids[:600].tolist())
+    indices["train"].extend(ids[600:].tolist())
+indices = {s: sorted(ids) for s, ids in indices.items()}
+torch.set_num_threads(8)
+pixels = source.data[indices["train"]].float()
+mean, std = pixels.mean().item() / 255, pixels.std().item() / 255
+fingerprint = hashlib.sha256(json.dumps({**indices, "normalization": [mean, std]}, sort_keys=True).encode()).hexdigest()
+metadata = dict(schema=1, dataset="Fashion-MNIST", seed=42,
+    split_hash=fingerprint, normalization=dict(mean=mean, std=std),
+    source="https://github.com/zalandoresearch/fashion-mnist", license="MIT", splits={})
+for split, raw, ids in [("train", source, indices["train"]),
+        ("val", source, indices["val"]), ("test", test, list(range(len(test))))]:
+    folder = base / split
+    folder.mkdir(exist_ok=True)
+    arrays = dict(images=raw.data.numpy()[ids], labels=raw.targets.numpy()[ids].astype(np.uint8),
+                  indices=np.array(ids, dtype=np.int64))
+    checksums = {}
+    for key, value in arrays.items():
+        path = folder / f"{key}.npy"
+        np.save(path, value, allow_pickle=False)
+        checksums[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    metadata["splits"][split] = dict(count=len(ids), sha256=checksums)
+(base / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+print({s: v["count"] for s, v in metadata["splits"].items()}, fingerprint)
+```
+
+### GTSRB
+
+Giải nén ba ZIP chính thức vào `datasets/_raw/gtsrb`, để có
+`GTSRB/Final_Training/Images`, `GTSRB/Final_Test/Images` và `GT-final_test.csv`.
+Giữ thứ tự dòng CSV nguồn, đọc class 0–42. Một RNG NumPy dùng qua cả 43 lớp;
+sort track rồi shuffle, chọn `max(1, round(0.2 * số_track))` làm validation.
+Không shuffle frame trong track. Quy tắc đã đối chiếu toàn bộ indices local.
+PNG dùng RGB, compression level 6; kiểm tra pixel trước khi ghi manifest.
+
+```python
+from pathlib import Path
+import csv, hashlib, json
+import numpy as np
+from PIL import Image
+
+raw = Path("datasets/_raw/gtsrb")
+base = Path("datasets/_prepared/gtsrb")
+base.mkdir(parents=True, exist_ok=True)
+train_rows = []
+for label in range(43):
+    folder = raw / "GTSRB/Final_Training/Images" / f"{label:05d}"
+    with (folder / f"GT-{label:05d}.csv").open(newline="") as stream:
+        for row in csv.DictReader(stream, delimiter=";"):
+            track = f"{label:05d}_{Path(row['Filename']).stem.split('_')[0]}"
+            train_rows.append((folder / row["Filename"], row, label, track))
+with (raw / "GT-final_test.csv").open(newline="") as stream:
+    test_rows = [(raw / "GTSRB/Final_Test/Images" / row["Filename"], row,
+                  int(row["ClassId"]), "") for row in csv.DictReader(stream, delimiter=";")]
+rng = np.random.default_rng(42)
+indices = {"train": [], "val": []}
+for label in range(43):
+    tracks = sorted({track for _, _, cls, track in train_rows if cls == label})
+    rng.shuffle(tracks)
+    heldout = set(tracks[:max(1, round(len(tracks) * 0.2))])
+    for i, (_, _, cls, track) in enumerate(train_rows):
+        if cls == label:
+            indices["val" if track in heldout else "train"].append(i)
+fingerprint = hashlib.sha256(json.dumps({**indices,
+    "files": [path.name for path, _, _, _ in train_rows]}, sort_keys=True).encode()).hexdigest()
+metadata = dict(schema=1, dataset="GTSRB", seed=42, split_hash=fingerprint,
+    group_key="class_id + physical_sign_track", image_format="PNG lossless; RGB pixels preserved",
+    source="https://sid.erda.dk/public/archives/daaeac0d7ce1152aea9b61d9f1e19370/published-archive.html", splits={})
+for split, source_rows, ids in [("train", train_rows, indices["train"]),
+        ("val", train_rows, indices["val"]), ("test", test_rows, list(range(len(test_rows))))]:
+    folder = base / split
+    entries = []
+    for i in ids:
+        path, row, label, track = source_rows[i]
+        relative = Path("images") / f"{label:05d}" / f"{path.stem}.png"
+        output = folder / relative
+        output.parent.mkdir(parents=True, exist_ok=True)
+        with Image.open(path) as image:
+            rgb = image.convert("RGB")
+            rgb.save(output, format="PNG", compress_level=6)
+            with Image.open(output) as encoded:
+                assert np.array_equal(np.asarray(rgb), np.asarray(encoded.convert("RGB")))
+        entry = dict(image=relative.as_posix(), label=label, track=track,
+            original_index=i, original_filename=path.name, width=int(row["Width"]), height=int(row["Height"]))
+        for axis in ("x1", "y1", "x2", "y2"):
+            key = f"Roi.{axis.upper()}"
+            entry[f"roi_{axis}"] = row.get(key, row.get(f"Roi.{axis}"))
+        entry["sha256"] = hashlib.sha256(output.read_bytes()).hexdigest()
+        entries.append(entry)
+    manifest = folder / "samples.csv"
+    with manifest.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(entries[0]), lineterminator="\r\n")
+        writer.writeheader()
+        writer.writerows(entries)
+    metadata["splits"][split] = dict(count=len(entries), manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest())
+(base / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+print({s: v["count"] for s, v in metadata["splits"].items()}, fingerprint)
+```
+
+### VOC2012
+
+Tải `VOCtrainval_11-May-2012.tar`, giải nén vào `datasets/_prepared/voc` để có
+`VOCdevkit/VOC2012`. Chỉ dùng `ImageSets/Main/trainval.txt` có 11.540 ảnh.
+Danh sách ID được sort, shuffle bằng **Python `random.Random(42)`**, cắt
+9.232/1.154/1.154 rồi sort từng split. Thành viên và thứ tự của cả ba split
+đã đối chiếu với local. Đường dẫn CSV khi dựng mới tham chiếu nguồn JPEG/XML
+ngay trong VOCdevkit; không nhân bản ảnh theo split, nên CSV có thể khác hash
+byte của bản local có đường dẫn khác. Nhãn và danh sách ID phải khớp.
+
+```python
+from pathlib import Path
+from collections import Counter
+import csv, json, random
+import xml.etree.ElementTree as ET
+
+base = Path("datasets/_prepared/voc")
+raw = base / "VOCdevkit/VOC2012"
+names = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
+         "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+ids = sorted((raw / "ImageSets/Main/trainval.txt").read_text().split())
+assert len(ids) == 11540 and len(set(ids)) == 11540
+random.Random(42).shuffle(ids)
+splits = dict(train=sorted(ids[:9232]), val=sorted(ids[9232:10386]), test=sorted(ids[10386:]))
+out = base / "voc2012"
+out.mkdir(parents=True, exist_ok=True)
+metadata = dict(dataset="VOC2012 detection labeled trainval; local 80/10/10 holdout", seed=42,
+    original_images=11540, source="https://www.robots.ox.ac.uk/~vgg/projects/pascal/VOC/voc2012/",
+    coordinate_format="0-based half-open xyxy; xmin/ymin minus1, xmax/ymax unchanged",
+    paths_relative_to="datasets/voc", splits={})
+for split, image_ids in splits.items():
+    records, counts = [], Counter()
+    for image_id in image_ids:
+        xml = raw / "Annotations" / f"{image_id}.xml"
+        tree = ET.parse(xml).getroot()
+        width, height = int(tree.findtext("size/width")), int(tree.findtext("size/height"))
+        boxes, labels, difficult, truncated = [], [], [], []
+        for obj in tree.findall("object"):
+            label = names.index(obj.findtext("name")) + 1
+            b = obj.find("bndbox")
+            coords = [float(b.findtext(k)) for k in ("xmin", "ymin", "xmax", "ymax")]
+            x1, y1, x2, y2 = coords[0]-1, coords[1]-1, coords[2], coords[3]
+            box = [max(0., min(x1, width)), max(0., min(y1, height)),
+                   max(0., min(x2, width)), max(0., min(y2, height))]
+            if box[2] <= box[0] or box[3] <= box[1]: continue
+            diff, trunc = int(obj.findtext("difficult", "0")), int(obj.findtext("truncated", "0"))
+            boxes.append(box); labels.append(label); difficult.append(diff); truncated.append(trunc)
+            if not diff: counts[names[label-1]] += 1
+        records.append(dict(key=f"2012_{image_id}",
+            image=(raw / "JPEGImages" / f"{image_id}.jpg").relative_to(base).as_posix(),
+            annotation=xml.relative_to(base).as_posix(), width=width, height=height,
+            boxes=json.dumps(boxes,separators=(",", ":")), labels=json.dumps(labels,separators=(",", ":")),
+            difficult=json.dumps(difficult,separators=(",", ":")), truncated=json.dumps(truncated,separators=(",", ":"))))
+    with (out / f"{split}.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(records[0]), lineterminator="\r\n")
+        writer.writeheader(); writer.writerows(records)
+    metadata["splits"][split] = dict(images=len(records), regular_boxes=sum(counts.values()),
+        difficult_boxes=sum(sum(json.loads(r['difficult'])) for r in records),
+        truncated_boxes=sum(sum(json.loads(r['truncated'])) for r in records),
+        per_class={name: counts[name] for name in names})
+(out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+print({s: (v["images"],v["regular_boxes"]) for s,v in metadata["splits"].items()})
+```
+
+### Kiểm tra prepared trước khi train
+
+Đoạn này chạy riêng một lần khi tải/chuyển dữ liệu. Nếu dùng đường dẫn ngoài
+project, đổi `base` tương ứng. Không đặt trong mini-batch loop.
+
+```python
+from pathlib import Path
+import csv, hashlib, json
+import numpy as np
+
+for name in ("fashion_mnist", "gtsrb"):
+    base = Path("datasets") / name
+    meta = json.loads((base / "metadata.json").read_text(encoding="utf-8"))
+    for split, info in meta["splits"].items():
+        checksums = info.get("sha256", {"samples.csv": info.get("manifest_sha256")})
+        for file, expected in checksums.items():
+            assert hashlib.sha256((base / split / file).read_bytes()).hexdigest() == expected
+    print(name, {s: v["count"] for s,v in meta["splits"].items()})
+base = Path("datasets/voc")
+keys = {}
+for split in ("train", "val", "test"):
+    with (base / "voc2012" / f"{split}.csv").open(newline="", encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
+    keys[split] = {r["key"] for r in rows}
+    assert len(keys[split]) == len(rows)
+    for r in rows:
+        assert (base / r["image"]).is_file() and (base / r["annotation"]).is_file()
+        boxes, labels = json.loads(r["boxes"]), json.loads(r["labels"])
+        assert len(boxes) == len(labels) == len(json.loads(r["difficult"])) == len(json.loads(r["truncated"]))
+        for (x1,y1,x2,y2),label in zip(boxes, labels):
+            assert 1 <= label <= 20 and 0 <= x1 < x2 <= int(r["width"]) and 0 <= y1 < y2 <= int(r["height"])
+    print("VOC2012", split, len(rows))
+assert not (keys["train"] & keys["val"] or keys["train"] & keys["test"] or keys["val"] & keys["test"])
+```

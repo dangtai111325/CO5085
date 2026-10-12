@@ -193,7 +193,7 @@
 \TensorMap{v}{10.4}{.6}{.2}{1}{.4}{1.1}{2048}
 \draw[flow] (c-east)--node[above,align=center,font=\footnotesize]{Global\\AvgPool}(v-west);
 \NeuronLayer{o}{10.7}{-2.5}{43 logits}
-\draw[flow] (v-south)--node[right,font=\footnotesize]{FC $2048\to43$}(10.7,-1.3);
+\draw[flow] (10.5,-.05)--node[right,font=\footnotesize]{FC $2048\to43$}(10.7,-1.3);
 \end{tikzpicture}}
 \newcommand{\ArchDeiT}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
@@ -202,10 +202,12 @@
 \TensorMap{p}{4.5}{.5}{1.9}{1}{.6}{1}{$196\times384$}
 \draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Conv $16\times16$\\stride 16\\$3\to384$}(p-west);
 \TensorMap{e}{8.8}{.5}{1.9}{1}{.6}{1}{$197\times384$}
-\draw[flow] (p-east)--node[above,align=center,font=\footnotesize]{CLS + position\\12 encoder block\\6 head; FFN 1536}(e-west);
+\draw[flow] (p-east)--(e-west);
+\node[anchor=south,align=center,font=\footnotesize] at (7.8,2.1)
+ {CLS + position\\12 encoder block\\6 head; FFN 1536};
 \NeuronLayer{h}{9.7}{-2.6}{384; CLS}
 \NeuronLayer{o}{5.7}{-2.6}{43 logits}
-\draw[flow] (e-south)--node[right,font=\footnotesize]{LayerNorm, lấy CLS}(9.7,-1.4);
+\draw[flow] (9.75,-.05)--node[right,font=\footnotesize]{LayerNorm, lấy CLS}(9.7,-1.4);
 \DenseLinks{h}{o}\node[font=\footnotesize] at (7.6,-1.35) {FC $384\to43$};
 \end{tikzpicture}}
 \newcommand{\ArchFPN}[1]{%

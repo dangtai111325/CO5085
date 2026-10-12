@@ -2,6 +2,12 @@
 /datasets/*
 !/datasets/README.md
 
+# Local validation-best model weights.
+/model/
+
+# Generated Kaggle upload bundles.
+/kaggle_upload/
+
 # Python/Jupyter/editor caches.
 **/.ipynb_checkpoints/
 **/__pycache__/

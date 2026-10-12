@@ -33,69 +33,88 @@ dropout 0,1. Toàn classifier có 10 ánh xạ Linear theo cách đếm QKV gộ
 một Linear: 1 embedding + $2\times4$ trong encoder + 1 head. CNN-stem bổ sung 2 Conv.
 
 Cặp manual/PyTorch copy toàn bộ weights khởi tạo, gồm tokenizer, position,
-FFN và head. Kiểm tra CUDA float64 với dropout tắt đạt sai số tối đa
-$1,665\times10^{-16}$ ở forward và input/weight/bias gradients.
+FFN và head. Kiểm tra CUDA float64 với dropout tắt đạt sai số forward tối đa
+$1,665\times10^{-16}$; các gradient input/weight/bias khớp theo kiểm tra.
 Parity xác nhận phép toán; không đảm bảo dropout/RNG và đường tối ưu của
 hai lần training giống nhau.
 
 \section{Thiết lập huấn luyện và tám cấu hình}
-AdamW LR $10^{-3}$, WD $10^{-4}$, batch 128, tối đa 100 epoch; thí nghiệm dùng
-patience 10, min-delta $10^{-4}$ và checkpoint min validation loss.
-Sáu run cơ sở là manual/PyTorch $\times $ rows/patch/stem, H=4.
-Tokenizer manual tốt nhất theo validation là CNN-stem, được dùng thêm H=2 và H=8;
-H=4 tái dùng run đã train. D giữ 64 nên số tham số không thay đổi theo H.
+AdamW learning rate $10^{-3}$, weight decay $10^{-4}$, batch 128,
+tối đa 100 epoch; early stopping dùng validation loss, patience 4,
+min-delta $10^{-4}$. Checkpoint có validation loss nhỏ nhất được dùng để test.
+Sáu cấu hình chính là Manual/PyTorch $\times$ Rows/Patch/CNN-stem với H=4.
+CNN-stem được chọn từ các cấu hình Manual bằng validation, rồi thử thêm
+H=2 và H=8; giữ $D=64$, tương ứng mỗi head có 32/16/8 chiều.
 
-Ký hiệu bảng: M=manual, T=PyTorch; R=rows, P=patch 4, C=CNN-stem;
-chữ số cuối là H. Ví dụ M-C4 là manual CNN-stem, 4 head.
+Ký hiệu bảng: M=Manual, T=PyTorch; R=Rows, P=Patch, C=CNN-stem;
+số cuối là số head. M-C4 là Manual CNN-stem với bốn head.
 
-\section{Kết quả và so sánh theo đề}
-\DataTable{assets/e2/results.tex}{Metric E2; mọi model đánh giá đủ 10.000 ảnh test, F1 là macro-F1.}
-\DataTable{assets/e2/cost.tex}{Capacity và chi phí của tám cấu hình E2.}
-\ReportFigure{assets/e2/comparison.png}{Tổng quan accuracy validation, capacity và chi phí E2.}
-\ReportFigure{assets/e2/implementation_tokenizer_comparison.png}{So sánh manual/PyTorch cùng tokenizer: accuracy, params và giây/epoch.}
-\begin{table}[H]\centering\caption{So sánh manual/PyTorch ở H=4, cùng weights khởi tạo.}
-\small\begin{tabular}{lrrrr}\toprule Tokenizer & M val & T val & M--T (điểm\%) & M/T s/epoch\\\midrule
-Rows &89,97&89,90&+0,07&6,217 / 6,142\\
-Patch &89,17&88,47&+0,70&7,347 / 6,902\\
-CNN-stem &90,65&90,68&$-0,03$&6,487 / 6,824\\\bottomrule\end{tabular}\end{table}
-Sai số đối chiếu phép toán rất nhỏ không có nghĩa metric training phải bằng nhau:
-dropout, thứ tự sử dụng số ngẫu nhiên và AMP làm đường tối ưu khác.
-Chênh lệch 0,07 hoặc 0,03 điểm ở rows/stem nhỏ; chênh lệch 0,70 ở patch cũng
-chỉ quan sát ở một seed, chưa kết luận implementation nào tốt hơn.
+\section{Kết quả và hai phép so sánh bắt buộc}
+\DataTable{assets/e2/results.tex}{Kết quả tám cấu hình E2; test dùng đầy đủ 10.000 ảnh, F1 là macro-F1.}
+\DataTable{assets/e2/cost.tex}{Capacity, epoch và thời gian của tám cấu hình E2.}
+\DataTable{assets/e2/implementation.tex}{Manual và PyTorch ở H=4 với cùng tokenizer; chênh lệch tính theo điểm phần trăm.}
 
-CNN-stem đạt validation cao nhất trong cả hai implementation
-(90,65\% manual, 90,68\% PyTorch). So với patch, cải thiện tương ứng 1,48
-và 2,21 điểm; so với rows là 0,68 và 0,78 điểm. Các convolution học đặc trưng
-cục bộ trước attention là giải thích kiến trúc hợp lý, nhưng chưa cô lập
-tác động vì capacity và token features cũng thay đổi. Rows $ N=28$ có
-attention matrix 784 phần tử/head; patch/stem $ N=49$ có 2.401, gấp 3,06 lần.
-Chi phí toàn mạng còn gồm projections/FFN/CNN, nên không suy tốc độ chỉ từ $ N^2$.
+Với cùng tokenizer, Manual cao hơn PyTorch trên validation 0,07; 0,25;
+0,18 điểm tương ứng Rows, Patch và CNN-stem. Trên test, chênh lệch là
++0,29; $-0,12$; +0,33 điểm. Parity forward/gradient xác nhận phép toán
+MSA, nhưng một seed không đủ để xếp hạng hai cách cài đặt theo các
+chênh lệch nhỏ này; dropout và AMP có thể tạo đường tối ưu khác nhau.
 
-\ReportFigure{assets/e2/head_ablation_curves.png}{Ablation H=2/4/8 trên manual CNN-stem, giữ D=64.}
-H=2/4/8 đạt val 90,50/90,65/90,35\%; test 90,74/90,50/90,23\%.
-H=4 tốt nhất theo validation nhưng H=2 cao hơn trên test; giữ quy tắc chọn
-H=4 thay vì đổi quyết định sau test. Tăng head không tăng tham số projection,
-mà chia feature mỗi head thành 32/16/8 chiều; accuracy không tăng đơn điệu.
+CNN-stem đạt validation tốt nhất ở cả hai bản: 90,65\% Manual và
+90,47\% PyTorch. So với Patch, tăng 2,05 và 2,12 điểm; so với Rows,
+tăng 0,68 và 0,57 điểm. CNN-stem có thêm 2.480 tham số so với Patch,
+nên lợi ích có thể đến từ cả đặc trưng cục bộ lẫn capacity.
 
-\section{Learning curves, attention và lỗi}
-\ReportFigure{assets/e2/learning_curves_loss.png}{Loss theo epoch, nhóm theo tokenizer; train nét đứt, validation nét liền.}
-\ReportFigure{assets/e2/learning_curves_accuracy.png}{Accuracy theo epoch của các cấu hình E2.}
-Các train--val gap khoảng 1,53--2,72 điểm phần trăm. Đọc curves cùng best
-epoch cho thấy cần dừng khi validation chững, thay vì chọn loss train thấp nhất.
-\ReportFigure{assets/e2/attention_best_manual.png}{Attention của manual CNN-stem H=4 trên hai ảnh validation cố định; trung bình head, block cuối, gộp 7 nhóm query/key, tổng mỗi hàng 100\%.}
-Map thể hiện phân bố trọng số giữa các nhóm token sau CNN-stem, không phải
-saliency trực tiếp ở pixel gốc. Việc trung bình head và gộp 7 nhóm làm mất
-chi tiết từng head/token. Các ô sáng cho biết trọng số kết hợp lớn, không
-tự chứng minh token là nguyên nhân của quyết định phân loại.
+Thời gian mỗi epoch của PyTorch thấp hơn Manual 1,7\% với Rows, 0,2\% với Patch và 14,7\%
+với CNN-stem trong phép đo này. Rows dùng 28 token, Patch/stem dùng 49;
+số phần tử attention mỗi head tăng từ 784 lên 2.401 (3,06 lần).
+Chi phí toàn mạng còn có projections, FFN và CNN; không suy thời gian
+chỉ từ $N^2$. Tổng thời gian còn phụ thuộc số epoch dừng sớm.
 
-\begin{table}[H]\centering\caption{Nhầm lẫn lớn nhất của ba tokenizer manual H=4.}
-\small\begin{tabular}{llrr}\toprule Model & Thật $\to$ dự đoán & Số ảnh & \% lớp thật\\\midrule
-M-R4 & Shirt $\to $ T-shirt/top &139&13,9\\
-M-P4 & Coat $\to $ Pullover &127&12,7\\
-M-C4 & Shirt $\to $ T-shirt/top &94&9,4\\\bottomrule\end{tabular}\end{table}
-\ReportFigure[.9]{assets/e2/failure_examples_test.png}{Gallery lỗi của các mô hình đại diện E2 chọn bằng validation.}
-Ảnh lỗi và ma trận đầy đủ ở Phụ lục cho thấy nhóm áo vẫn khó tách.
-Patch hay nhầm Coat/Pullover; stem giảm cặp Shirt/T-shirt/top trong bản
-manual, song không xóa lỗi. E2 sử dụng hai cách cài đặt và ba cách tạo token;
-giới hạn là encoder nhỏ, một seed, chưa kiểm soát capacity giữa tokenizers
-và attention visualization chỉ mang tính mô tả.
+\subsection{Ảnh hưởng số head}
+\DataTable{assets/e2/heads.tex}{H=2/4/8 trên Manual CNN-stem; $d_h=D/H$, giữ $D=64$.}
+H=4 đạt accuracy validation/test cao nhất trong ba lượt. Giữ $D=64$
+nên cả ba cùng 74.426 tham số; tăng số head không đảm bảo kết quả tốt hơn.
+\PortraitFigure{assets/e2/paired_accuracy.png}{So sánh accuracy validation giữa Manual và PyTorch cho từng tokenizer.}
+\PortraitFigure{assets/e2/paired_time.png}{Thời gian train và validation trung bình mỗi epoch, cùng protocol và GPU.}
+\PortraitFigure{assets/e2/head_accuracy.png}{Đường cong accuracy của Manual CNN-stem với H=2, 4 và 8.}
+
+\section{Đường cong học, attention và lỗi}
+Khoảng cách train--validation tại checkpoint nằm trong 1,09--1,98 điểm.
+Trên CNN-stem, hai bản có quá trình hội tụ gần nhau nhưng validation loss
+vẫn dao động khi train loss giảm. Đường cong Rows/Patch và loss của thí
+nghiệm số head được trình bày riêng ở Phụ lục.
+
+Attention lấy từ block cuối của M-C4, trung bình bốn head, gộp 49 token
+thành bảy nhóm. Hai ảnh validation cố định là Shirt (index 0) và
+Ankle boot (index 31), đều dự đoán đúng. Tổng mỗi hàng bằng 1 trước khi
+làm tròn; tổng các ô phần trăm nguyên có thể lệch 100\%.
+
+\begin{table}[H]\centering\caption{Entropy attention chuẩn hóa theo head; số đọc từ biểu đồ, làm tròn ba chữ số.}
+\begin{tabular}{lrrrr}\toprule Ảnh & H1 & H2 & H3 & H4\\\midrule
+Shirt &0,864&0,582&0,658&0,844\\
+Ankle boot &0,326&0,694&0,736&0,698\\\bottomrule\end{tabular}\end{table}
+Entropy thấp hơn cho biết attention tập trung hơn; head 1 của Ankle boot
+có entropy 0,326 so với 0,864 ở Shirt. Đây là trọng số kết hợp token sau
+CNN-stem, không phải saliency pixel hay bằng chứng nhân quả. Hai ảnh
+chỉ minh họa, không đại diện cho phân bố toàn bộ mười lớp.
+
+\DataTable{assets/e2/errors.tex}{Cặp lớp nhầm nhiều nhất của từng cấu hình E2 trên test.}
+M-C4 nhầm Shirt thành T-shirt/top 94 ảnh, ít hơn M-R4 (139 ảnh);
+T-C4 nhầm chiều ngược T-shirt/top thành Shirt 151 ảnh. Nhóm áo vẫn là
+nguồn lỗi chính, dù accuracy tổng của CNN-stem cao hơn.
+Ma trận của tám cấu hình nằm ở Phụ lục. E2 đáp ứng hai cách cài đặt và
+ba tokenizer; giới hạn là encoder nhỏ, một seed và các tokenizer khác
+capacity. Không suy kết luận tổng quát về Transformer từ một dataset.
+
+\PortraitFigure{assets/e2/loss_stem.png}{Loss của Manual và PyTorch với CNN-stem H=4; nét đứt train, nét liền validation.}
+\PortraitFigure{assets/e2/accuracy_stem.png}{Accuracy của Manual và PyTorch với CNN-stem H=4.}
+\begin{figure}[H]\centering
+\includegraphics[width=.47\linewidth]{assets/e2/sample_shirt_report.png}\hfill
+\includegraphics[width=.47\linewidth]{assets/e2/sample_boot_report.png}
+\caption{Hai ảnh validation dùng để phân tích attention của Manual CNN-stem H=4: Shirt (index 0) và Ankle boot (index 31). Confidence lấy từ output đã lưu.}
+\end{figure}
+\PortraitFigure{assets/e2/attention_shirt.png}{Attention gộp của ảnh Shirt; hàng là nhóm query, cột là nhóm key.}
+\PortraitFigure{assets/e2/attention_boot.png}{Attention gộp của ảnh Ankle boot, cùng thang màu và cách nhóm token.}
+\PortraitFigure{assets/e2/errors_m_c4.png}{Mẫu lỗi của Manual CNN-stem H=4, bố cục $2\times5$.}
+\PortraitFigure{assets/e2/errors_t_c4.png}{Mẫu lỗi của PyTorch CNN-stem H=4, cùng nhóm lớp thật.}

@@ -78,7 +78,7 @@
   a:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
     .skip{position:absolute;left:12px;top:-80px;background:white;padding:12px;z-index:30}.skip:focus{top:8px}
     section,article[id]{scroll-margin-top:110px}.navlinks a,.btn{min-height:44px;display:inline-flex;align-items:center}
-    .review{background:var(--accent-soft);border-left:4px solid var(--accent);padding:14px 18px;border-radius:8px;margin-bottom:24px}
+    .results-note{background:var(--accent-soft);border-left:4px solid var(--accent);padding:14px 18px;border-radius:8px;margin-bottom:24px}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
     @media(max-width:450px){.wrap{width:calc(100% - 32px)}nav{align-items:center}.navlinks{gap:0 10px}.hero h1{font-size:36px}.card{padding:20px}.kv{grid-template-columns:1fr;gap:4px}.kv dd{margin-bottom:8px}.deadline{max-width:65%;text-align:right}.section-head{display:block}}
     @media print{header,.skip,.links,.resource-list{display:none}.hero{padding-top:12px}.card{box-shadow:none;break-inside:avoid}body{background:white}.wrap{width:100%}a{overflow-wrap:anywhere}}
@@ -105,7 +105,7 @@
       <h1>Deep Learning & Applications in Computer Vision</h1>
       <p>Từ phân loại ảnh đến phát hiện đối tượng: code, kết quả thực nghiệm và báo cáo cho năm bài tập E1–E3, A1–A2.</p>
       <div class="links"><a class="btn primary" href="../report/CO5085_Report.pdf">Đọc báo cáo tổng · PDF</a><a class="btn" href="#coursework">Khám phá các bài tập</a></div>
-      <div class="summary-stats" aria-label="Quy mô thực nghiệm"><span><strong>5</strong> notebook độc lập</span><span><strong>36</strong> lượt huấn luyện</span><span><strong>3</strong> bộ dữ liệu</span><span><strong>79</strong> trang báo cáo</span></div>
+      <div class="summary-stats" aria-label="Quy mô thực nghiệm"><span><strong>5</strong> bài thực nghiệm</span><span><strong>36</strong> lượt huấn luyện</span><span><strong>3</strong> bộ dữ liệu</span><span><strong>160</strong> trang báo cáo</span></div>
       <div class="hero-meta">
         <span class="chip">Học kỳ 261 · 2026–2027</span>
         <span class="chip">Giảng viên: Lê Thành Sách · Nguyễn Quốc Minh</span>
@@ -141,14 +141,14 @@
   <section class="section" id="coursework">
     <div class="wrap">
       <div class="section-head"><div><h2>Bài tập và kết quả</h2><p>Mỗi notebook chứa toàn bộ pipeline và output đã lưu. Xem trên GitHub hoặc tải về để chạy bằng Jupyter.</p></div></div>
-      <div class="review">Các số liệu dưới đây lấy từ test sau khi chọn mô hình bằng validation. Bảng đầy đủ, đường học, ma trận và ảnh dự đoán nằm trong notebook và <a href="../report/CO5085_Report.pdf">báo cáo tổng</a>.</div>
+      <div class="results-note">Các số liệu dưới đây lấy từ test sau khi chọn mô hình bằng validation. Bảng đầy đủ, đường học, ma trận và ảnh dự đoán nằm trong notebook và <a href="../report/CO5085_Report.pdf">báo cáo tổng</a>.</div>
       <div class="grid">
         <article class="card span-4" id="e1">
           <div class="assignment-top"><span class="code">E1</span><span class="deadline">02/11/2026 · 23:59</span></div>
           <h3>Softmax · MLP · CNN</h3>
           <p>Phân loại ảnh với training loop PyTorch tự viết và phân tích lỗi.</p>
           <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
-          <table class="result-table"><caption>Test accuracy · 10.000 ảnh</caption><tbody><tr><th scope="row">Softmax</th><td>84,27%</td></tr><tr><th scope="row">MLP</th><td>89,45%</td></tr><tr><th scope="row">CNN-A</th><td>91,66%</td></tr><tr><th scope="row">CNN-B</th><td><strong>91,97%</strong></td></tr></tbody></table>
+          <table class="result-table"><caption>Test accuracy · 10.000 ảnh</caption><tbody><tr><th scope="row">Softmax</th><td>84,11%</td></tr><tr><th scope="row">MLP</th><td>89,45%</td></tr><tr><th scope="row">CNN-A</th><td><strong>91,66%</strong></td></tr><tr><th scope="row">CNN-B</th><td>91,45%</td></tr></tbody></table>
           <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E1.ipynb">Xem E1</a><a class="btn" href="../source_code/E1.ipynb" download>Tải .ipynb</a></div>
         </article>
         <article class="card span-4" id="e2">
@@ -156,7 +156,7 @@
           <h3>MSA · Tokenization</h3>
           <p>Multi-Head Self-Attention tự hiện thực, bản PyTorch đối chiếu và nhiều cách token hóa.</p>
           <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
-          <table class="result-table"><caption>Cấu hình có test accuracy cao nhất trong E2</caption><tbody><tr><th scope="row">MSA PyTorch<br>CNN-stem · 4 heads</th><td><strong>90,78%</strong></td></tr></tbody></table>
+          <table class="result-table"><caption>Cấu hình chọn bằng validation trong E2</caption><tbody><tr><th scope="row">MSA thủ công<br>CNN-stem · 4 heads</th><td><strong>90,50%</strong></td></tr></tbody></table>
           <p class="context">8 cấu hình đối chiếu MSA thủ công/PyTorch, token theo hàng, patch, CNN-stem và số attention heads.</p>
           <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E2.ipynb">Xem E2</a><a class="btn" href="../source_code/E2.ipynb" download>Tải .ipynb</a></div>
         </article>
@@ -165,7 +165,7 @@
           <h3>LSTM · GRU</h3>
           <p>Mô hình hóa ảnh dưới dạng chuỗi và so sánh với baseline không hồi tiếp.</p>
           <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
-          <table class="result-table"><caption>Test accuracy · chuỗi theo hàng và baseline</caption><tbody><tr><th scope="row">LSTM rows</th><td>89,70%</td></tr><tr><th scope="row">GRU rows</th><td>90,06%</td></tr><tr><th scope="row">CNN-B baseline</th><td><strong>91,97%</strong></td></tr></tbody></table>
+          <table class="result-table"><caption>Test accuracy · chuỗi theo hàng và baseline</caption><tbody><tr><th scope="row">LSTM rows</th><td>89,70%</td></tr><tr><th scope="row">GRU rows</th><td>90,06%</td></tr><tr><th scope="row">CNN-B baseline</th><td>91,45%</td></tr></tbody></table>
           <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E3.ipynb">Xem E3</a><a class="btn" href="../source_code/E3.ipynb" download>Tải .ipynb</a></div>
         </article>
 
@@ -178,7 +178,7 @@
             <dt>CNN</dt><dd><span class="fixed">ResNet-50</span></dd>
             <dt>Transformer</dt><dd><span class="fixed">DeiT-Small/16 · non-distilled</span></dd>
           </dl>
-          <table class="result-table"><caption>Pretrained full · seed 42 · test GTSRB</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">Accuracy</th><th scope="col">Macro-F1</th></tr></thead><tbody><tr><th scope="row">ResNet-50</th><td>98,37%</td><td>0,9743</td></tr><tr><th scope="row">DeiT-Small</th><td>98,92%</td><td>0,9790</td></tr></tbody></table>
+          <table class="result-table"><caption>Pretrained full · seed 42 · test GTSRB</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">Accuracy</th><th scope="col">Macro-F1</th></tr></thead><tbody><tr><th scope="row">ResNet-50</th><td>97,83%</td><td>0,9678</td></tr><tr><th scope="row">DeiT-Small</th><td>98,92%</td><td>0,9790</td></tr></tbody></table>
           <p class="context">14 lượt train: scratch, head-only, partial/full fine-tuning, ảnh hưởng augmentation và lặp ba seed. Train/validation được chia theo track biển báo.</p>
           <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A1.ipynb">Xem A1</a><a class="btn" href="../source_code/A1.ipynb" download>Tải .ipynb</a></div>
         </article>
@@ -190,12 +190,12 @@
           <dl class="kv">
             <dt>Chủ đề</dt><dd><span class="fixed">Object Detection</span></dd>
             <dt>Dataset</dt><dd><span class="fixed">VOC2012 · 20 lớp · 9.232/1.154/1.154 local holdout</span></dd>
-            <dt>Huấn luyện</dt><dd>Batch 4 × accumulation 3; 23 / 13 epoch; best 21 / 11.</dd>
+            <dt>Huấn luyện</dt><dd>T4 x2, hai model song song; batch 8 × accumulation 3; 21 / 17 epoch; best 19 / 15.</dd>
             <dt>Video demo</dt><dd>Chưa có liên kết video.</dd>
           </dl>
-          <table class="result-table"><caption>Test holdout VOC2012 · 1.154 ảnh</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">VOC mAP50</th><th scope="col">AP50:95</th></tr></thead><tbody><tr><th scope="row">RetinaNet</th><td>71,58%</td><td>41,36%</td></tr><tr><th scope="row">Faster R-CNN</th><td>73,07%</td><td>40,75%</td></tr></tbody></table>
-          <p class="context">Notebook có AP/AR, precision, recall, F1, AP từng lớp, PR curves, ma trận, ảnh GT/dự đoán/lỗi và benchmark latency/FPS/VRAM.</p>
-          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A2.ipynb">Xem A2</a><a class="btn" href="../source_code/A2.ipynb" download>Tải .ipynb</a></div>
+          <table class="result-table"><caption>Test holdout VOC2012 · 1.154 ảnh</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">VOC mAP50</th><th scope="col">AP50:95</th></tr></thead><tbody><tr><th scope="row">RetinaNet</th><td>70,88%</td><td>39,13%</td></tr><tr><th scope="row">Faster R-CNN</th><td>73,16%</td><td>40,98%</td></tr></tbody></table>
+          <p class="context">Kaggle Tesla T4: FPS batch 1 25,08 / 22,68 (RetinaNet / Faster R-CNN). Notebook có AP/AR, precision, recall, F1, AP từng lớp, PR curves, ma trận, ảnh GT/dự đoán/lỗi và benchmark latency/FPS/VRAM.</p>
+          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A2.kaggle.ipynb">Xem A2</a><a class="btn" href="../source_code/A2.kaggle.ipynb" download>Tải .ipynb</a></div>
         </article>
 
         <article class="card span-12">
@@ -209,7 +209,7 @@
     <div class="wrap">
       <div class="section-head"><div><h2>Báo cáo và tài liệu</h2><p>Đề bài, dữ liệu, nguồn LaTeX và các paper dùng trong thực nghiệm.</p></div></div>
       <div class="grid">
-        <article class="card span-6"><h3>Báo cáo tổng · 79 trang</h3><p>Thiết lập thực nghiệm, sơ đồ mạng TikZ, kết quả và thảo luận cho cả năm bài. Notebook và các hình trong báo cáo được công bố cùng mã nguồn.</p><div class="resource-list"><a class="btn primary" href="../report/CO5085_Report.pdf">Mở PDF</a><a class="btn" href="../report/CO5085_Report.pdf" download>Tải PDF</a><a class="btn" href="https://github.com/dangtai111325/CO5085/tree/main/report/source_latex">Nguồn LaTeX</a></div></article>
+        <article class="card span-6"><h3>Báo cáo tổng · 160 trang</h3><p>Thiết lập thực nghiệm, sơ đồ mạng TikZ, kết quả và thảo luận cho cả năm bài. Notebook và các hình trong báo cáo được công bố cùng mã nguồn.</p><div class="resource-list"><a class="btn primary" href="../report/CO5085_Report.pdf">Mở PDF</a><a class="btn" href="../report/CO5085_Report.pdf" download>Tải PDF</a><a class="btn" href="https://github.com/dangtai111325/CO5085/tree/main/report/source_latex">Nguồn LaTeX</a></div></article>
         <article class="card span-6"><h3>Dữ liệu và cách chạy</h3><p>Fashion-MNIST, GTSRB và PASCAL VOC2012. README mô tả số lượng, phân bố lớp, định dạng nhãn, cách chia tập và nguồn tải. Dataset được giữ local, không đưa lên Git.</p><div class="resource-list"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/datasets/README.md">Thông tin dataset</a><a class="btn" href="https://github.com/dangtai111325/CO5085#readme">Hướng dẫn chạy</a></div></article>
         <article class="card span-6"><h3>Đề bài</h3><p>Các yêu cầu về code, so sánh mô hình, đầu ra thực nghiệm và báo cáo.</p><div class="resource-list"><a class="btn" href="../assignment/exercise-vne.pdf">Đề E1–E3 · PDF</a><a class="btn" href="../assignment/assignment1-vne.pdf">Đề A1 · PDF</a><a class="btn" href="../assignment/assignment2-vne.pdf">Đề A2 · PDF</a></div></article>
         <article class="card span-6"><h3>Paper cho A2</h3><p>Feature pyramid đa tỉ lệ và Focal Loss cho phát hiện đối tượng one-stage.</p><div class="resource-list"><a class="btn" href="https://arxiv.org/abs/1612.03144">FPN · CVPR 2017</a><a class="btn" href="https://arxiv.org/abs/1708.02002">Focal Loss · ICCV 2017</a></div><p class="context">A2 còn yêu cầu video demo riêng theo đề. Liên kết video sẽ được công bố khi có video.</p></article>
@@ -228,6 +228,14 @@
           <div class="event"><time>09 Nov 2026 · W10</time><strong>E3 + A1.2</strong><span>Hoàn thiện E3 và toàn bộ so sánh A1.</span></div>
           <div class="event"><time>16 Nov 2026 · W11</time><strong>A2.2 — Final</strong><span>Pipeline detection, ≥2 biến thể, paper analysis, kết quả và thảo luận.</span></div>
         </div>
+      </article>
+    </div>
+  </section>
+  <section class="section" id="ai-support">
+    <div class="wrap">
+      <article class="card">
+        <h2>Hỗ trợ của công cụ AI</h2>
+        <p class="context">AI hỗ trợ format code và Markdown, triển khai PyTorch theo phương pháp và cấu hình được chỉ định, kiểm tra pipeline, tổng hợp bảng và biểu đồ từ output, dựng sơ đồ TikZ và dàn trang báo cáo theo mẫu. AI cũng hỗ trợ soạn hướng dẫn chạy và chuẩn bị dữ liệu. Người thực hiện chịu trách nhiệm kiểm chứng, giải thích mã nguồn và kết quả. Phạm vi hỗ trợ được trình bày trong notebook, README và báo cáo theo mục 1.6 của đề E1–E3.</p>
       </article>
     </div>
   </section>

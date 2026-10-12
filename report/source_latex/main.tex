@@ -41,12 +41,12 @@ tách validation theo track biển báo. A2 dùng toàn bộ 11.540 ảnh VOC201
 trainval có nhãn, chia 9.232/1.154/1.154 thành train/validation/test nội bộ.
 Mỗi notebook độc lập, có vòng lặp PyTorch và lưu kết quả ngay trong output cell.
 
-Trên Fashion-MNIST, CNN-B đạt test accuracy 91,97\% với 94.186 tham số;
-MSA PyTorch với CNN-stem đạt 90,78\%; GRU theo hàng đạt 90,06\%.
+Trên Fashion-MNIST, CNN-A đạt test accuracy 91,66\%; CNN-B đạt 91,45\%
+với 94.186 tham số. MSA thủ công với CNN-stem đạt 90,50\%; GRU theo hàng đạt 90,06\%.
 Trên GTSRB, pretrained full ResNet-50 và DeiT-Small/16 ở seed 42 đạt
-98,37\% và 98,92\%; trung bình ba seed là $98,44\pm0,29\%$ và
-$98,95\pm0,33\%$. Trên VOC2012, RetinaNet/Faster R-CNN đạt mAP50
-71,58\%/73,07\% và COCO-style AP50:95 41,36\%/40,75\%.
+97,83\% và 98,92\%; trung bình ba seed là $97,95\pm0,21\%$ và
+$98,50\pm0,36\%$. Trên VOC2012, RetinaNet/Faster R-CNN đạt mAP50
+70,88\%/73,16\% và COCO-style AP50:95 39,13\%/40,98\%.
 Không có kiến trúc tốt nhất trên mọi tiêu chí: kết quả được phân tích cùng
 chi phí, chất lượng từng lớp và các trường hợp sai. Sơ đồ TikZ thể hiện
 luồng tensor, kích thước feature map và cấu trúc head; số liệu/hình kết quả
@@ -101,16 +101,21 @@ không augmentation. E1--E3 dùng cùng split fingerprint:
 bd9f3884131e411a26892e15ff685f2849\\
 216340505ea615f3fb3b901e30fe80
 \end{center}
-\ReportFigure{assets/e1/dataset_overview.png}{Fashion-MNIST: ảnh đại diện và phân bố train/validation cân bằng.}
+\ReportFigure{assets/e1/dataset_gallery_report.png}{Ảnh đại diện mười lớp Fashion-MNIST, lấy trực tiếp từ dữ liệu train.}
+\ReportFigure{assets/e1/class_distribution_report.png}{Phân bố Fashion-MNIST: mỗi lớp có 5.400 ảnh train và 600 ảnh validation.}
 GTSRB chia theo track để hạn chế các frame cùng biển vật lý rơi vào cả
 train và validation. VOC2012 chia theo ảnh; test là holdout nội bộ.
 Chi tiết nhãn, augmentation, nguồn tải và giới hạn độc lập dữ liệu được
 trình bày ở từng chương và README dataset.
 
 \section{Môi trường và quy tắc đánh giá}
-Python 3.14.7, PyTorch 2.11.0+cu128, torchvision 0.26.0+cu128,
+E1--E3/A1 chạy với Python 3.14.7, PyTorch 2.11.0+cu128, torchvision 0.26.0+cu128,
 NumPy 2.5.2, Matplotlib 3.11.2 và Pillow 12.3.0 chạy trên Windows,
-GPU NVIDIA RTX A3000 12 GB Laptop, CUDA 12.8. DataLoader workers 0.
+GPU NVIDIA RTX A3000 12 GB Laptop, CUDA 12.8.
+A2 chạy trên Kaggle với hai Tesla T4, mỗi GPU 14,6 GiB khả dụng;
+metadata notebook ghi Python 3.13.15. Phiên bản thư viện A2 không được
+ghi trong output đã lưu. Hai model train song song trên hai GPU riêng,
+test/benchmark lần lượt trên cùng GPU 0. DataLoader workers 0 ở các bài.
 Training loop thực hiện forward, loss, backward và optimizer step;
 AMP/GradScaler hỗ trợ train, validation/test không tính gradient.
 
@@ -124,22 +129,23 @@ Loss được tổng hợp theo số ảnh. Accuracy là tỷ lệ dự đoán �
 $F1_c=2 P_cR_c/(P_c+R_c)$, macro-F1 trung bình đều qua các lớp.
 Ma trận có hàng là GT, cột là prediction; phần trăm chuẩn hóa theo hàng.
 
-Checkpoint phân loại chọn validation loss nhỏ nhất; dừng sớm dùng
-min-delta $10^{-4}$. E1--E3 dùng patience 10 trong thực nghiệm, A1 dùng
-patience 4. Đại diện/ablation chọn bằng validation accuracy, macro-F1 rồi
-loss. A2 chọn weights và dừng sớm theo validation VOC mAP50, patience 2,
-min-delta 0,001; cách matching và detection metrics được trình bày ở
-Chương~\ref{chap:a2}. Cấu hình được chốt bằng validation trước khi đánh giá test.
+E1--E3 dừng sớm theo validation loss, patience 4 và min-delta $10^{-4}$.
+A1 dùng patience 2 và min-delta $10^{-3}$ theo validation loss.
+Checkpoint phân loại giữ validation loss nhỏ nhất; đại diện/ablation
+chọn bằng validation accuracy, macro-F1 rồi loss. A2 chọn weights và
+dừng sớm theo validation VOC mAP50, patience 2, min-delta $10^{-3}$.
+Cách matching và detection metrics trình bày ở Chương~\ref{chap:a2}.
+Mọi lựa chọn cấu hình dùng validation trước khi đánh giá test.
 
 \begin{table}[H]\centering\caption{Quy mô các lượt huấn luyện tạo ra số liệu báo cáo.}
 \begin{tabular}{lrrrr}\toprule
 Bài & Lượt train & Epoch & CUDA updates & AMP skips\\\midrule
-E1 &4&108&45.574&2\\
-E2 &8&259&109.290&8\\
-E3 &8&238&100.434&2\\
-A1 &14&208&51.168&0\\
-A2 &2&36&27.720&0\\\midrule
-Tổng &36&849&334.186&12\\\bottomrule
+E1 &4&64&27.008&0\\
+E2 &8&177&74.693&1\\
+E3 &8&168&70.896&0\\
+A1 &14&94&23.124&0\\
+A2 &2&38&14.630&0\\\midrule
+Tổng &36&541&210.351&1\\\bottomrule
 \end{tabular}\end{table}
 AMP skips là các optimizer steps bị scaler bỏ qua khi gradient không hữu
 hạn; không tính chúng vào updates thực tế. Train accuracy được đo khi
@@ -150,8 +156,12 @@ Peak memory dùng \texttt{torch.cuda.max\_memory\_allocated}, không phải
 reserved hoặc tổng VRAM máy.
 
 Mỗi notebook tự dựng dataset, model và loop, không đọc code/checkpoint
-của notebook khác. Best weights chỉ giữ trong RAM cho cùng lần chạy;
-notebook không xuất thêm file kết quả. Kích thước tensor trên sơ đồ
+của notebook khác. Mỗi thí nghiệm giữ best weights trong
+\texttt{model/<bài>/<thí nghiệm>/latest.pt}; chỉ thay file khi validation
+cải thiện. Run All nạp file này nếu có, nếu không thì khởi tạo theo seed.
+Optimizer, lịch learning rate và bộ đếm epoch/dừng sớm bắt đầu cho lượt
+train hiện tại. Bảng và hình được lưu trong output cell; A2 Kaggle xuất thêm
+PNG/CSV và lịch sử dưới /kaggle/working để tải về. Kích thước tensor trên sơ đồ
 dùng thứ tự $H\times W\times C$ cho ảnh/feature map, $N\times D$ cho token;
 batch được lược để dễ đọc. Mặt trước biểu diễn không gian, phần sâu và
 độ dày nét gợi số channels; sơ đồ không dùng một tỷ lệ hình học chung.
@@ -168,18 +178,18 @@ hơn CNN-A nhưng test accuracy tương đương trong một seed.
 E2 xác nhận MSA thủ công qua forward/gradient; CNN-stem hữu ích trong
 cả hai cách cài đặt. Tăng số head không tạo cải thiện đơn điệu.
 E3 cho thấy rows tốt nhất trong các biểu diễn đã thử; GRU dùng ít tham
-số và chạy nhanh hơn LSTM cùng representation, nhưng CNN-B vẫn hiệu
+số hơn LSTM cùng representation, nhưng thời gian đo cao hơn. CNN-B hiệu
 quả hơn về độ chính xác/thời gian ở bài toán ảnh tĩnh.
 
 A1 cho thấy pretrained full cho kết quả validation tốt nhất trong
 hai họ. Head-only tiết kiệm bộ nhớ nhưng accuracy thấp; partial phụ
 thuộc phạm vi unfreeze. DeiT pretrained full có test accuracy trung
 bình ba seed cao hơn ResNet; ResNet suy luận nhanh hơn và dùng ít peak
-memory hơn. Tác dụng augmentation không giống nhau giữa hai họ.
+memory hơn. Augmentation cải thiện cả hai họ trong phép so sánh seed 42.
 
-A2 cho thấy thứ tự detector phụ thuộc metric: Faster R-CNN hơn ở mAP50,
-recall và APsmall; RetinaNet hơn ở COCO-style AP50:95, F1 tại score 0,30
-và latency batch 1. FPN tạo feature đa tỉ lệ, nhưng vẫn khó với vật thể
+A2 cho thấy Faster R-CNN hơn ở VOC mAP50, COCO-style AP50:95/AP75,
+recall và APsmall; RetinaNet hơn ở precision/F1 tại score 0,30 và FPS median
+batch 1, đồng thời ít tham số hơn. P95 và tốc độ pipeline có thứ tự khác median. FPN tạo feature đa tỉ lệ, nhưng vẫn khó với vật thể
 nhỏ/nội thất; Focal Loss không thay thế phân tích FP/FN hoặc lựa chọn
 confidence trên validation.
 
