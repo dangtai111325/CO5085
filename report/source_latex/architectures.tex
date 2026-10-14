@@ -1,282 +1,1138 @@
-% Architecture drawings use only black strokes and white fills.
-% Spatial extent and channel depth are schematic, not a common physical scale.
+% Architecture diagrams use black ink and white fill.
+% Tensor faces show spatial dimensions and channel depth.
+% All arrows are strictly orthogonal (horizontal, vertical, or right-angle turns).
+% Minimal text inside nodes (symbolic), with full explanations in bottom badges.
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,decorations.pathreplacing}
+
+\tikzset{
+  % Common styles
+  arch_box/.style={draw=black, fill=white, line width=0.6pt, rounded corners=1.5pt, align=center, font=\footnotesize},
+  arch_box_gray/.style={draw=black, fill=white, line width=0.6pt, rounded corners=1.5pt, align=center, font=\footnotesize},
+  arch_box_dark/.style={draw=black, fill=white, line width=0.6pt, rounded corners=1.5pt, align=center, font=\footnotesize},
+  arch_op/.style={draw=black, fill=white, circle, line width=0.6pt, inner sep=1pt, minimum size=5.0mm, font=\small},
+  arch_arrow/.style={-{Latex[length=2.2mm,width=1.4mm]}, line width=0.65pt},
+  arch_arrow_thick/.style={-{Latex[length=2.5mm,width=1.6mm]}, line width=0.85pt},
+  arch_line/.style={draw=black, line width=0.65pt},
+  arch_dash/.style={draw=black, dashed, line width=0.6pt},
+  arch_label/.style={font=\footnotesize, align=center, fill=white, inner sep=1.5pt},
+  arch_title/.style={font=\small\bfseries, align=center},
+  arch_badge/.style={draw=black, fill=white, rounded corners=1mm, font=\scriptsize, align=center, inner sep=2.5pt}
+}
+
+% -------------------------------------------------------------
+% Helper: 2.5D Isometric Tensor Drawing
+% #1: name
+% #2: x
+% #3: y (bottom of front face)
+% #4: width (front face x-dim)
+% #5: height (front face y-dim)
+% #6: depth (isometric projection length)
+% #7: line width (pt)
+% #8: label below (optional)
+% -------------------------------------------------------------
 \newcommand{\TensorMap}[8]{%
 \begin{scope}[shift={(#2,#3)}]
-\pgfmathsetmacro{\depthy}{#6*.55}
+\pgfmathsetmacro{\dx}{#6*0.707}
+\pgfmathsetmacro{\dy}{#6*0.5}
+% Top face
 \draw[draw=black,fill=white,line width=#7pt]
- (0,#5)--(#6,{#5+\depthy})--({#4+#6},{#5+\depthy})--(#4,#5)--cycle;
+ (0,#5)--(\dx,{#5+\dy})--({#4+\dx},{#5+\dy})--(#4,#5)--cycle;
+% Right face
 \draw[draw=black,fill=white,line width=#7pt]
- (#4,0)--({#4+#6},\depthy)--({#4+#6},{#5+\depthy})--(#4,#5)--cycle;
-\foreach \q in {.33,.66}{\draw[black,line width=.35pt]
- ({#4+#6*\q},{\depthy*\q})--({#4+#6*\q},{#5+\depthy*\q});}
+ (#4,0)--({#4+\dx},\dy)--({#4+\dx},{#5+\dy})--(#4,#5)--cycle;
+% Channel slices on right face if depth is noticeable
+\ifdim #6pt>0.25pt
+  \foreach \q in {0.33, 0.66}{
+    \draw[black,line width=0.35pt]
+     ({#4+\dx*\q},{\dy*\q})--({#4+\dx*\q},{#5+\dy*\q});
+  }
+\fi
+% Front face
 \draw[draw=black,fill=white,line width=#7pt] (0,0) rectangle (#4,#5);
+% Standard anchors
 \coordinate (#1-west) at (0,{#5/2});
-\coordinate (#1-east) at ({#4+#6},{#5/2+\depthy/2});
-\coordinate (#1-north) at ({#4/2+#6/2},{#5+\depthy});
+\coordinate (#1-east) at ({#4+\dx},{#5/2+\dy/2});
+\coordinate (#1-front-east) at (#4,{#5/2});
+\coordinate (#1-north) at ({#4/2+\dx/2},{#5+\dy});
 \coordinate (#1-south) at ({#4/2},0);
-\node[font=\footnotesize,align=center,anchor=north] at ({#4/2},-.13) {#8};
+\coordinate (#1-center) at ({#4/2+\dx/2},{#5/2+\dy/2});
+\if\relax\detokenize{#8}\relax\else
+  \node[font=\footnotesize,align=center,anchor=north,inner sep=2pt] at ({#4/2}, -0.15) {#8};
+\fi
 \end{scope}}
-\newcommand{\NeuronLayer}[4]{%
-\foreach \k in {1,...,4}{\node[draw=black,fill=white,circle,inner sep=0pt,minimum size=2.3mm,line width=.5pt]
- (#1-\k) at (#2,{#3+.32*(\k-1)}) {};}
-\node[font=\footnotesize,anchor=north,align=center] at (#2,{#3-.2}) {#4};}
-\newcommand{\DenseLinks}[2]{\foreach \i in {1,...,4}{\foreach \j in {1,...,4}{\draw[black,line width=.18pt] (#1-\i)--(#2-\j);}}}
+
+% =============================================================
+% 1. ARCHITECTURE: Softmax Classifier
+% =============================================================
 \newcommand{\ArchSoftmax}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{im}{0}{0}{1.5}{1.5}{.08}{.35}{$28\times28\times1$}
-\NeuronLayer{v}{3.3}{.23}{784 inputs}
-\NeuronLayer{o}{6.8}{.23}{10 logits}
-\draw[flow] (im-east)--node[above,font=\small]{Flatten}(2.9,.8);
-\DenseLinks{v}{o}
-\node[font=\small,align=center] at (5,1.9) {FC $784\to10$};
-\draw[flow] (7.2,.8)--(9,.8);
-\node[align=center,font=\small] at (9.6,.8) {Softmax\\10 xác suất};
+  % Input image
+  \node[arch_box, minimum width=1.8cm, minimum height=1.8cm, fill=white] (im) at (0, 0) {};
+  \draw[step=0.225cm, black, line width=0.25pt] (-0.9,-0.9) grid (0.9,0.9);
+  \node[font=\footnotesize, anchor=north, align=center] at (0, -1.05) {Ảnh Fashion-MNIST\\$28\times 28\times 1$};
+
+  % Flatten arrow
+  \draw[arch_arrow] (1.0, 0) -- node[above=1pt, font=\footnotesize, fill=white, inner sep=1.5pt] {Flatten} (2.3, 0);
+
+  % 1D Vector
+  \node[arch_box, minimum width=0.6cm, minimum height=2.6cm, fill=white] (vec) at (2.7, 0) {};
+  \foreach \y in {-1.0, -0.6, 0.6, 1.0}{ \draw[black, line width=0.3pt] (2.4, \y) -- (3.0, \y); }
+  \node[font=\scriptsize] at (2.7, 0.8) {$x_1$};
+  \node[font=\scriptsize] at (2.7, 0.1) {$\vdots$};
+  \node[font=\scriptsize] at (2.7, -0.8) {$x_{784}$};
+  \node[font=\footnotesize, anchor=north, align=center] at (2.7, -1.45) {$\mathbf{x} \in \mathbb{R}^{784}$};
+
+  % Linear transformation block
+  \draw[arch_arrow] (vec.east) -- (4.0, 0);
+  \node[arch_box_gray, text width=3.0cm, minimum height=1.6cm] (fc) at (5.7, 0) {
+    \textbf{Tầng FC}\\[2pt]
+    $\mathbf{z} = \mathbf{W}\mathbf{x} + \mathbf{b}$\\[2pt]
+    \scriptsize $\mathbf{W} \in \mathbb{R}^{10\times 784}$
+  };
+
+  % Logits vector
+  \draw[arch_arrow] (fc.east) -- (7.9, 0);
+  \node[arch_box, minimum width=0.6cm, minimum height=2.2cm, fill=white] (logits) at (8.3, 0) {};
+  \foreach \y in {-0.8, -0.4, 0.4, 0.8}{ \draw[black, line width=0.3pt] (8.0, \y) -- (8.6, \y); }
+  \node[font=\scriptsize] at (8.3, 0.6) {$z_0$};
+  \node[font=\scriptsize] at (8.3, 0.05) {$\vdots$};
+  \node[font=\scriptsize] at (8.3, -0.6) {$z_9$};
+  \node[font=\footnotesize, anchor=north, align=center] at (8.3, -1.45) {Logits\\$\mathbf{z} \in \mathbb{R}^{10}$};
+
+  % Softmax block
+  \draw[arch_arrow] (logits.east) -- (9.4, 0);
+  \node[arch_box_dark, text width=2.2cm, minimum height=1.5cm] (sm) at (10.6, 0) {
+    \textbf{Softmax}\\[3pt]
+    $p_c = \frac{e^{z_c}}{\sum_{j=0}^{9} e^{z_j}}$
+  };
+
+  % Output probabilities
+  \draw[arch_arrow] (sm.east) -- (12.4, 0);
+  \node[arch_box, minimum width=0.6cm, minimum height=2.2cm, fill=white] (prob) at (12.8, 0) {};
+  \foreach \y in {-0.8, -0.4, 0.4, 0.8}{ \draw[black, line width=0.3pt] (12.5, \y) -- (13.1, \y); }
+  \node[font=\scriptsize] at (12.8, 0.6) {$p_0$};
+  \node[font=\scriptsize] at (12.8, 0.05) {$\vdots$};
+  \node[font=\scriptsize] at (12.8, -0.6) {$p_9$};
+  \node[font=\footnotesize, anchor=north, align=center] at (12.8, -1.45) {Xác suất\\$\hat{\mathbf{y}} \in \mathbb{R}^{10}$};
+
+  % Note / equation at bottom dự đoán nhãn bằng $\hat{y} = \operatorname{argmax}_c z_c$, tổng $7,850$ tham số ($10\times 784$ trọng số + $10$ bias)};
 \end{tikzpicture}}
+
+% =============================================================
+% 2. ARCHITECTURE: MLP
+% =============================================================
 \newcommand{\ArchMLP}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\NeuronLayer{i}{.4}{0}{784}
-\NeuronLayer{h}{3.2}{0}{256}
-\NeuronLayer{g}{6}{0}{128}
-\NeuronLayer{o}{8.8}{0}{10 logits}
-\DenseLinks{i}{h}\DenseLinks{h}{g}\DenseLinks{g}{o}
-\node[font=\small,align=center] at (3.2,1.75) {ReLU\\Dropout 0,2};
-\node[font=\small,align=center] at (6,1.75) {ReLU\\Dropout 0,2};
-\node[font=\footnotesize] at (4.6,-1) {Mỗi cột minh họa một tầng; các nơ-ron được lược bớt.};
+  % Input vector
+  \node[arch_box, minimum width=0.55cm, minimum height=2.6cm, fill=white] (in) at (0, 0) {};
+  \node[font=\scriptsize] at (0, 0.8) {$x_1$};
+  \node[font=\scriptsize] at (0, 0.1) {$\vdots$};
+  \node[font=\scriptsize] at (0, -0.8) {$x_{784}$};
+  \node[font=\footnotesize, anchor=north, align=center] at (0, -1.45) {Đầu vào\\$\mathbf{x} \in \mathbb{R}^{784}$};
+
+  % Hidden layer 1
+  \draw[arch_arrow] (in.east) -- (1.7, 0);
+  \node[arch_box, text width=2.0cm, minimum height=1.6cm, fill=white] (fc1) at (2.85, 0) {
+    \textbf{FC 1}\\[2pt]
+    $784 \to 256$\\[1pt]
+    \scriptsize ReLU, Dropout
+  };
+
+  % Feature h1
+  \draw[arch_arrow] (fc1.east) -- (4.9, 0);
+  \node[arch_box, minimum width=0.55cm, minimum height=2.0cm, fill=white] (h1) at (5.3, 0) {};
+  \node[font=\scriptsize] at (5.3, 0.6) {$h_1^{(1)}$};
+  \node[font=\scriptsize] at (5.3, 0.05) {$\vdots$};
+  \node[font=\scriptsize] at (5.3, -0.6) {$h_{256}^{(1)}$};
+  \node[font=\footnotesize, anchor=north, align=center] at (5.3, -1.45) {Ẩn 1\\$\mathbf{h}_1 \in \mathbb{R}^{256}$};
+
+  % Hidden layer 2
+  \draw[arch_arrow] (h1.east) -- (7.0, 0);
+  \node[arch_box, text width=2.0cm, minimum height=1.6cm, fill=white] (fc2) at (8.15, 0) {
+    \textbf{FC 2}\\[2pt]
+    $256 \to 128$\\[1pt]
+    \scriptsize ReLU, Dropout
+  };
+
+  % Feature h2
+  \draw[arch_arrow] (fc2.east) -- (10.2, 0);
+  \node[arch_box, minimum width=0.55cm, minimum height=1.7cm, fill=white] (h2) at (10.6, 0) {};
+  \node[font=\scriptsize] at (10.6, 0.5) {$h_1^{(2)}$};
+  \node[font=\scriptsize] at (10.6, 0.0) {$\vdots$};
+  \node[font=\scriptsize] at (10.6, -0.5) {$h_{128}^{(2)}$};
+  \node[font=\footnotesize, anchor=north, align=center] at (10.6, -1.45) {Ẩn 2\\$\mathbf{h}_2 \in \mathbb{R}^{128}$};
+
+  % Output FC
+  \draw[arch_arrow] (h2.east) -- (12.4, 0);
+  \node[arch_box, text width=1.8cm, minimum height=1.6cm, fill=white] (fco) at (13.45, 0) {
+    \textbf{FC 3}\\[2pt]
+    $128 \to 10$
+  };
+
+  % Output logits
+  \draw[arch_arrow] (fco.east) -- (15.2, 0);
+  \node[arch_box, minimum width=0.55cm, minimum height=1.5cm, fill=white] (out) at (15.6, 0) {};
+  \node[font=\scriptsize] at (15.6, 0.4) {$z_0$};
+  \node[font=\scriptsize] at (15.6, 0.0) {$\vdots$};
+  \node[font=\scriptsize] at (15.6, -0.4) {$z_9$};
+  \node[font=\footnotesize, anchor=north, align=center] at (15.6, -1.45) {Logits\\$\mathbf{z} \in \mathbb{R}^{10}$};
+
+  % Capacity note tổng $235,146$ tham số học được};
 \end{tikzpicture}}
+
+% =============================================================
+% 3. ARCHITECTURE: CNN-A
+% =============================================================
 \newcommand{\ArchCNNA}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{i}{0}{0}{1.6}{1.6}{.06}{.35}{$28\times28\times1$}
-\TensorMap{a}{4}{.25}{1.1}{1.1}{.25}{.7}{$14\times14\times32$}
-\TensorMap{b}{8}{.4}{.72}{.72}{.45}{1}{$7\times7\times64$}
-\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$1\to32$; ReLU\\MaxPool $2\times2$}(a-west);
-\draw[flow] (a-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$32\to64$; ReLU\\MaxPool $2\times2$}(b-west);
-\NeuronLayer{h}{8.5}{-2.9}{128; ReLU}
-\NeuronLayer{o}{4.7}{-2.9}{10 logits}
-\DenseLinks{h}{o}
-\draw[flow] (b-south)--node[right,align=left,font=\footnotesize]{Flatten 3136\\FC $3136\to128$}(8.5,-1.65);
-\node[font=\footnotesize] at (6.6,-1.55) {FC $128\to10$};
+  \def\cy{0.75}
+
+  % Input map
+  \TensorMap{im}{0}{0}{1.4}{1.4}{0.08}{0.55}{$28\times 28\times 1$}
+
+  % Conv 1 operation
+  \draw[arch_arrow] (1.45, \cy) -- (2.6, \cy);
+  \node[arch_box, text width=2.4cm, minimum height=1.35cm] (op1) at (3.9, \cy) {
+    \textbf{Conv 1}\\[2pt]
+    \scriptsize $3\times 3$, $32$ filters\\[1pt]
+    ReLU, MaxPool
+  };
+
+  % Feature map 1
+  \draw[arch_arrow] (5.2, \cy) -- (6.3, \cy);
+  \TensorMap{fm1}{6.3}{0.2}{1.1}{1.1}{0.35}{0.65}{$14\times 14\times 32$}
+
+  % Conv 2 operation
+  \draw[arch_arrow] (7.65, \cy) -- (8.7, \cy);
+  \node[arch_box, text width=2.4cm, minimum height=1.35cm] (op2) at (10.0, \cy) {
+    \textbf{Conv 2}\\[2pt]
+    \scriptsize $3\times 3$, $64$ filters\\[1pt]
+    ReLU, MaxPool
+  };
+
+  % Feature map 2
+  \draw[arch_arrow] (11.3, \cy) -- (12.3, \cy);
+  \TensorMap{fm2}{12.3}{0.35}{0.8}{0.8}{0.65}{0.75}{$7\times 7\times 64$}
+
+  % Flatten & FC 1
+  \draw[arch_arrow] (13.56, \cy) -- (14.6, \cy);
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.35cm] (fc1) at (16.0, \cy) {
+    \textbf{FC 1}\\[2pt]
+    \scriptsize Flatten $\to 3,136$\\[1pt]
+    FC $3136 \to 128$, ReLU
+  };
+
+  % FC 2
+  \draw[arch_arrow] (17.4, \cy) -- (18.2, \cy);
+  \node[arch_box, text width=2.0cm, minimum height=1.35cm] (fc2) at (19.3, \cy) {
+    \textbf{FC 2}\\[2pt]
+    \scriptsize FC $128 \to 10$
+  };
+
+  % Logits
+  \draw[arch_arrow] (20.4, \cy) -- (21.2, \cy);
+  \node[arch_box_dark, minimum width=0.65cm, minimum height=1.35cm] (out) at (21.6, \cy) {};
+  \node[font=\scriptsize, align=center] at (21.6, \cy) {$10$\\logits};
+
+  % Note below tổng $421,642$ tham số};
 \end{tikzpicture}}
+
+% =============================================================
+% 4. ARCHITECTURE: CNN-B
+% =============================================================
 \newcommand{\ArchCNNB}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{i}{0}{0}{1.6}{1.6}{.06}{.35}{$28\times28\times1$}
-\TensorMap{a}{3.5}{.25}{1.1}{1.1}{.22}{.7}{$14\times14\times32$}
-\TensorMap{b}{7}{.4}{.72}{.72}{.4}{1}{$7\times7\times64$}
-\TensorMap{c}{10.2}{.5}{.48}{.48}{.65}{1.3}{$3\times3\times128$}
-\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Conv $3^2$, $1\to32$\\BN, ReLU, Pool $2^2$}(a-west);
-\draw[flow] (a-east)--node[above,align=center,font=\footnotesize]{Conv $3^2$, $32\to64$\\BN, ReLU, Pool $2^2$}(b-west);
-\draw[flow] (b-east)--node[above,align=center,font=\footnotesize]{Conv $3^2$, $64\to128$\\BN, ReLU, Pool $2^2$}(c-west);
-\NeuronLayer{h}{10.6}{-2.7}{128}
-\NeuronLayer{o}{6.9}{-2.7}{10 logits}
-\DenseLinks{h}{o}
-\draw[flow] (c-south)--node[right,align=left,font=\footnotesize]{AvgPool $1\times1$\\Flatten; Dropout 0,3}(10.6,-1.4);
-\node[font=\footnotesize] at (8.7,-1.35) {FC $128\to10$};
+  \def\cy{0.75}
+
+  % Input map
+  \TensorMap{im}{0}{0}{1.4}{1.4}{0.08}{0.55}{$28\times 28\times 1$}
+
+  % Conv 1
+  \draw[arch_arrow] (1.45, \cy) -- (2.5, \cy);
+  \node[arch_box, text width=2.3cm, minimum height=1.35cm] (op1) at (3.75, \cy) {
+    \textbf{Conv 1}\\[2pt]
+    \scriptsize $3\times 3$, $32$\\[1pt]
+    BN, ReLU, Pool
+  };
+
+  % FM1
+  \draw[arch_arrow] (5.0, \cy) -- (6.0, \cy);
+  \TensorMap{fm1}{6.0}{0.2}{1.1}{1.1}{0.35}{0.65}{$14\times 14\times 32$}
+
+  % Conv 2
+  \draw[arch_arrow] (7.35, \cy) -- (8.4, \cy);
+  \node[arch_box, text width=2.3cm, minimum height=1.35cm] (op2) at (9.65, \cy) {
+    \textbf{Conv 2}\\[2pt]
+    \scriptsize $3\times 3$, $64$\\[1pt]
+    BN, ReLU, Pool
+  };
+
+  % FM2
+  \draw[arch_arrow] (10.9, \cy) -- (11.9, \cy);
+  \TensorMap{fm2}{11.9}{0.35}{0.8}{0.8}{0.65}{0.75}{$7\times 7\times 64$}
+
+  % Conv 3
+  \draw[arch_arrow] (13.16, \cy) -- (14.2, \cy);
+  \node[arch_box, text width=2.3cm, minimum height=1.35cm] (op3) at (15.45, \cy) {
+    \textbf{Conv 3}\\[2pt]
+    \scriptsize $3\times 3$, $128$\\[1pt]
+    BN, ReLU, Pool
+  };
+
+  % FM3
+  \draw[arch_arrow] (16.7, \cy) -- (17.7, \cy);
+  \TensorMap{fm3}{17.7}{0.475}{0.55}{0.55}{0.85}{0.85}{$3\times 3\times 128$}
+
+  % GAP & FC head
+  \draw[arch_arrow] (18.85, \cy) -- (19.8, \cy);
+  \node[arch_box_gray, text width=2.3cm, minimum height=1.35cm] (gap) at (21.05, \cy) {
+    \textbf{GAP + FC}\\[2pt]
+    \scriptsize Global AvgPool\\[1pt]
+    FC $128 \to 10$
+  };
+
+  % Out
+  \draw[arch_arrow] (22.3, \cy) -- (23.0, \cy);
+  \node[arch_box_dark, minimum width=0.65cm, minimum height=1.35cm] (out) at (23.4, \cy) {};
+  \node[font=\scriptsize, align=center] at (23.4, \cy) {$10$\\logits};
+
+  % Note below tổng $94,186$ tham số (giảm $4{,}48$ lần)};
 \end{tikzpicture}}
+
+% =============================================================
+% 5. ARCHITECTURE: Tokenizers
+% =============================================================
 \newcommand{\ArchTokens}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{i}{0}{0}{1.5}{1.5}{.05}{.35}{$28\times28\times1$}
-\draw[step=.214,black,line width=.2pt] (0,0) grid (1.5,1.5);
-\TensorMap{r}{4.5}{3}{1.8}{.7}{.12}{.5}{Rows: $28\times28$}
-\foreach \k in {1,...,6}{\draw[line width=.25pt] (4.5,{3+.1*\k})--(6.3,{3+.1*\k});}
-\TensorMap{p}{4.5}{.4}{1.8}{.7}{.12}{.5}{Patch $4^2$: $49\times16$}
-\draw[step=.225,black,line width=.2pt] (4.5,.4) grid (6.3,1.1);
-\TensorMap{c}{4.5}{-2.3}{1.05}{1.05}{.38}{.9}{CNN-stem: $7\times7\times16$}
-\TensorMap{e}{9.5}{.4}{1.8}{.7}{.45}{1}{$N\times64$}
-\draw[flow] (i-east)--++(.6,0)|-(r-west);
-\node[anchor=south,align=center,font=\footnotesize] at (3.2,3.55) {Mỗi hàng\\một token};
-\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Patch $4\times4$\\không overlap}(p-west);
-\draw[flow] (i-east)--++(.6,0)|-(c-west);
-\node[align=center,font=\footnotesize] at (3.3,-.6) {Conv $1\to16$\\Conv $16\to16$};
-\draw[flow] (r-east)--++(.6,0)|-(e-west);
-\draw[flow] (p-east)--node[above,font=\footnotesize]{FC $F\to64$}(e-west);
-\draw[flow] (c-east)--++(1.1,0)|-(e-west);
-\node[anchor=west,align=left,font=\footnotesize] at (7.2,-1.5) {Reshape\\$49\times16$};
+  % Input image
+  \node[arch_box, minimum width=1.8cm, minimum height=1.8cm, fill=white] (im) at (0, 0) {};
+  \draw[step=0.225cm, black, line width=0.25pt] (-0.9,-0.9) grid (0.9,0.9);
+  \node[font=\footnotesize, anchor=north, align=center] at (0, -1.05) {Ảnh Fashion-MNIST\\$28\times 28\times 1$};
+
+  % Fork (strictly horizontal and vertical)
+  \draw[arch_line] (im.east) -- (1.5, 0);
+  \draw[arch_arrow] (1.5, 0) |- (2.4, 2.3);
+  \draw[arch_arrow] (1.5, 0) -- (2.4, 0);
+  \draw[arch_arrow] (1.5, 0) |- (2.4, -2.3);
+
+  % Rows branch
+  \node[arch_box, text width=2.4cm, minimum height=1.15cm] (r_desc) at (3.7, 2.3) {
+    \textbf{Quét hàng}\\[1pt]
+    \scriptsize $28$ lát $1\times 28$
+  };
+  \draw[arch_arrow] (r_desc.east) -- (5.0, 2.3);
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.15cm] (r_tok) at (6.4, 2.3) {
+    \textbf{Tokens}\\[1pt]
+    \mbox{$N=28,\ F=28$}
+  };
+
+  % Patch branch
+  \node[arch_box, text width=2.4cm, minimum height=1.15cm] (p_desc) at (3.7, 0) {
+    \textbf{Patch $4\times 4$}\\[1pt]
+    \scriptsize $7\times 7$ patches
+  };
+  \draw[arch_arrow] (p_desc.east) -- (5.0, 0);
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.15cm] (p_tok) at (6.4, 0) {
+    \textbf{Tokens}\\[1pt]
+    \mbox{$N=49,\ F=16$}
+  };
+
+  % Stem branch
+  \node[arch_box, text width=2.4cm, minimum height=1.15cm] (s_desc) at (3.7, -2.3) {
+    \textbf{CNN-stem}\\[1pt]
+    \scriptsize $2\times (\text{Conv} + \text{Pool})$
+  };
+  \draw[arch_arrow] (s_desc.east) -- (5.0, -2.3);
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.15cm] (s_tok) at (6.4, -2.3) {
+    \textbf{Tokens}\\[1pt]
+    \mbox{$N=49,\ F=16$}
+  };
+
+  % Linear projection block
+  \draw[arch_line] (r_tok.east) -- (7.9, 2.3) -- (7.9, 0);
+  \draw[arch_arrow] (7.9, 0) -- (8.5, 0);
+  \draw[arch_arrow] (p_tok.east) -- (8.5, 0);
+  \draw[arch_line] (s_tok.east) -- (7.9, -2.3) -- (7.9, 0);
+
+  \node[arch_box, text width=2.5cm, minimum height=1.45cm] (proj) at (9.9, 0) {
+    \textbf{Chiếu tuyến tính}\\[2pt]
+    \scriptsize $\mathbf{E} \in \mathbb{R}^{F \times 64}$\\[1pt]
+    FC $F \to 64$
+  };
+
+  % Tokens out
+  \draw[arch_arrow] (proj.east) -- (11.6, 0);
+  \node[arch_box_dark, text width=2.6cm, minimum height=1.45cm] (out) at (13.0, 0) {
+    \textbf{Đầu vào Transformer}\\[2pt]
+    $\mathbf{X}_0 \in \mathbb{R}^{N\times 64}$\\[1pt]
+    \scriptsize $N \in \{28, 49\}$
+  };
+
+  % Note below
+  \node[arch_badge] at (6.5, -3.3) {Ba tokenizer biểu diễn ảnh $28\times 28$ thành chuỗi $N\times D$ ($D=64$); CNN-stem bổ sung inductive bias cục bộ ($2,480$ tham số)};
 \end{tikzpicture}}
+
+% =============================================================
+% 6. ARCHITECTURE: Transformer Classifier
+% =============================================================
 \newcommand{\ArchEncoder}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{i}{0}{0}{1.6}{1}{.4}{.8}{$N\times64$}
-\TensorMap{e}{4.5}{0}{1.6}{1}{.4}{.8}{$N\times64$}
-\TensorMap{h}{8.9}{.2}{.25}{.7}{.35}{.9}{64}
-\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Position học\\2 encoder block\\$D=64$, $H=4$}(e-west);
-\draw[flow] (e-east)--node[above,align=center,font=\footnotesize]{LayerNorm\\Mean theo token}(h-west);
-\NeuronLayer{o}{11.5}{.1}{10 logits}
-\draw[flow] (h-east)--node[above,font=\footnotesize]{FC}(11.2,.65);
+  % Input tokens
+  \node[arch_box, text width=1.8cm, minimum height=1.0cm] (tok) at (0, 0) {
+    $\mathbf{X}_0 \in \mathbb{R}^{N\times 64}$
+  };
+
+  % Position embedding addition
+  \draw[arch_arrow] (tok.east) -- (1.4, 0);
+  \node[arch_op] (add_pos) at (1.75, 0) {$+$};
+
+  \node[arch_box, text width=1.6cm, minimum height=0.8cm] (pos) at (1.75, 1.25) {
+    \scriptsize $\mathbf{E}_{\mathrm{pos}}$
+  };
+  \draw[arch_arrow] (pos.south) -- (add_pos.north);
+
+  % Encoder Block 1
+  \draw[arch_arrow] (add_pos.east) -- (2.6, 0);
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.65cm] (b1) at (4.0, 0) {
+    \textbf{Encoder 1}\\[2pt]
+    \scriptsize Pre-norm, $H=4$\\[1pt]
+    $D=64, d_h=16$\\[1pt]
+    FFN $64\to 128\to 64$
+  };
+
+  % Encoder Block 2
+  \draw[arch_arrow] (b1.east) -- (5.8, 0);
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.65cm] (b2) at (7.2, 0) {
+    \textbf{Encoder 2}\\[2pt]
+    \scriptsize Pre-norm, $H=4$\\[1pt]
+    $D=64, d_h=16$\\[1pt]
+    FFN $64\to 128\to 64$
+  };
+
+  % Final LayerNorm
+  \draw[arch_arrow] (b2.east) -- (8.8, 0);
+  \node[arch_box, minimum width=1.1cm, minimum height=0.9cm] (ln) at (9.5, 0) {
+    $\mathrm{LN}$
+  };
+
+  % Mean Pooling
+  \draw[arch_arrow] (ln.east) -- (10.4, 0);
+  \node[arch_box, text width=2.0cm, minimum height=1.35cm] (pool) at (11.5, 0) {
+    \textbf{Mean Pooling}\\[2pt]
+    \scriptsize $\bar{\mathbf{h}} = \frac{1}{N}\sum \mathbf{x}_i$
+  };
+
+  % FC Head
+  \draw[arch_arrow] (pool.east) -- (12.8, 0);
+  \node[arch_box_dark, text width=1.7cm, minimum height=1.0cm] (head) at (13.8, 0) {
+    \textbf{FC Head}\\[1pt]
+    \scriptsize $64 \to 10$
+  };
+
+  % Logits
+  \draw[arch_arrow] (head.east) -- (14.9, 0);
+  \node[arch_box_dark, minimum width=1.0cm, minimum height=1.0cm] (out) at (15.5, 0) {};
+  \node[font=\scriptsize, align=center] at (15.5, 0) {Logits\\$\mathbf{z}$};
+
+  % Note below
+  \node[arch_badge] at (7.7, -1.5) {Mô hình E2: 2 khối Pre-norm Transformer ($D=64, H=4$), gộp đặc trưng bằng Mean Pooling, phân loại qua FC $64\to 10$ ($650$ tham số)};
 \end{tikzpicture}}
+
+% =============================================================
+% 7. ARCHITECTURE: Multi-Head Self-Attention Block
+% =============================================================
 \newcommand{\ArchMSA}{%
-\begin{tikzpicture}[x=1cm,y=1cm,op/.style={draw=black,fill=white,circle,inner sep=2pt,font=\small}]
-\TensorMap{x}{0}{0}{1.2}{.8}{.25}{.6}{$X:N\times64$}
-\node[font=\footnotesize,align=center] at (2.65,1.1) {LayerNorm\\QKV Linear};
-\TensorMap{q}{4}{2}{1}{.7}{.15}{.5}{$Q_h:N\times16$}
-\TensorMap{k}{4}{0}{1}{.7}{.15}{.5}{$K_h:N\times16$}
-\TensorMap{v}{4}{-2}{1}{.7}{.15}{.5}{$V_h:N\times16$}
-\draw[flow] (x-east)--(3,.5);
-\foreach \a in {q,k,v}{\draw[flow] (3,.5)|-(\a-west);}
-\TensorMap{att}{7}{1}{1.2}{1.2}{.06}{.5}{$A_h:N\times N$}
-\draw[flow] (q-east)--(att-west);
-\node[font=\footnotesize] at (5.8,3.25) {$Q_hK_h^\top/\sqrt{16}$};
-\draw[flow] (k-east)--++(.5,0)|-(att-west);
-\node[font=\footnotesize,align=center] at (8,3.25) {Softmax theo key\\Dropout 0,1};
-\node[op] (mul) at (9.3,-1.5) {$\times$};
-\draw[flow] (att-east)-|(mul);\draw[flow] (v-east)--(mul);
-\node[font=\footnotesize,align=center] (concat) at (11,-1.5) {Concat 4 head\\FC $64\to64$\\Dropout};
-\node[op] (add) at (10.7,.5) {$+$};
-\draw[flow] (mul)--(concat.west);\draw[flow] (concat.north)|-(10.7,-.5)--(add);
-\draw[flow] (x-north)--++(0,3.2)-|(add);
-\node[font=\footnotesize,align=center] at (6,4.4) {$U=X+\mathrm{MSA}(\mathrm{LN}(X))$};
-\draw[flow] (add)--node[above,font=\footnotesize]{$U$}(12.8,.5);
-\TensorMap{u}{0}{-5.3}{1.2}{.8}{.25}{.6}{$U:N\times64$}
-\TensorMap{ff}{4.5}{-5.3}{1.3}{.8}{.55}{1}{$N\times128$}
-\TensorMap{back}{8.5}{-5.3}{1.2}{.8}{.25}{.6}{$N\times64$}
-\draw[flow] (u-east)--node[above,align=center,font=\footnotesize]{LayerNorm\\FC $64\to128$}(ff-west);
-\draw[flow] (ff-east)--node[above,align=center,font=\footnotesize]{GELU, Dropout\\FC $128\to64$}(back-west);
-\node[op] (sumff) at (11.2,-4.8) {$+$};
-\draw[flow] (back-east)--(sumff);
-\node[font=\footnotesize] at (10.35,-4.15) {Dropout};
-\draw[flow] (u-north)--++(0,1.1)-|(sumff);
-\draw[flow] (sumff)--node[above,font=\footnotesize]{$Y$}(12.8,-4.8);
-\node[font=\footnotesize] at (6,-6.4) {$Y=U+\mathrm{FFN}(\mathrm{LN}(U))$; Dropout 0,1};
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Container frame
+  \draw[draw=black, dashed, rounded corners=3mm, fill=white] (-1.2, -0.8) rectangle (13.2, 8.1);
+  \node[font=\footnotesize\bfseries, anchor=north west] at (-0.9, 7.85) {Pre-norm Transformer Encoder Block ($D=64$, $H=4$ heads)};
+
+  % ---------------- TOWER 1: MSA SUB-LAYER ----------------
+  % Input X
+  \node[arch_box_gray, text width=2.4cm, minimum height=0.75cm] (x_in) at (2.4, 0.0) {
+    Đầu vào $\mathbf{X} \in \mathbb{R}^{N\times 64}$
+  };
+
+  % LN 1
+  \draw[arch_arrow] (x_in.north) -- (2.4, 0.7);
+  \node[arch_box, minimum width=1.6cm, minimum height=0.65cm] (ln1) at (2.4, 1.05) {
+    $\mathrm{LN}$
+  };
+
+  % QKV Linear
+  \draw[arch_arrow] (ln1.north) -- (2.4, 1.7);
+  \node[arch_box_dark, text width=2.8cm, minimum height=0.65cm] (qkv) at (2.4, 2.05) {
+    $\mathbf{W}_{qkv} \in \mathbb{R}^{64 \times 192}$
+  };
+
+  % Attention computation
+  \node[arch_box_gray, text width=3.4cm, minimum height=0.95cm] (att) at (2.4, 4.05) {
+    \textbf{Scaled Dot-Product ($4$ heads)}\\[2pt]
+    \scriptsize $A_h = \operatorname{softmax}\left(\frac{Q_h K_h^\top}{\sqrt{16}}\right) V_h$
+  };
+
+  % Three parallel vertical arrows directly from QKV to Attention
+  \draw[arch_arrow] (1.6, 2.40) -- node[left=1pt, font=\tiny] {$Q$} (1.6, 3.55);
+  \draw[arch_arrow] (2.4, 2.40) -- node[fill=white, inner sep=0.5pt, font=\tiny] {$K$} (2.4, 3.55);
+  \draw[arch_arrow] (3.2, 2.40) -- node[right=1pt, font=\tiny] {$V$} (3.2, 3.55);
+
+  % Out Linear
+  \draw[arch_arrow] (att.north) -- (2.4, 5.0);
+  \node[arch_box, text width=2.4cm, minimum height=0.65cm] (proj) at (2.4, 5.35) {
+    $\mathbf{W}_O \in \mathbb{R}^{64\times 64}$
+  };
+
+  % Addition 1
+  \node[arch_op] (add1) at (2.4, 6.5) {$+$};
+  \draw[arch_arrow] (proj.north) -- (add1.south);
+
+  % Residual 1 highway
+  \draw[arch_line] (x_in.west) -- (-0.4, 0.0) -- (-0.4, 6.5);
+  \draw[arch_arrow] (-0.4, 6.5) -- (add1.west);
+
+  % ---------------- BRIDGE: TOWER 1 TO TOWER 2 ----------------
+  \draw[arch_line] (add1.east) -- (5.0, 6.5) -- (5.0, 0.0);
+  \draw[arch_arrow] (5.0, 0.0) -- (7.4, 0.0);
+
+  % ---------------- TOWER 2: FFN SUB-LAYER ----------------
+  % Intermediate tensor U
+  \node[arch_box_gray, text width=2.6cm, minimum height=0.75cm] (u_mid) at (8.8, 0.0) {
+    $\mathbf{U} = \mathbf{X} + \text{MSA}(\text{LN}(\mathbf{X}))$
+  };
+
+  % LN 2
+  \draw[arch_arrow] (u_mid.north) -- (8.8, 0.9);
+  \node[arch_box, minimum width=1.6cm, minimum height=0.65cm] (ln2) at (8.8, 1.25) {
+    $\mathrm{LN}$
+  };
+
+  % FFN 1 (widened to 3.0cm for clean single line)
+  \draw[arch_arrow] (ln2.north) -- (8.8, 2.1);
+  \node[arch_box, text width=3.0cm, minimum height=0.65cm] (ffn1) at (8.8, 2.5) {
+    $\mathbf{W}_1 \in \mathbb{R}^{64\times 128} + \text{GELU}$
+  };
+
+  % FFN 2
+  \draw[arch_arrow] (ffn1.north) -- (8.8, 3.35);
+  \node[arch_box, text width=2.4cm, minimum height=0.65cm] (ffn2) at (8.8, 3.75) {
+    $\mathbf{W}_2 \in \mathbb{R}^{128\times 64}$
+  };
+
+  % Addition 2
+  \node[arch_op] (add2) at (8.8, 5.1) {$+$};
+  \draw[arch_arrow] (ffn2.north) -- (add2.south);
+
+  % Residual 2 highway
+  \coordinate (tap_u) at (8.8, 0.625);
+  \fill[black] (tap_u) circle (1.5pt);
+  \draw[arch_line] (tap_u) -- (6.0, 0.625) -- (6.0, 5.1);
+  \draw[arch_arrow] (6.0, 5.1) -- (add2.west);
+
+  % Output Y
+  \draw[arch_arrow] (add2.north) -- (8.8, 6.0);
+  \node[arch_box_dark, text width=2.6cm, minimum height=0.75cm] (y_out) at (8.8, 6.4) {
+    Đầu ra $\mathbf{Y} \in \mathbb{R}^{N\times 64}$
+  };
 \end{tikzpicture}}
+
+% =============================================================
+% 8. ARCHITECTURE: Recurrent Sequence
+% =============================================================
 \newcommand{\ArchSequence}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{i}{0}{0}{1.5}{1.5}{.06}{.35}{$28\times28\times1$}
-\TensorMap{s}{3.5}{.2}{1.4}{1.1}{.15}{.5}{$T\times F$}
-\foreach \k in {1,...,5}{\draw[black,line width=.3pt] (3.5,{.2+\k*.18})--(4.9,{.2+\k*.18});}
-\draw[flow] (i-east)--node[above,font=\footnotesize]{Quét ảnh}(s-west);
-\foreach \x/\t in {6.1/1,8/2,10/T}{
-\node[draw=black,fill=white,rounded corners=3mm,minimum width=1.1cm,minimum height=1cm,font=\footnotesize,align=center] (c\t) at (\x,.8) {LSTM\\hoặc GRU};
-\node[font=\footnotesize] at (\x,-.15) {$x_{\t}$};
-\draw[flow] (\x,.05)--(\x,.3);}
-\draw[flow] (s-east)--(c1);\draw[flow] (c1)--node[above,font=\footnotesize]{$h_1$}(c2);
-\draw[flow,dashed] (c2)--node[above,font=\footnotesize]{$\cdots$}(cT);
-\draw[flow] (cT.east)--(11.5,.8);
-\NeuronLayer{o}{12}{.25}{10 logits}
-\node[font=\footnotesize,align=center] at (10.8,2) {$h_T\in\mathbb{R}^{128}$\\FC $128\to10$};
-\node[font=\footnotesize,align=center] at (6,-1.4) {Rows/columns: $T=28,F=28$; patch: $T=49,F=16$.\\Một bộ trọng số được dùng chung ở mọi bước.};
+  % Input image at top-left
+  \node[arch_box, minimum width=1.4cm, minimum height=1.4cm, fill=white] (im) at (-2.2, 0.7) {};
+  \draw[step=0.2cm, black, line width=0.25pt] (-2.9,0.0) grid (-1.5,1.4);
+  \node[font=\footnotesize, anchor=south, align=center] at (-2.2, 1.5) {Ảnh Fashion-MNIST\\$28\times 28\times 1$};
+
+  % Sequence generator
+  \draw[arch_arrow] (im.south) -- (-2.2, -0.45);
+  \node[arch_box_gray, text width=1.8cm, minimum height=1.15cm] (scan) at (-2.2, -1.0) {
+    \textbf{Quét chuỗi}\\[1pt]
+    \scriptsize $x_t \in \mathbb{R}^F$
+  };
+
+  % Initial state h0 (centered at 0.0 with clear separation from im at -1.5)
+  \node[font=\small] (h0) at (0.0, 0.7) {$h_0 = \mathbf{0}$};
+
+  % Step 1
+  \node[arch_box, text width=1.6cm, minimum height=0.95cm] (c1) at (1.6, 0.7) {
+    \textbf{Cell}\\[1pt]
+    \scriptsize $t=1$
+  };
+  \draw[arch_arrow] (h0.east) -- (c1.west);
+
+  \draw[arch_arrow] (scan.east) -- (1.1, -1.0);
+  \node[arch_box, minimum width=0.7cm, minimum height=0.45cm] (x1) at (1.6, -1.0) {$x_1$};
+  \draw[arch_arrow] (x1.north) -- (c1.south);
+
+  % Step 2
+  \node[arch_box, text width=1.6cm, minimum height=0.95cm] (c2) at (4.3, 0.7) {
+    \textbf{Cell}\\[1pt]
+    \scriptsize $t=2$
+  };
+  \draw[arch_arrow] (c1.east) -- node[above=1pt, font=\scriptsize] {$h_1$} (c2.west);
+
+  \draw[arch_arrow] (x1.east) -- (3.8, -1.0);
+  \node[arch_box, minimum width=0.7cm, minimum height=0.45cm] (x2) at (4.3, -1.0) {$x_2$};
+  \draw[arch_arrow] (x2.north) -- (c2.south);
+
+  % Step T (ellipses)
+  \node[arch_box, text width=1.6cm, minimum height=0.95cm] (cT) at (7.8, 0.7) {
+    \textbf{Cell}\\[1pt]
+    \scriptsize $t=T$
+  };
+
+  \draw[arch_dash] (c2.east) -- (6.4, 0.7);
+  \node[font=\scriptsize, fill=white, inner sep=1.5pt] at (5.85, 0.7) {$\cdots$};
+  \draw[arch_arrow] (6.4, 0.7) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {$h_{T-1}$} (cT.west);
+
+  \node[arch_box, minimum width=0.7cm, minimum height=0.45cm] (xT) at (7.8, -1.0) {$x_T$};
+  \draw[arch_arrow] (xT.north) -- (cT.south);
+
+  \draw[arch_dash] (x2.east) -- (7.3, -1.0);
+  \node[font=\scriptsize, fill=white, inner sep=1.5pt] at (6.05, -1.0) {$\cdots$};
+  \draw[arch_arrow] (6.6, -1.0) -- (xT.west);
+
+  % FC Head
+  \draw[arch_arrow] (cT.east) -- node[above=1pt, font=\scriptsize] {$h_T$} (9.4, 0.7);
+  \node[arch_box_gray, text width=1.8cm, minimum height=0.95cm] (head) at (10.4, 0.7) {
+    \textbf{FC Head}\\[1pt]
+    \scriptsize $128 \to 10$
+  };
+
+  % Logits
+  \draw[arch_arrow] (head.east) -- (11.7, 0.7);
+  \node[arch_box_dark, minimum width=0.65cm, minimum height=0.95cm] (out) at (12.15, 0.7) {};
+  \node[font=\tiny, align=center] at (12.15, 0.7) {$10$\\logits};
+
+  % Note below
+  \node[arch_badge] at (5.3, -1.85) {Rows/Columns: $T=28, F=28$; Patch: $T=49, F=16$. Cùng một bộ trọng số cell được dùng chung tại mọi bước $t$, chỉ trích hidden state cuối $h_T$};
 \end{tikzpicture}}
+
+% =============================================================
+% 9. ARCHITECTURE: LSTM Cell
+% =============================================================
 \newcommand{\ArchLSTM}{%
-\begin{tikzpicture}[x=1cm,y=1cm,gate/.style={draw=black,fill=white,rounded corners=1mm,minimum size=7mm,font=\small},op/.style={draw=black,fill=white,circle,inner sep=2pt}]
-\coordinate (cp) at (0,3);\node[above,font=\small] at (cp) {$c_{t-1}$};
-\node[op] (forget) at (3,3) {$\times$};\node[op] (sum) at (7,3) {$+$};
-\draw[flow] (cp)--(forget);\draw[flow] (forget)--(sum);\draw[flow] (sum)--node[above,font=\small]{$c_t$}(11,3);
-\foreach \x/\n/\lab in {3/f/\sigma,5/i/\sigma,7/g/\tanh,9/o/\sigma}{
-\node[gate] (\n) at (\x,.8) {$\lab$};
-\draw[flow] (\x,-.2)--(\n);}
-\node[op] (write) at (6,2) {$\times$};
-\draw[flow] (f)--(forget);\draw[flow] (i)|-(write);\draw[flow] (g)|-(write);\draw[flow] (write)-|(sum);
-\node[gate] (tc) at (10,2) {$\tanh$};\node[op] (read) at (10,.8) {$\times$};
-\draw[flow] (10,3)--(tc);\draw[flow] (tc)--(read);\draw[flow] (o)--(read);
-\draw[flow] (read)--node[above,font=\small]{$h_t$}(11.6,.8);
-\draw[line width=.6pt] (2,-.2)--(9,-.2);
-\draw[flow] (1,-1.4)--node[above,align=center,font=\footnotesize]{FC $F\to512$ + FC $128\to512$\\Tách $f,i,g,o$, mỗi gate 128 chiều}(5.5,-1.4)--(5.5,-.2);
-\node[font=\small,align=center] at (.3,-1.4) {$x_t$\\$h_{t-1}$};
-\node[font=\footnotesize] at (6,4) {Đường trên truyền bộ nhớ; các nút tròn là phép toán theo phần tử.};
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Boundary of LSTM cell
+  \draw[draw=black, rounded corners=3mm, line width=0.8pt, fill=white] (-0.8, -1.1) rectangle (12.2, 4.3);
+  \node[font=\footnotesize\bfseries, anchor=north west] at (-0.6, 4.15) {LSTM Cell (Hidden size $H=128$)};
+
+  % Top Cell State Highway
+  \node[font=\small, anchor=east] (cp) at (-1.4, 3.4) {$c_{t-1}$};
+  \node[arch_op] (mul_f) at (2.0, 3.4) {$\odot$};
+  \node[arch_op] (add_c) at (5.5, 3.4) {$\oplus$};
+  \node[font=\small, anchor=west] (cn) at (12.7, 3.4) {$c_t$};
+
+  \draw[arch_arrow_thick] (cp.east) -- (mul_f.west);
+  \draw[arch_arrow_thick] (mul_f.east) -- (add_c.west);
+  \draw[arch_arrow_thick] (add_c.east) -- (cn.west);
+
+  % Bottom Inputs: x_t and h_{t-1}
+  \node[font=\small, anchor=east] (hp) at (-1.4, -0.5) {$h_{t-1}$};
+  \node[font=\small, anchor=north] (xt) at (1.8, -1.55) {$x_t$};
+
+  % Wide Projections Bar
+  \node[arch_box_gray, minimum width=8.0cm, minimum height=0.65cm] (proj) at (5.5, -0.5) {
+    $\mathbf{W}x_t + \mathbf{U}h_{t-1} + \mathbf{b}$
+  };
+  \draw[arch_arrow] (hp.east) -- (proj.west);
+  \draw[arch_arrow] (xt.north) -- (proj.south -| xt.north);
+
+  % 4 Parallel Gates
+  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (gf) at (2.0, 1.25) {$\sigma$};
+  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (gi) at (4.4, 1.25) {$\sigma$};
+  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (gg) at (6.6, 1.25) {$\tanh$};
+  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (go) at (9.0, 1.25) {$\sigma$};
+
+  % Connections from projection to gates
+  \draw[arch_arrow] (proj.north -| gf.south) -- (gf.south);
+  \draw[arch_arrow] (proj.north -| gi.south) -- (gi.south);
+  \draw[arch_arrow] (proj.north -| gg.south) -- (gg.south);
+  \draw[arch_arrow] (proj.north -| go.south) -- (go.south);
+
+  % Forget gate to Cell State
+  \draw[arch_arrow] (gf.north) -- node[right=1pt, font=\scriptsize] {$f_t$} (mul_f.south);
+
+  % Candidate multiplication (straight vertical entry to add_c)
+  \node[arch_op] (mul_i) at (5.5, 2.35) {$\odot$};
+  \draw[arch_arrow] (gi.north) |- node[pos=0.75, above=1pt, font=\scriptsize] {$i_t$} (mul_i.west);
+  \draw[arch_arrow] (gg.north) |- node[pos=0.75, above=1pt, font=\scriptsize] {$g_t$} (mul_i.east);
+  \draw[arch_arrow] (mul_i.north) -- (add_c.south);
+
+  % Output gate & tanh on cell state
+  \node[arch_box, minimum width=1.1cm, minimum height=0.65cm] (tanh_c) at (10.6, 2.35) {$\tanh$};
+  \coordinate (tap_c) at (10.6, 3.4);
+  \fill[black] (tap_c) circle (1.5pt);
+  \draw[arch_arrow] (tap_c) -- (tanh_c.north);
+
+  \node[arch_op] (mul_o) at (10.6, 1.25) {$\odot$};
+  \draw[arch_arrow] (tanh_c.south) -- (mul_o.north);
+  \draw[arch_arrow] (go.east) -- node[above=1pt, font=\scriptsize] {$o_t$} (mul_o.west);
+
+  % Hidden state out
+  \node[font=\small, anchor=west] (hn) at (12.7, 1.25) {$h_t$};
+  \draw[arch_arrow_thick] (mul_o.east) -- (hn.west);
+
+  % Explanatory badge below
+  \node[arch_badge] at (5.7, -2.45) {LSTM: 4 cổng gồm quên $f_t=\sigma(\cdot)$, vào $i_t=\sigma(\cdot)$, ứng viên $g_t=\tanh(\cdot)$, ra $o_t=\sigma(\cdot)$; $c_t = f_t \odot c_{t-1} + i_t \odot g_t$, $h_t = o_t \odot \tanh(c_t)$};
 \end{tikzpicture}}
+
+% =============================================================
+% 10. ARCHITECTURE: GRU Cell
+% 100% PLANAR LAYOUT: ZERO INTERSECTIONS!
+% =============================================================
 \newcommand{\ArchGRU}{%
-\begin{tikzpicture}[x=1cm,y=1cm,gate/.style={draw=black,fill=white,rounded corners=1mm,minimum size=7mm,font=\small},op/.style={draw=black,fill=white,circle,inner sep=2pt}]
-\node[font=\small] (hp) at (0,3) {$h_{t-1}$};
-\node[gate] (r) at (2.5,.6) {$r_t: \sigma$};\node[gate] (z) at (5,.6) {$z_t: \sigma$};
-\node[op] (reset) at (2.5,1.8) {$\times$};\node[gate] (n) at (7.5,1.8) {$n_t: \tanh$};
-\node[op] (keep) at (9,3) {$\times$};\node[op] (write) at (9,1.8) {$\times$};\node[op] (sum) at (11,2.4) {$+$};
-\draw[flow] (hp)--(keep);\draw[flow] (r)--(reset);
-\draw[flow] (reset)--node[above,font=\footnotesize]{$x_n+r_t\odot h_n$}(n);
-\draw[flow] (z)--(5,3)--(keep);\draw[flow] (z)-|node[pos=.7,below,font=\footnotesize]{$1-z_t$}(write);
-\draw[flow] (n)--(write);\draw[flow] (keep)-|(sum);\draw[flow] (write)-|(sum);
-\draw[flow] (sum)--node[above,font=\small]{$h_t$}(12.3,2.4);
-\node[font=\footnotesize,align=center] at (5,-.9) {$x_t,h_{t-1}$: hai projection $F\to384$, $128\to384$\\Chia ba nhóm $r,z,n$; reset nhân sau projection hidden.};
-\draw[flow] (2.5,-.3)--(r);\draw[flow] (5,-.3)--(z);
-\draw[flow] (1.1,.6)--node[left,font=\footnotesize]{$h_n$}(1.1,1.8)--(reset);
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Boundary of GRU cell
+  \draw[draw=black, rounded corners=3mm, line width=0.8pt, fill=white] (-0.8, -1.1) rectangle (12.2, 4.3);
+  \node[font=\footnotesize\bfseries, anchor=north west] at (-0.6, 4.15) {GRU Cell (Hidden size $H=128$)};
+
+  % External Inputs
+  \node[font=\small, anchor=east] (hp) at (-1.4, 3.4) {$h_{t-1}$};
+  \node[font=\small, anchor=north] (xt) at (1.4, -1.55) {$x_t$};
+
+  % Wide Linear Projections Bar
+  \node[arch_box_gray, minimum width=5.6cm, minimum height=0.65cm] (proj) at (3.8, -0.5) {
+    $\mathbf{W}x_t + \mathbf{U}h_{t-1}$
+  };
+  \draw[arch_arrow] (xt.north) -- (proj.south -| xt.north);
+
+  % h_{t-1} branch down to proj.west at x = -0.2
+  \coordinate (tap_p) at (-0.2, 3.4);
+  \fill[black] (tap_p) circle (1.5pt);
+  \draw[arch_arrow] (tap_p) |- (proj.west);
+
+  % 1. Update Gate z_t on Left (x = 2.2)
+  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (gz) at (2.2, 0.7) {$\sigma$};
+  \draw[arch_arrow] (proj.north -| gz.south) -- (gz.south);
+
+  % mul_keep: z_t * h_{t-1} directly on highway at (2.2, 3.4)
+  \node[arch_op] (mul_keep) at (2.2, 3.4) {$\odot$};
+  \draw[arch_arrow] (hp.east) -- (mul_keep.west);
+  \draw[arch_arrow] (gz.north) -- node[right=1pt, font=\scriptsize] {$z_t$} (mul_keep.south);
+
+  % 2. Reset Gate r_t in Middle (x = 4.5)
+  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (gr) at (4.5, 0.7) {$\sigma$};
+  \draw[arch_arrow] (proj.north -| gr.south) -- (gr.south);
+
+  % mul_r at (4.5, 2.0)
+  \node[arch_op] (mul_r) at (4.5, 2.0) {$\odot$};
+  \draw[arch_arrow] (gr.north) -- node[right=1pt, font=\scriptsize] {$r_t$} (mul_r.south);
+
+  % h_{t-1} tap to mul_r at x = 3.4
+  \coordinate (tap_r) at (3.4, 3.4);
+  \fill[black] (tap_r) circle (1.5pt);
+  \draw[arch_arrow] (tap_r) |- (mul_r.west);
+
+  % 3. Candidate Cell gn (\tanh) at (6.5, 2.0)
+  \node[arch_box, minimum width=1.1cm, minimum height=0.7cm] (gn) at (6.5, 2.0) {$\tanh$};
+  \draw[arch_arrow] (mul_r.east) -- (gn.west);
+
+  % Blend box: (1 - z_t) at (6.5, 0.7)
+  \node[arch_box, minimum width=1.1cm, minimum height=0.6cm] (inv_z) at (6.5, 0.7) {\scriptsize $1 - z_t$};
+  \draw[arch_arrow] (gz.east) -- (inv_z.west);
+
+  % 4. Candidate Multiplier at (8.5, 2.0): (1 - z_t) * \tilde{h}_t
+  \node[arch_op] (mul_cand) at (8.5, 2.0) {$\odot$};
+  \draw[arch_arrow] (gn.east) -- node[above=1pt, font=\scriptsize] {$\tilde{h}_t$} (mul_cand.west);
+  \draw[arch_arrow] (inv_z.east) -| (mul_cand.south);
+
+  % 5. Output Addition at (10.4, 2.7)
+  \node[arch_op] (add_h) at (10.4, 2.7) {$\oplus$};
+  \draw[arch_arrow] (mul_keep.east) -| (add_h.north);
+  \draw[arch_arrow] (mul_cand.east) -| (add_h.south);
+
+  % Output h_t
+  \node[font=\small, anchor=west] (hn) at (12.7, 2.7) {$h_t$};
+  \draw[arch_arrow_thick] (add_h.east) -- (hn.west);
+
+  % Explanatory badge below
+  \node[arch_badge] at (5.7, -2.45) {GRU: cổng reset $r_t = \sigma(W_r x_t + U_r h_{t-1})$; cổng cập nhật $z_t = \sigma(W_z x_t + U_z h_{t-1})$; ứng viên $\tilde{h}_t = \tanh(W_n x_t + r_t \odot U_n h_{t-1})$; đầu ra $h_t = z_t \odot h_{t-1} + (1 - z_t) \odot \tilde{h}_t$};
 \end{tikzpicture}}
+
+% =============================================================
+% 11. ARCHITECTURE: ResNet-50
+% =============================================================
 \newcommand{\ArchResNet}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{i}{0}{0}{2.2}{2.2}{.08}{.35}{$224\times224\times3$}
-\TensorMap{c}{6.2}{.7}{.7}{.7}{1.05}{1.5}{$7\times7\times2048$}
-\draw[flow] (i-east)--node[above,align=center,font=\small]{ResNet-50 backbone\\Bottleneck: $3,4,6,3$\\Stem, C2--C5}(c-west);
-\TensorMap{v}{10.4}{.6}{.2}{1}{.4}{1.1}{2048}
-\draw[flow] (c-east)--node[above,align=center,font=\footnotesize]{Global\\AvgPool}(v-west);
-\NeuronLayer{o}{10.7}{-2.5}{43 logits}
-\draw[flow] (10.5,-.05)--node[right,font=\footnotesize]{FC $2048\to43$}(10.7,-1.3);
+  \def\ty{3.0}
+
+  % Input image
+  \node[arch_box, minimum width=1.8cm, minimum height=1.8cm, fill=white] (in) at (0, \ty) {};
+  \draw[step=0.225cm, black, line width=0.25pt] (-0.9,2.1) grid (0.9,3.9);
+  \node[font=\footnotesize, anchor=north, align=center] at (0, 1.95) {Ảnh GTSRB\\$224\times 224\times 3$};
+
+  % Stem
+  \draw[arch_arrow] (0.95, \ty) -- (1.7, \ty);
+  \node[arch_box, text width=2.0cm, minimum height=1.5cm] (stem) at (2.75, \ty) {
+    \textbf{Stem (Conv1)}\\[1pt]
+    \scriptsize $7\times 7, 64, s=2$\\[1pt]
+    BN, ReLU, Pool
+  };
+
+  % Stage 1 (C2)
+  \draw[arch_arrow] (stem.east) -- (4.3, \ty);
+  \node[arch_box_gray, text width=2.0cm, minimum height=1.5cm] (c2) at (5.35, \ty) {
+    \textbf{Stage 1 (C2)}\\[1pt]
+    \scriptsize $3\times$ Bottleneck\\[1pt]
+    \textbf{$56\times 56\times 256$}
+  };
+
+  % Stage 2 (C3)
+  \draw[arch_arrow] (c2.east) -- (6.9, \ty);
+  \node[arch_box_gray, text width=2.0cm, minimum height=1.5cm] (c3) at (7.95, \ty) {
+    \textbf{Stage 2 (C3)}\\[1pt]
+    \scriptsize $4\times$ Bottleneck\\[1pt]
+    \textbf{$28\times 28\times 512$}
+  };
+
+  % Stage 3 (C4)
+  \draw[arch_arrow] (c3.east) -- (9.5, \ty);
+  \node[arch_box_gray, text width=2.0cm, minimum height=1.5cm] (c4) at (10.55, \ty) {
+    \textbf{Stage 3 (C4)}\\[1pt]
+    \scriptsize $6\times$ Bottleneck\\[1pt]
+    \textbf{$14\times 14\times 1024$}
+  };
+
+  % Stage 4 (C5)
+  \draw[arch_arrow] (c4.east) -- (12.1, \ty);
+  \node[arch_box_gray, text width=2.0cm, minimum height=1.5cm] (c5) at (13.15, \ty) {
+    \textbf{Stage 4 (C5)}\\[1pt]
+    \scriptsize $3\times$ Bottleneck\\[1pt]
+    \textbf{$7\times 7\times 2048$}
+  };
+
+  % Classification Head
+  \draw[arch_arrow] (c5.east) -- (14.7, \ty);
+  \node[arch_box_dark, text width=1.9cm, minimum height=1.5cm] (head) at (15.7, \ty) {
+    \textbf{Head}\\[1pt]
+    \scriptsize GAP $\to$ FC $43$\\[1pt]
+    \textbf{$43$ logits}
+  };
+
+  % Inset Detail: Bottleneck Block
+  \draw[draw=black, dashed, rounded corners=2mm, fill=white] (1.6, -1.2) rectangle (16.2, 1.2);
+  \node[font=\footnotesize\bfseries, anchor=west] at (2.0, 0.8) {Chi tiết cấu trúc một khối Bottleneck (Residual Unit)};
+
+  \def\by{-0.5}
+  \node[font=\footnotesize] (bx_in) at (2.3, \by) {$\mathbf{x}$};
+  \node[arch_box, text width=2.1cm, minimum height=0.7cm] (b_c1) at (3.95, \by) {\scriptsize Conv $1\times 1$, BN, R};
+  \node[arch_box, text width=2.1cm, minimum height=0.7cm] (b_c2) at (6.85, \by) {\scriptsize Conv $3\times 3$, BN, R};
+  \node[arch_box, text width=2.1cm, minimum height=0.7cm] (b_c3) at (9.75, \by) {\scriptsize Conv $1\times 1$, BN};
+  \node[arch_op] (b_add) at (12.0, \by) {$+$};
+  \node[arch_box, minimum width=1.0cm, minimum height=0.65cm] (b_relu) at (13.4, \by) {\scriptsize ReLU};
+  \node[font=\footnotesize] (bx_out) at (14.7, \by) {$\mathbf{y}$};
+
+  \draw[arch_arrow] (bx_in) -- (b_c1);
+  \draw[arch_arrow] (b_c1) -- (b_c2);
+  \draw[arch_arrow] (b_c2) -- (b_c3);
+  \draw[arch_arrow] (b_c3) -- (b_add);
+  \draw[arch_arrow] (b_add) -- (b_relu);
+  \draw[arch_arrow] (b_relu) -- (bx_out);
+
+  % Residual shortcut
+  \coordinate (b_tap) at (2.7, \by);
+  \fill[black] (b_tap) circle (1.5pt);
+  \draw[arch_line] (b_tap) -- (2.7, 0.15) -- (12.0, 0.15);
+  \draw[arch_arrow] (12.0, 0.15) -- node[above=1pt, font=\tiny, fill=white, inner sep=1pt] {Shortcut (Identity / $1\times 1$)} (b_add.north);
+
+  % Overall capacity badge
+  \node[arch_badge] at (8.9, -1.65) {ResNet-50 gồm stem và 16 khối bottleneck ($3+4+6+3$); head $88,107$ tham số, toàn mạng $23,596,139$ tham số};
 \end{tikzpicture}}
+
+% =============================================================
+% 12. ARCHITECTURE: DeiT-Small/16
+% =============================================================
 \newcommand{\ArchDeiT}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{i}{0}{0}{2.2}{2.2}{.08}{.35}{$224\times224\times3$}
-\draw[step=.157,black,line width=.2pt] (0,0) grid (2.2,2.2);
-\TensorMap{p}{4.5}{.5}{1.9}{1}{.6}{1}{$196\times384$}
-\draw[flow] (i-east)--node[above,align=center,font=\footnotesize]{Conv $16\times16$\\stride 16\\$3\to384$}(p-west);
-\TensorMap{e}{8.8}{.5}{1.9}{1}{.6}{1}{$197\times384$}
-\draw[flow] (p-east)--(e-west);
-\node[anchor=south,align=center,font=\footnotesize] at (7.8,2.1)
- {CLS + position\\12 encoder block\\6 head; FFN 1536};
-\NeuronLayer{h}{9.7}{-2.6}{384; CLS}
-\NeuronLayer{o}{5.7}{-2.6}{43 logits}
-\draw[flow] (9.75,-.05)--node[right,font=\footnotesize]{LayerNorm, lấy CLS}(9.7,-1.4);
-\DenseLinks{h}{o}\node[font=\footnotesize] at (7.6,-1.35) {FC $384\to43$};
+  \def\ty{3.0}
+
+  % Input image
+  \node[arch_box, minimum width=1.8cm, minimum height=1.8cm, fill=white] (in) at (0, \ty) {};
+  \draw[step=0.225cm, black, line width=0.25pt] (-0.9,2.1) grid (0.9,3.9);
+  \node[font=\footnotesize, anchor=north, align=center] at (0, 1.95) {Ảnh GTSRB\\$224\times 224\times 3$};
+
+  % Patch Embedding
+  \draw[arch_arrow] (0.95, \ty) -- (1.8, \ty);
+  \node[arch_box, text width=2.1cm, minimum height=1.5cm] (pe) at (2.9, \ty) {
+    \textbf{Patch Embed}\\[1pt]
+    \scriptsize $16\times 16$, $s=16$\\[1pt]
+    \textbf{$196$ tokens}
+  };
+
+  % CLS + Pos Embedding
+  \draw[arch_arrow] (pe.east) -- (4.6, \ty);
+  \node[arch_box_gray, text width=2.4cm, minimum height=1.5cm] (cls_pos) at (5.85, \ty) {
+    \textbf{+ [CLS], Pos}\\[1pt]
+    \scriptsize $+\mathbf{E}_{\mathrm{pos}} \in \mathbb{R}^{197\times 384}$\\[1pt]
+    \textbf{$197\times 384$}
+  };
+
+  % 12 Transformer Encoder Blocks
+  \draw[arch_arrow] (cls_pos.east) -- (7.6, \ty);
+  \node[arch_box_dark, text width=3.0cm, minimum height=1.5cm] (enc) at (9.15, \ty) {
+    \textbf{Transformer}\\[2pt]
+    \scriptsize $12\times$ DeiT Blocks\\[1pt]
+    $D=384, H=6, d_h=64$\\[1pt]
+    $\text{FFN } 384\to 1536$
+  };
+
+  % Extract CLS & LayerNorm
+  \draw[arch_arrow] (enc.east) -- (11.2, \ty);
+  \node[arch_box, text width=2.0cm, minimum height=1.5cm] (ext) at (12.3, \ty) {
+    \textbf{Trích [CLS]}\\[1pt]
+    \scriptsize $\mathrm{LN} (D=384)$\\[1pt]
+    $\mathbf{h}_{\mathrm{cls}} \in \mathbb{R}^{384}$
+  };
+
+  % Classification Head
+  \draw[arch_arrow] (ext.east) -- (13.9, \ty);
+  \node[arch_box_gray, text width=1.8cm, minimum height=1.5cm] (head) at (14.9, \ty) {
+    \textbf{Head}\\[1pt]
+    \scriptsize FC $384 \to 43$\\[1pt]
+    \textbf{$43$ logits}
+  };
+
+  % Inset Detail: DeiT Block
+  \draw[draw=black, dashed, rounded corners=2mm, fill=white] (1.6, -1.2) rectangle (16.2, 1.2);
+  \node[font=\footnotesize\bfseries, anchor=west] at (2.0, 0.8) {Chi tiết cấu trúc một DeiT Encoder Block (Pre-norm Transformer)};
+
+  \def\by{-0.5}
+  \node[font=\footnotesize] (dx_in) at (2.3, \by) {$\mathbf{z}_{l-1}$};
+  \node[arch_box, minimum width=1.0cm, minimum height=0.65cm] (d_ln1) at (3.5, \by) {\scriptsize LN};
+  \node[arch_box, text width=2.0cm, minimum height=0.65cm] (d_msa) at (5.5, \by) {\scriptsize MSA ($H=6$)};
+  \node[arch_op] (d_add1) at (7.5, \by) {$+$};
+  \node[arch_box, minimum width=1.0cm, minimum height=0.65cm] (d_ln2) at (8.9, \by) {\scriptsize LN};
+  \node[arch_box, text width=2.5cm, minimum height=0.65cm] (d_ffn) at (11.1, \by) {\scriptsize FFN $384\to 1536$};
+  \node[arch_op] (d_add2) at (13.3, \by) {$+$};
+  \node[font=\footnotesize] (dx_out) at (14.6, \by) {$\mathbf{z}_l$};
+
+  \draw[arch_arrow] (dx_in) -- (d_ln1);
+  \draw[arch_arrow] (d_ln1) -- (d_msa);
+  \draw[arch_arrow] (d_msa) -- (d_add1);
+  \draw[arch_arrow] (d_add1) -- (d_ln2);
+  \draw[arch_arrow] (d_ln2) -- (d_ffn);
+  \draw[arch_arrow] (d_ffn) -- (d_add2);
+  \draw[arch_arrow] (d_add2) -- (dx_out);
+
+  % Residual connections in block
+  \coordinate (d_tap1) at (2.8, \by);
+  \fill[black] (d_tap1) circle (1.5pt);
+  \draw[arch_line] (d_tap1) -- (2.8, 0.15) -- (7.5, 0.15);
+  \draw[arch_arrow] (7.5, 0.15) -- (d_add1.north);
+
+  \coordinate (d_tap2) at (8.2, \by);
+  \fill[black] (d_tap2) circle (1.5pt);
+  \draw[arch_line] (d_tap2) -- (8.2, 0.15) -- (13.3, 0.15);
+  \draw[arch_arrow] (13.3, 0.15) -- (d_add2.north);
+
+  % Capacity note
+  \node[arch_badge] at (8.9, -1.65) {DeiT-Small/16 gồm 12 block encoder ($D=384, H=6$); head $16,555$ tham số, toàn mạng $21,682,219$ tham số};
 \end{tikzpicture}}
+
+% =============================================================
+% 13. ARCHITECTURE: FPN
+% Parameter #1 = 1: RetinaNet (P3--P7)
+% Parameter #1 = 2: Faster R-CNN (P2--P6)
+% =============================================================
 \newcommand{\ArchFPN}[1]{%
-\begin{tikzpicture}[x=1cm,y=1cm,op/.style={draw=black,fill=white,circle,inner sep=1.5pt,font=\small}]
-\foreach \l/\y/\w/\ch/\s/\d/\b in {5/9/.6/2048/16/1.0/1.4,4/6/.85/1024/32/.8/1.2,3/3/1.15/512/64/.6/1,2/0/1.5/256/128/.45/.8}{%
-\ifnum#1=1\relax\def\low{3}\else\def\low{2}\fi
-\ifnum\l<\low\relax\else
-\TensorMap{c\l}{0}{\y}{\w}{\w}{\d}{\b}{$C_{\l}:\s^2\times\ch$}
-\ifnum\l=5
-\node[font=\footnotesize,fill=white] (t\l) at (5,{\y+.5}) {$T_5$};
-\else
-\node[op] (t\l) at (5,{\y+.5}) {$+$};
-\fi
-\draw[flow] (c\l-east)--node[above,font=\footnotesize]{Conv $1\times1$}(t\l);
-\TensorMap{p\l}{9}{\y}{\w}{\w}{.45}{.8}{$P_{\l}:\s^2\times256$}
-\draw[flow] (t\l)--node[above,font=\footnotesize]{Conv $3\times3$}(p\l-west);
-\ifnum\l<5
-\pgfmathtruncatemacro{\up}{\l+1}
-\draw[flow] (t\up)--node[right,align=left,font=\footnotesize]{Nearest\\upsample $\times2$}(t\l);
-\fi
-\fi}
-\node[font=\small,align=center] at (.6,11.1) {ResNet-50\\bottom-up};
-\node[font=\small,align=center] at (5,11.1) {Top-down\\$T_l=L_l(C_l)+\uparrow T_{l+1}$};
-\node[font=\small,align=center] at (9.8,11.1) {Smoothing\\256 channels};
-\draw[flow] (c3-west)--++(-.35,0)|-(c4-west);
-\draw[flow] (c4-west)--++(-.35,0)|-(c5-west);
-\ifnum#1=1
-\TensorMap{p6}{9}{-.1}{.45}{.45}{.45}{.8}{}
-\node[anchor=east,font=\footnotesize] at (8.7,-.35) {$P_6:8^2\times256$};
-\TensorMap{p7}{9}{-2.8}{.3}{.3}{.45}{.8}{$P_7:4^2\times256$}
-\draw[flow] (c5-west)--++(-1.1,0)|-node[pos=.8,above,font=\footnotesize]{Conv $3\times3$, stride 2}(p6-west);
-\draw[flow] (p6-south)--(p7-north);
-\node[anchor=east,align=right,font=\footnotesize] at (8.7,-1.65) {ReLU\\Conv $3\times3$, stride 2};
-\else
-\draw[flow] (c2-west)--++(-.35,0)|-(c3-west);
-\TensorMap{p6}{9}{-2.8}{.45}{.45}{.45}{.8}{$P_6:8^2\times256$}
-\draw[flow] (p5-east)--++(1.2,0)|-(p6-east);
-\node[align=center,font=\footnotesize] at (9.5,-1.5) {MaxPool $1\times1$\\stride 2};
-\fi
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Column Headers
+  \node[arch_title] at (0.8, 10.3) {ResNet-50\\(Bottom-up)};
+  \node[arch_title] at (5.0, 10.3) {Top-down pathway\\$T_l = \text{Conv}_{1\times 1}(C_l) + \uparrow T_{l+1}$};
+  \node[arch_title] at (9.2, 10.3) {Feature Pyramid\\(Smoothing $3\times 3$)};
+
+  % Level 5 (Exact horizontal axis at y = 8.55)
+  \TensorMap{c5}{0}{8.2}{0.7}{0.7}{0.9}{0.8}{}
+  \node[font=\footnotesize, anchor=east] at (-0.2, 8.55) {$C_5: 16^2\times 2048$};
+  \node[arch_box_gray, minimum width=1.1cm, minimum height=0.65cm] (t5) at (5.0, 8.55) {$T_5$};
+  \draw[arch_arrow] (0.7, 8.55) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $1\times 1$} (t5.west);
+  \TensorMap{p5}{8.5}{8.2}{0.7}{0.7}{0.45}{0.7}{}
+  \node[font=\footnotesize, anchor=west] at (9.8, 8.55) {$P_5: 16^2\times 256$};
+  \draw[arch_arrow] (t5.east) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $3\times 3$} (8.5, 8.55);
+
+  % Level 4 (Exact horizontal axis at y = 6.25)
+  \TensorMap{c4}{0}{5.8}{0.9}{0.9}{0.75}{0.7}{}
+  \node[font=\footnotesize, anchor=east] at (-0.2, 6.25) {$C_4: 32^2\times 1024$};
+  \node[arch_op] (add4) at (5.0, 6.25) {$+$};
+  \draw[arch_arrow] (0.9, 6.25) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $1\times 1$} (add4.west);
+  \TensorMap{p4}{8.5}{5.8}{0.9}{0.9}{0.45}{0.7}{}
+  \node[font=\footnotesize, anchor=west] at (10.0, 6.25) {$P_4: 32^2\times 256$};
+  \draw[arch_arrow] (add4.east) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $3\times 3$} (8.5, 6.25);
+  \draw[arch_arrow] (t5.south) -- node[right=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Nearest $\uparrow 2\times$} (add4.north);
+
+  % Level 3 (Exact horizontal axis at y = 3.975)
+  \TensorMap{c3}{0}{3.4}{1.15}{1.15}{0.6}{0.65}{}
+  \node[font=\footnotesize, anchor=east] at (-0.2, 3.975) {$C_3: 64^2\times 512$};
+  \node[arch_op] (add3) at (5.0, 3.975) {$+$};
+  \draw[arch_arrow] (1.15, 3.975) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $1\times 1$} (add3.west);
+  \TensorMap{p3}{8.5}{3.4}{1.15}{1.15}{0.45}{0.7}{}
+  \node[font=\footnotesize, anchor=west] at (10.25, 3.975) {$P_3: 64^2\times 256$};
+  \draw[arch_arrow] (add3.east) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $3\times 3$} (8.5, 3.975);
+  \draw[arch_arrow] (add4.south) -- node[right=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Nearest $\uparrow 2\times$} (add3.north);
+
+  % Bottom-up backbone connection arrows between cubes
+  \draw[arch_arrow] (0.575, 4.85) -- node[right=2pt, font=\scriptsize] {stride 2} (0.575, 5.8);
+  \draw[arch_arrow] (0.45, 7.05) -- node[right=2pt, font=\scriptsize] {stride 2} (0.45, 8.2);
+
+  % Conditional Level 2 and High-level extensions
+  \ifnum#1=1
+    % RetinaNet: P3--P7 (No C2/P2; P6 and P7 added)
+    \TensorMap{p6}{8.5}{1.2}{0.55}{0.55}{0.45}{0.7}{}
+    \node[font=\footnotesize, anchor=west] at (9.6, 1.45) {$P_6: 8^2\times 256$};
+    \draw[arch_line] (0.35, 9.35) -- (0.35, 9.6) -- (-3.2, 9.6) -- (-3.2, 1.45);
+    \draw[arch_arrow] (-3.2, 1.45) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $3\times 3$, stride 2 (từ $C_5$)} (8.5, 1.45);
+
+    % P7 from P6 via ReLU + Conv 3x3 s=2
+    \TensorMap{p7}{8.575}{-1.0}{0.4}{0.4}{0.45}{0.7}{}
+    \node[font=\footnotesize, anchor=west] at (9.5, -0.8) {$P_7: 4^2\times 256$};
+    \draw[arch_arrow] (8.775, 1.2) -- node[right=1pt, font=\scriptsize, fill=white, inner sep=1pt] {ReLU $\to$ Conv $3\times 3$, stride 2} (8.775, -0.46);
+
+    \node[arch_badge] at (4.5, -2.2) {FPN trong RetinaNet sử dụng 5 mức $P_3$--$P_7$ để bao phủ các kích thước vật thể từ nhỏ đến rất lớn};
+
+  \else
+    % Faster R-CNN: P2--P6 (Includes C2 and P2; P6 from P5 via MaxPool)
+    % Level 2 (Exact horizontal axis at y = 1.725)
+    \TensorMap{c2}{0}{1.0}{1.45}{1.45}{0.45}{0.6}{}
+    \node[font=\footnotesize, anchor=east] at (-0.2, 1.725) {$C_2: 128^2\times 256$};
+    \node[arch_op] (add2) at (5.0, 1.725) {$+$};
+    \draw[arch_arrow] (1.45, 1.725) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $1\times 1$} (add2.west);
+    \TensorMap{p2}{8.5}{1.0}{1.45}{1.45}{0.45}{0.7}{}
+    \node[font=\footnotesize, anchor=west] at (10.5, 1.725) {$P_2: 128^2\times 256$};
+    \draw[arch_arrow] (add2.east) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $3\times 3$} (8.5, 1.725);
+    \draw[arch_arrow] (add3.south) -- node[right=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Nearest $\uparrow 2\times$} (add2.north);
+    \draw[arch_arrow] (0.725, 2.65) -- node[right=2pt, font=\scriptsize] {stride 2} (0.725, 3.4);
+
+    % P6 from P5 via MaxPool
+    \TensorMap{p6}{8.5}{-1.2}{0.55}{0.55}{0.45}{0.7}{}
+    \node[font=\footnotesize, anchor=north] at (8.775, -1.35) {$P_6: 8^2\times 256$};
+    \draw[arch_line] (8.985, 9.075) -- (8.985, 9.4) -- (13.8, 9.4) -- (13.8, -0.925);
+    \draw[arch_arrow] (13.8, -0.925) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {MaxPool $1\times 1$, stride 2 (từ $P_5$)} (9.05, -0.925);
+
+    \node[arch_badge] at (4.5, -2.6) {FPN trong Faster R-CNN bổ sung $P_2$ độ phân giải cao cho vật thể nhỏ; $P_6$ được dùng riêng cho RPN};
+  \fi
 \end{tikzpicture}}
+
+% =============================================================
+% 14. ARCHITECTURE: RetinaNet Head
+% =============================================================
 \newcommand{\ArchRetinaHead}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\TensorMap{p}{0}{0}{1.4}{1.4}{.4}{.8}{$P_l:H_l\times W_l\times256$}
-\TensorMap{c}{5}{2}{1.1}{1.1}{.5}{1}{$H_l\times W_l\times256$}
-\TensorMap{r}{5}{-2}{1.1}{1.1}{.5}{1}{$H_l\times W_l\times256$}
-\draw[flow] (p-east)--++(.7,0)|-node[pos=.8,above,align=center,font=\footnotesize]{Classification subnet\\4 Conv $3^2$ + ReLU}(c-west);
-\draw[flow] (p-east)--++(.7,0)|-node[pos=.8,below,align=center,font=\footnotesize]{Regression subnet\\4 Conv $3^2$ + ReLU}(r-west);
-\TensorMap{co}{10}{2}{.8}{.8}{.45}{.9}{$H_l\times W_l\times180$}
-\TensorMap{ro}{10}{-2}{.8}{.8}{.2}{.6}{$H_l\times W_l\times36$}
-\draw[flow] (c-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$9\times20$ logits}(co-west);
-\draw[flow] (r-east)--node[above,align=center,font=\footnotesize]{Conv $3\times3$\\$9\times4$ offsets}(ro-west);
-\node[font=\small,align=center] at (6,-3.8) {Hai subnet riêng; trọng số từng subnet dùng chung trên P3--P7.\\Focal Loss ($\alpha=0,25$, $\gamma=2$) + Smooth L1.};
+  % Input FPN Feature Map Pl
+  \TensorMap{p}{-0.5}{0.8}{1.4}{1.4}{0.45}{0.7}{$P_l \in \mathbb{R}^{H_l\times W_l\times 256}$\\[1pt]\scriptsize($l \in \{3,4,5,6,7\}$)}
+
+  % Fork to Classification Subnet (Top) and Regression Subnet (Bottom)
+  \draw[arch_line] (p-east) -- (1.8, 1.5);
+  \draw[arch_arrow] (1.8, 1.5) |- (2.6, 3.0);
+  \draw[arch_arrow] (1.8, 1.5) |- (2.6, -0.8);
+
+  % Top Branch: Classification Subnet
+  \node[arch_box_gray, text width=3.8cm, minimum height=1.45cm] (c_sub) at (4.6, 3.0) {
+    \textbf{Classification Subnet}\\[2pt]
+    \scriptsize $4\times (\text{Conv } 3\times 3, 256 + \text{ReLU})$\\[1pt]
+    Chia sẻ trên $P_3$--$P_7$
+  };
+
+  \node[arch_box_dark, text width=2.4cm, minimum height=1.45cm] (c_out) at (9.5, 3.0) {
+    \textbf{Phân loại}\\[2pt]
+    \scriptsize $9 \times 20 = 180$\\[1pt]
+    Sigmoid độc lập
+  };
+  \draw[arch_arrow] (c_sub.east) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $3\times 3$} (c_out.west);
+
+  \node[arch_box, text width=2.2cm, minimum height=1.45cm, fill=white] (c_t) at (12.7, 3.0) {
+    \textbf{Đầu ra}\\[2pt]
+    \scriptsize $H_l\times W_l\times 180$
+  };
+  \draw[arch_arrow] (c_out.east) -- (c_t.west);
+
+  % Bottom Branch: Box Regression Subnet
+  \node[arch_box_gray, text width=3.8cm, minimum height=1.45cm] (r_sub) at (4.6, -0.8) {
+    \textbf{Box Regression Subnet}\\[2pt]
+    \scriptsize $4\times (\text{Conv } 3\times 3, 256 + \text{ReLU})$\\[1pt]
+    Chia sẻ trên $P_3$--$P_7$
+  };
+
+  \node[arch_box_dark, text width=2.4cm, minimum height=1.45cm] (r_out) at (9.5, -0.8) {
+    \textbf{Hồi quy BBox}\\[2pt]
+    \scriptsize $9 \times 4 = 36$\\[1pt]
+    Offsets $(dx, dy, dw, dh)$
+  };
+  \draw[arch_arrow] (r_sub.east) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Conv $3\times 3$} (r_out.west);
+
+  \node[arch_box, text width=2.2cm, minimum height=1.45cm, fill=white] (r_t) at (12.7, -0.8) {
+    \textbf{Đầu ra}\\[2pt]
+    \scriptsize $H_l\times W_l\times 36$
+  };
+  \draw[arch_arrow] (r_out.east) -- (r_t.west);
+
+  % Note below
+  \node[arch_badge] at (6.8, -2.4) {RetinaNet Head gồm hai subnet độc lập (mỗi subnet 4 tầng Conv 256); huấn luyện bằng Focal Loss ($\alpha=0.25, \gamma=2$) và Smooth L1 ($\beta=1$)};
 \end{tikzpicture}}
+
+% =============================================================
+% 15. ARCHITECTURE: Faster R-CNN Head
+% =============================================================
 \newcommand{\ArchFasterHead}{%
-\begin{tikzpicture}[x=1cm,y=1cm,op/.style={draw=black,fill=white,circle,inner sep=3pt}]
-\TensorMap{p}{0}{0}{1.4}{1.4}{.4}{.8}{$P_l:H_l\times W_l\times256$}
-\node[font=\footnotesize,align=center] (rpn) at (5.2,3.6) {RPN: Conv $3^2$ + ReLU\\Conv $1^2$: 3 objectness + 12 offsets\\Decode, NMS 0,7};
-\draw[flow] (p-east)--++(.6,0)|-(rpn.west);
-\TensorMap{roi}{5}{-.1}{.7}{.7}{.65}{1}{$7\times7\times256$}
-\draw[flow] (p-east)--(roi-west);
-\node[font=\footnotesize] at (3.25,1.3) {RoI Pool $7\times7$};
-\draw[flow] (rpn.south)--node[left,font=\footnotesize]{Proposals}(roi-north);
-\NeuronLayer{fc1}{8.6}{.1}{1024; ReLU}
-\NeuronLayer{fc2}{11.3}{.1}{1024; ReLU}
-\draw[flow] (roi-east)--(8.2,.6);
-\node[font=\footnotesize,align=center] at (7.2,1.5) {Flatten 12544\\FC};
-\DenseLinks{fc1}{fc2}
-\node[font=\footnotesize,align=center] at (9.9,2) {FC $1024\to1024$};
-\draw[flow] (11.3,-.7)--(11.3,-1.7)--(9,-1.7);
-\node[font=\footnotesize,align=center] at (6.8,-1.7) {FC $1024\to21$: lớp + BG\\FC $1024\to84$: bbox theo lớp};
-\node[font=\footnotesize,align=center] at (5,-3) {RPN: P2--P6; RoI Pool: P2--P5 theo $\lfloor4+\log_2(\sqrt{wh}/224)\rfloor$.\\Loss: objectness + classification CE, hai thành phần Smooth L1.};
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Input FPN Feature Map
+  \TensorMap{p}{-0.4}{1.5}{1.4}{1.4}{0.45}{0.7}{$P_l \in \mathbb{R}^{H_l\times W_l\times 256}$\\[1pt]\scriptsize($l \in \{2,3,4,5,6\}$)}
+
+  % Branch 1: RPN (Top row at y = 4.2)
+  \draw[arch_line] (p-east) -- (1.8, 2.2);
+  \draw[arch_arrow] (1.8, 2.2) |- (2.8, 4.2);
+
+  \node[arch_box_gray, text width=3.2cm, minimum height=1.45cm] (rpn) at (4.5, 4.2) {
+    \textbf{RPN}\\[1pt]
+    \scriptsize Conv $3\times 3, 256$ + ReLU\\[1pt]
+    $1\times 1$: $3$ obj, $12$ deltas
+  };
+
+  \draw[arch_arrow] (rpn.east) -- (7.0, 4.2);
+  \node[arch_box, text width=2.6cm, minimum height=1.45cm] (props) at (8.4, 4.2) {
+    \textbf{Đề xuất vùng}\\[1pt]
+    \scriptsize NMS $\implies 2,000$ (train)\\[1pt]
+    $1,000$ (test) RoIs
+  };
+
+  % Branch 2: RoI Pooling & Head (Bottom row at y = 0.6)
+  \node[arch_box_dark, text width=2.6cm, minimum height=1.5cm] (roipool) at (4.5, 0.6) {
+    \textbf{RoI Pooling}\\[1pt]
+    \scriptsize Mức FPN $k \in [2,5]$\\[1pt]
+    \textbf{$7\times 7\times 256$}
+  };
+  \draw[arch_arrow] (1.8, 2.2) |- (roipool.west);
+
+  % Proposal line from RPN: drops from props.south at y=3.475 to corridor at y=2.4, then left into roipool.north
+  \draw[arch_line] (props.south) -- (8.4, 2.4);
+  \draw[arch_arrow] (8.4, 2.4) -- node[above=1pt, font=\scriptsize, fill=white, inner sep=1pt] {Đề xuất RoIs (BBoxes)} (4.5, 2.4) -- (roipool.north);
+
+  % Flatten & Two FC layers
+  \draw[arch_arrow] (roipool.east) -- (7.0, 0.6);
+  \node[arch_box_gray, text width=2.7cm, minimum height=1.5cm] (fcs) at (8.4, 0.6) {
+    \textbf{Hai tầng FC}\\[1pt]
+    \scriptsize Flatten $\to 12,544$\\[1pt]
+    $2\times (\text{FC } 1024 + \text{ReLU})$
+  };
+
+  % Final dual outputs (Classification & Bbox) with 0.5cm vertical separation
+  \draw[arch_arrow] (fcs.east) |- (10.6, 1.55);
+  \draw[arch_arrow] (fcs.east) |- (10.6, -0.35);
+
+  \node[arch_box, text width=3.1cm, minimum height=1.35cm] (out_cls) at (12.3, 1.55) {
+    \textbf{Phân loại}\\[1pt]
+    \scriptsize FC $1024 \to 21$\\[1pt]
+    $20$ VOC + $1$ BG, Softmax
+  };
+
+  \node[arch_box, text width=3.1cm, minimum height=1.35cm] (out_reg) at (12.3, -0.35) {
+    \textbf{Hồi quy}\\[1pt]
+    \scriptsize FC $1024 \to 84$\\[1pt]
+    $21 \times 4$ offsets, Smooth L1
+  };
+
+  % Note below
+  \node[arch_badge] at (6.8, -1.65) {Faster R-CNN gồm hai giai đoạn: RPN đề xuất vùng trên P2--P6; RoI Pooling trích đặc trưng $7\times 7$ trên P2--P5 qua hai tầng FC $1024$};
 \end{tikzpicture}}

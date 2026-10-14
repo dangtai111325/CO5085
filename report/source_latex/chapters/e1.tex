@@ -1,74 +1,46 @@
 \chapter{E1: Softmax, MLP và CNN}
 \section{Mục tiêu và kiến trúc}
-E1 so sánh classifier tuyến tính, MLP và CNN trên cùng Fashion-MNIST.
-Softmax dùng vector flatten 784 chiều; MLP thêm phi tuyến; CNN giữ cấu trúc
-không gian trước khi gom feature. Hai CNN giúp phân biệt số tham số và
-chất lượng: CNN-A có head lớn, CNN-B dùng global average pooling.
+E1 so sánh Softmax tuyến tính, MLP và hai CNN trên cùng Fashion-MNIST.
+Softmax/MLP nhận vector 784 chiều; CNN giữ cấu trúc không gian. CNN-A dùng
+head flatten lớn, CNN-B dùng global average pooling.
 
-\begin{figure}[H]\centering
-\resizebox{.97\linewidth}{!}{\ArchSoftmax}
-\caption{Softmax classifier: không Conv, một FC; 7.850 tham số.}
-\end{figure}
-\begin{figure}[H]\centering
-\resizebox{.97\linewidth}{!}{\ArchMLP}
-\caption{MLP: ba FC, hai tầng ẩn; 235.146 tham số.}
-\end{figure}
-\begin{figure}[H]\centering
-\resizebox{.97\linewidth}{!}{\ArchCNNA}
-\caption{CNN-A: hai Conv, hai MaxPool, hai FC; 421.642 tham số. Conv stride 1, padding 1, có bias.}
-\end{figure}
-\begin{figure}[H]\centering
-\resizebox{.97\linewidth}{!}{\ArchCNNB}
-\caption{CNN-B: ba Conv/BN/MaxPool, một FC; 94.186 tham số. Conv stride 1, padding 1, không bias. Kích thước sau pool thứ ba là $3\times3$.}
-\end{figure}
-Ký hiệu $3^2$ chỉ kernel $3\times3$; chiều batch được lược khỏi sơ đồ. CNN-A dành 401.536 tham số cho
-FC $3136\to 128$, khoảng 95,2\% tổng số tham số. CNN-B thay head này bằng
+\ArchitecturePair{\ArchSoftmax}{Softmax: một FC, 7,850 tham số.}
+{\ArchMLP}{MLP: ba FC, 235,146 tham số.}
+{Classifier vector E1: (a) tuyến tính, (b) hai tầng ẩn phi tuyến; input Fashion-MNIST $28\times28$.}{e1-vector}
+\ArchitecturePair{\ArchCNNA}{CNN-A: hai Conv/MaxPool, hai FC, 421,642 tham số.}
+{\ArchCNNB}{CNN-B: ba Conv/BN/MaxPool, một FC, 94,186 tham số.}
+{CNN E1: Conv kernel $3\times3$, stride 1, padding 1; (a) có bias và flatten, (b) không bias và global average pooling, feature sau pool cuối $3\times3$.}{e1-cnn}
+Ký hiệu $3^2$ chỉ kernel $3\times3$; chiều batch được lược khỏi sơ đồ. CNN-A dành 401,536 tham số cho
+FC $3136\to 128$, khoảng 95.2\% tổng số tham số. CNN-B thay head này bằng
 average pooling, nên ít tham số hơn dù có thêm một Conv.
 
 \section{Huấn luyện}
-AdamW learning rate $10^{-3}$, weight decay $10^{-4}$, batch 128, tối đa
-100 epoch. Mỗi epoch dùng 422 batch train, 47 batch validation; test có
-79 batch và giữ batch cuối. Vòng lặp tự viết gồm forward, cross-entropy,
-backward và optimizer step; train dùng AMP. Dừng sau bốn epoch không cải
-thiện validation loss ít nhất $10^{-4}$; trọng số đánh giá là checkpoint
-có validation loss nhỏ nhất. Không augmentation hoặc scheduler.
+AdamW LR $10^{-3}$, weight decay $10^{-4}$, batch 128, tối đa 100 epoch;
+AMP train, không augmentation/scheduler. Mỗi epoch có 422 train và 47 validation
+batches; test có 79, giữ batch cuối. Loop forward/loss/backward/update tự viết.
+Dừng sớm theo validation loss, patience 4, min-delta $10^{-4}$;
+test dùng checkpoint có loss validation nhỏ nhất.
 
 \section{Kết quả định lượng và capacity}
-\DataTable{assets/e1/results.tex}{Kết quả E1 trên validation và 10.000 ảnh test; F1 là macro-F1.}
+\DataTable{assets/e1/results.tex}{Kết quả E1 trên validation và 10,000 ảnh test; F1 là macro-F1.}
 \DataTable{assets/e1/cost.tex}{Số tham số và chi phí E1; thời gian gồm train và validation.}
-\ReportFigure{assets/e1/comparison_quality.png}{Accuracy và macro-F1 trên validation, cùng thang phần trăm.}
-\ReportFigure{assets/e1/comparison_capacity.png}{Số tham số của bốn mô hình E1.}
-
-MLP đạt test accuracy 89,45\%, cao hơn Softmax 5,34 điểm phần trăm.
-Hai CNN đạt 91,66\% và 91,45\%, hơn MLP lần lượt 2,21 và 2,00 điểm.
-Phi tuyến giúp MLP biểu diễn ranh giới phức tạp hơn; convolution bổ sung
-khả năng học đặc trưng không gian và chia sẻ trọng số.
-
-CNN-A đạt validation cao nhất (92,00\%) và test cao nhất (91,66\%).
-CNN-B dùng ít tham số hơn 4,48 lần nhưng thấp hơn 0,21 điểm trên test.
-CNN-A tập trung khoảng 95,2\% tham số ở FC $3136\to128$; CNN-B thay
-head lớn bằng average pooling. Hai mô hình còn khác độ sâu và BatchNorm,
-nên chênh lệch này không phải tác động riêng của số tham số.
+MLP cải thiện test accuracy so với Softmax, trong khi cả hai CNN đạt
+kết quả cao hơn MLP trong protocol đã thử. CNN-A đạt 91.66\% test accuracy;
+CNN-B đạt 91.45\% với số tham số ít hơn khoảng 4.48 lần. Đây là đánh đổi
+accuracy--capacity thuận lợi cho CNN-B, nhưng hai CNN khác nhau về độ sâu,
+BatchNorm và classifier head nên không thể quy chênh lệch chỉ cho số tham số.
 
 \section{Đường cong học và phân tích lỗi}
-Train--validation gap tại checkpoint của Softmax, MLP, CNN-A và CNN-B
-lần lượt 0,99; 2,11; 2,61; 1,70 điểm phần trăm. Loss train tiếp tục giảm
-trong khi loss validation dao động, cho thấy không nên chọn trọng số chỉ
-theo mức khớp train. Train accuracy được đo trong train mode, với dropout/BatchNorm tùy mô hình;
-validation dùng eval mode nên gap chỉ là chỉ báo tham khảo.
-\PortraitFigure{assets/e1/learning_loss.png}{Cross-entropy của E1: nét đứt train, nét liền validation; mỗi đường có tên mô hình.}
-\PortraitFigure{assets/e1/learning_accuracy.png}{Accuracy theo epoch của bốn mô hình E1.}
+Đường cong ở Hình~\ref{fig:e1-curves} cho thấy train loss giảm khi validation
+dao động. Gap accuracy train--validation tại best checkpoint là
+0.99/2.11/2.61/1.70 điểm (Softmax/MLP/CNN-A/CNN-B), cần diễn giải theo
+khác biệt train/eval ở Chương 1.
 
-\DataTable{assets/e1/errors.tex}{Cặp lớp nhầm nhiều nhất trên test; mỗi lớp có 1.000 ảnh.}
-Shirt là lớp khó: recall làm tròn trên ma trận lần lượt 57\%, 75\%,
-79\%, 73\%. Softmax nhầm Pullover thành Coat 136 ảnh; MLP và CNN-A
-nhầm T-shirt/top thành Shirt 124/137 ảnh. CNN-B nhầm Shirt thành Coat
-103 ảnh. Vì vậy accuracy chung cần đọc cùng recall theo lớp và chiều nhầm.
-Ma trận riêng của cả bốn mô hình nằm ở Phụ lục. Mỗi ô ghi phần trăm theo
-lớp thật, làm tròn số nguyên. CNN phù hợp ảnh nhỏ trong thiết lập này;
-CNN-B tiết kiệm tham số, còn CNN-A cho accuracy cao nhất. Kết quả dùng
-một seed và một dataset cân bằng, chưa đo độ biến thiên giữa nhiều lượt train.
+\PairFigure[.39]{assets/e1/learning_loss.png}{Cross-entropy}{assets/e1/learning_accuracy.png}{Accuracy (\%).}{E1 trên train/validation: bốn model; train nét đứt, validation nét liền.}{e1-curves}
 
-\PortraitFigure{assets/e1/errors_softmax.png}{Mẫu lỗi Softmax, bố cục $2\times5$; mỗi ảnh ghi nhãn thật và dự đoán.}
-\PortraitFigure{assets/e1/errors_cnn_a.png}{Mẫu lỗi CNN-A; các ảnh minh họa không thay thế tần suất từ toàn bộ test.}
 
+\DataTable{assets/e1/errors.tex}{Cặp lớp nhầm nhiều nhất trên test; mỗi lớp có 1,000 ảnh.}
+Recall Shirt là 57/75/79/73\% (Softmax/MLP/CNN-A/CNN-B); các chiều nhầm
++và counts toàn test nằm trong bảng. Gallery chỉ minh họa, ma trận ở Phụ lục.
++Kết luận giới hạn ở một seed trên Fashion-MNIST cân bằng.
++\ComparisonFigure[.32]{assets/e1/errors_softmax.png}{Softmax}{assets/e1/errors_cnn_a.png}{CNN-A}{Mẫu lỗi test E1; mỗi panel gồm $2	imes5$ ảnh, nhãn thật và dự đoán. Đây là minh họa; tần suất lỗi dùng bảng và ma trận toàn test.}{e1-errors}

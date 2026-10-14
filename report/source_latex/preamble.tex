@@ -8,7 +8,7 @@
 \setmathfont{Cambria Math}
 \usepackage{indentfirst}
 \usepackage[table]{xcolor}
-\usepackage{enumitem,fancyhdr,titlesec,caption,subcaption,tcolorbox}
+\usepackage{enumitem,fancyhdr,titlesec,caption,subcaption,tcolorbox,needspace}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
 \usepackage[numbers,sort&compress]{natbib}
@@ -44,15 +44,87 @@
  flow/.style={-{Latex[length=2mm]},thick},
  note/.style={align=center,font=\footnotesize,text width=35mm}}
 \newcommand{\ReportFigure}[3][.97]{\begin{figure}[H]\centering
-\includegraphics[width=#1\linewidth,keepaspectratio]{#2}\caption{#3}\end{figure}}
+\includegraphics[width=#1\linewidth,keepaspectratio]{#2}\caption{#3}\label{fig:#2}\end{figure}}
 \newcommand{\DataTable}[2]{\begin{table}[H]\centering\caption{#2}
-\small\setlength{\tabcolsep}{4pt}\input{#1}\end{table}}
+\small\setlength{\tabcolsep}{4pt}\input{#1}\label{tab:#1}\end{table}}
 \newcommand{\Evidence}[1]{\begin{tcolorbox}[colback=white,colframe=black,
  boxrule=.5pt,arc=1mm]#1\end{tcolorbox}}
 \input{architectures}
 
 \newcommand{\PortraitFigure}[2]{\begin{figure}[H]\centering
 \makebox[\linewidth][c]{\includegraphics[width=1.13\linewidth,height=.82\textheight,keepaspectratio]{#1}}
-\caption{#2}\end{figure}}
+\caption{#2}\label{fig:#1}\end{figure}}
 
 \newcommand{\PortraitFigureIntro}[3]{#1\PortraitFigure{#2}{#3}}
+
+% Independent assets are composed in LaTeX; the raster files are not cropped.
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{.95}
+\renewcommand{\bottomfraction}{.85}
+\renewcommand{\textfraction}{.05}
+\renewcommand{\floatpagefraction}{.70}
+\captionsetup[subfigure]{font=small,labelfont=bf,justification=centering,skip=2pt}
+\newcommand{\PairFigure}[7][.39]{\begin{figure}[H]\centering
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=#1\textheight,keepaspectratio]{#2}
+    \caption{#3}\label{fig:#7:a}
+  \end{subfigure}\par\smallskip
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=#1\textheight,keepaspectratio]{#4}
+    \caption{#5}\label{fig:#7:b}
+  \end{subfigure}
+  \caption{#6}\label{fig:#7}
+\end{figure}}
+\newcommand{\ArchitecturePair}[6]{\begin{figure}[htbp]\centering
+  \begin{subfigure}{\linewidth}\centering
+    \resizebox{.97\linewidth}{!}{#1}\caption{#2}\label{fig:#6:a}
+  \end{subfigure}\par\medskip
+  \begin{subfigure}{\linewidth}\centering
+    \resizebox{.97\linewidth}{!}{#3}\caption{#4}\label{fig:#6:b}
+  \end{subfigure}
+  \caption{#5}\label{fig:#6}
+\end{figure}}
+\newcommand{\DetectionTriplet}[4]{\begin{figure}[H]\centering
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.65\linewidth,height=.19\textheight,keepaspectratio]{assets/a2/#1_gt.png}
+    \caption{Ground truth}\label{fig:#3:a}
+  \end{subfigure}\par\smallskip
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=.28\textheight,keepaspectratio]{assets/a2/#1_retina.png}
+    \caption{RetinaNet}\label{fig:#3:b}
+  \end{subfigure}\par\smallskip
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=.28\textheight,keepaspectratio]{assets/a2/#1_faster.png}
+    \caption{Faster R-CNN}\label{fig:#3:c}
+  \end{subfigure}
+  \caption{#2. #4}\label{fig:#3}
+\end{figure}}
+\newcommand{\ComparisonFigure}[7][.39]{\begin{figure}[htbp]\centering
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=#1\textheight,keepaspectratio]{#2}
+    \caption{#3}\label{fig:#7:a}
+  \end{subfigure}\par\smallskip
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=#1\textheight,keepaspectratio]{#4}
+    \caption{#5}\label{fig:#7:b}
+  \end{subfigure}
+  \caption{#6}\label{fig:#7}
+\end{figure}}
+
+\setlength{\intextsep}{8pt}
+\setlength{\textfloatsep}{10pt}
+\setlength{\floatsep}{8pt}
+\captionsetup{skip=4pt}
+\newcommand{\PlateFigure}[7][.39]{\begin{figure}[p]\centering
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=#1\textheight,keepaspectratio]{#2}
+    \caption{#3}\label{fig:#7:a}
+  \end{subfigure}\par\smallskip
+  \begin{subfigure}{\linewidth}\centering
+    \includegraphics[width=.97\linewidth,height=#1\textheight,keepaspectratio]{#4}
+    \caption{#5}\label{fig:#7:b}
+  \end{subfigure}
+  \caption{#6}\label{fig:#7}
+\end{figure}}

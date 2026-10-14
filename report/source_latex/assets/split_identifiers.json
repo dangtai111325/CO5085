@@ -1,0 +1,18 @@
+[
+  {
+    "dataset": "Fashion-MNIST E1-E3",
+    "identifier_as_recorded": "bd9f3884131e411a26892e15ff685f2849216340505ea615f3fb3b901e30fe80",
+    "source": "main.tex",
+    "purpose": "Recorded split fingerprint; presentation moved out of narrative, identifier retained verbatim.",
+    "verified_metadata": "datasets/fashion_mnist/metadata.json",
+    "metadata_sha256": "6f48aa60e46f84ceedd85b90bf2a3707a9219d6331067218ca8b9229bcec03fe"
+  },
+  {
+    "dataset": "GTSRB A1",
+    "identifier_as_recorded": "c1c1759f478eeeeaac0faddf424717574f6f1895f6a5511ed77964c34eb2c7ac",
+    "source": "chapters/a1.tex",
+    "purpose": "Recorded split fingerprint; presentation moved out of narrative, identifier retained verbatim.",
+    "verified_metadata": "datasets/GTSRB/metadata.json",
+    "metadata_sha256": "ae4fb9f43d23512d2eda9d9ee33df069815c2023fb7931b7a7a8c2708cc467fa"
+  }
+]

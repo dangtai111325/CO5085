@@ -17,6 +17,7 @@
 .vscode/
 
 # LaTeX build intermediates; keep PDF, source, bibliography and report assets.
+/report/source_latex/main.pdf
 *.aux
 *.bbl
 *.blg

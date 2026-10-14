@@ -1,0 +1,54 @@
+{
+  "check_count": 626908,
+  "protected_files": 312191,
+  "table_numeric_values": 1764,
+  "original_pngs_preserved": 168,
+  "pdf": "report/CO5085_Report.pdf",
+  "pdf_sha256": "83f1aa1f0ad2c5b5d3bd6c9c8c45f18fcd9b2fad0905063686bce3fe0140c64e",
+  "pages": 99,
+  "pages_before": 160,
+  "figure_groups": 70,
+  "tables": 45,
+  "bibliography_entries": 12,
+  "portrait_pages": 99,
+  "blank_pages": 0,
+  "fonts": [
+    "/AWFGSG+CambriaMath",
+    "/KSUVGF+TimesNewRomanPS-BoldMT",
+    "/LJGWYU+TimesNewRomanPSMT",
+    "/PWZDRS+TimesNewRomanPS-ItalicMT"
+  ],
+  "visual_review": "All 99 final pages rendered and reviewed; selected diagrams, matrices, class galleries, and bbox triplets checked at higher resolution.",
+  "compile_errors": [],
+  "unresolved_references": [],
+  "numeric_format_exceptions_in_used_figures": [],
+  "scope": "Report only; notebooks, output cells, datasets, checkpoints, README, and public files unchanged.",
+  "original_pngs_unchanged": true,
+  "semantic_guard": "Intervals [0,1] and [2,5], versions, image IDs, and TikZ coordinates preserved.",
+  "character_review": {
+    "pages_scanned": 99,
+    "long_hex_strings_in_visible_text": 0,
+    "replacement_or_unexpected_control_characters": 0,
+    "missing_glyph_warnings": 0,
+    "unresolved_references": 0,
+    "standalone_split_identifiers_relocated": 2,
+    "metadata_identifiers_verified": true,
+    "archive_hyperlink_preserved": true,
+    "render_identical_pages": 94,
+    "visually_changed_pages": [
+      5,
+      6,
+      26,
+      57,
+      99
+    ],
+    "mathematical_glyphs_checked_visually": [
+      6,
+      13,
+      45
+    ],
+    "unchanged_notebooks": 6,
+    "unchanged_table_assets": 40,
+    "unchanged_png_assets": 182
+  }
+}

@@ -16,141 +16,90 @@ Support là số ảnh test nguồn. ID tra bằng bảng tên lớp dưới đ�
 \DataTable{assets/a1/perclass_2.tex}{Precision/recall/F1 trên test GTSRB, lớp 22--42.}
 
 \DataTable{assets/a1/sensitivity.tex}{Độ nhạy A1 với 8 ảnh test trùng train; accuracy tính bằng \%.}
-Full test có 12.630 ảnh, clean test có 12.622; mọi accuracy tính bằng \%.
+Full test có 12,630 ảnh, clean test có 12,622; mọi accuracy tính bằng \%.
 Bảng ghi mức làm tròn trong output; delta tính trên giá trị chưa làm tròn nên
 không nhất thiết bằng phép trừ hai cột accuracy hiển thị.
 
-\PortraitFigureIntro{\section{Đường cong theo tokenizer và biểu diễn chuỗi}
-Các hình dùng cùng split và protocol với các bảng kết quả; mỗi đồ thị
-được trình bày độc lập để đọc rõ tên mô hình và legend.}{assets/e2/loss_rows.png}{Loss E2: Manual/PyTorch với Rows, H=4.}
-\PortraitFigure{assets/e2/accuracy_rows.png}{Accuracy E2: Manual/PyTorch với Rows, H=4.}
-\PortraitFigure{assets/e2/loss_patch.png}{Loss E2: Manual/PyTorch với Patch, H=4.}
-\PortraitFigure{assets/e2/accuracy_patch.png}{Accuracy E2: Manual/PyTorch với Patch, H=4.}
-\PortraitFigure{assets/e2/head_loss.png}{Loss E2: Manual CNN-stem với H=2, 4 và 8.}
-\PortraitFigure{assets/e3/loss_rows.png}{Loss E3: LSTM/GRU với Rows.}
-\PortraitFigure{assets/e3/accuracy_rows.png}{Accuracy E3: LSTM/GRU với Rows.}
-\PortraitFigure{assets/e3/loss_columns.png}{Loss E3: LSTM/GRU với Columns.}
-\PortraitFigure{assets/e3/accuracy_columns.png}{Accuracy E3: LSTM/GRU với Columns.}
-\PortraitFigure{assets/e3/loss_patch.png}{Loss E3: LSTM/GRU với Patch.}
-\PortraitFigure{assets/e3/accuracy_patch.png}{Accuracy E3: LSTM/GRU với Patch.}
-
+\section{Đường cong theo tokenizer và biểu diễn chuỗi}
+Mỗi cặp gồm loss và accuracy cùng thí nghiệm; train nét đứt, validation nét
+liền. Các model dùng chung split và protocol với bảng kết quả ở phần chính.
+\PairFigure[.37]{assets/e2/loss_rows.png}{Cross-entropy}{assets/e2/accuracy_rows.png}{Accuracy (\%).}{E2 Manual/PyTorch, Rows H=4.}{app-e2-rows}
+\PairFigure[.37]{assets/e2/loss_patch.png}{Cross-entropy}{assets/e2/accuracy_patch.png}{Accuracy (\%).}{E2 Manual/PyTorch, Patch H=4.}{app-e2-patch}
+\PairFigure[.37]{assets/e3/loss_rows.png}{Cross-entropy}{assets/e3/accuracy_rows.png}{Accuracy (\%).}{E3 LSTM/GRU, Rows.}{app-e3-rows}
+\PairFigure[.37]{assets/e3/loss_columns.png}{Cross-entropy}{assets/e3/accuracy_columns.png}{Accuracy (\%).}{E3 LSTM/GRU, Columns.}{app-e3-columns}
+\PairFigure[.37]{assets/e3/loss_patch.png}{Cross-entropy}{assets/e3/accuracy_patch.png}{Accuracy (\%).}{E3 LSTM/GRU, Patch.}{app-e3-patch}
+\Needspace{.91\textheight}
 \section{Ma trận nhầm lẫn E1--E3}
-Mỗi ma trận dùng toàn bộ 10.000 ảnh test; hàng là lớp thật, cột là
-lớp dự đoán. Ô ghi phần trăm theo hàng, làm tròn số nguyên nên tổng
-một hàng có thể khác 100\%. Thang màu thống nhất 0--100\%.
-\PortraitFigure{assets/e1/confusion_softmax.png}{E1: ma trận test của Softmax.}
-\PortraitFigure{assets/e1/confusion_mlp.png}{E1: ma trận test của MLP.}
-\PortraitFigure{assets/e1/confusion_cnn_a.png}{E1: ma trận test của CNN-A.}
-\PortraitFigure{assets/e1/confusion_cnn_b.png}{E1: ma trận test của CNN-B.}
-\PortraitFigure{assets/e2/confusion_m_r4.png}{E2: ma trận test của Manual Rows H=4.}
-\PortraitFigure{assets/e2/confusion_t_r4.png}{E2: ma trận test của PyTorch Rows H=4.}
-\PortraitFigure{assets/e2/confusion_m_p4.png}{E2: ma trận test của Manual Patch H=4.}
-\PortraitFigure{assets/e2/confusion_t_p4.png}{E2: ma trận test của PyTorch Patch H=4.}
-\PortraitFigure{assets/e2/confusion_m_c4.png}{E2: ma trận test của Manual CNN-stem H=4.}
-\PortraitFigure{assets/e2/confusion_t_c4.png}{E2: ma trận test của PyTorch CNN-stem H=4.}
-\PortraitFigure{assets/e2/confusion_m_c2.png}{E2: ma trận test của Manual CNN-stem H=2.}
-\PortraitFigure{assets/e2/confusion_m_c8.png}{E2: ma trận test của Manual CNN-stem H=8.}
-\PortraitFigure{assets/e3/confusion_l_r.png}{E3: ma trận test của LSTM Rows.}
-\PortraitFigure{assets/e3/confusion_g_r.png}{E3: ma trận test của GRU Rows.}
-\PortraitFigure{assets/e3/confusion_l_c.png}{E3: ma trận test của LSTM Columns.}
-\PortraitFigure{assets/e3/confusion_g_c.png}{E3: ma trận test của GRU Columns.}
-\PortraitFigure{assets/e3/confusion_l_p.png}{E3: ma trận test của LSTM Patch.}
-\PortraitFigure{assets/e3/confusion_g_p.png}{E3: ma trận test của GRU Patch.}
-\PortraitFigure{assets/e3/confusion_mlp.png}{E3: ma trận test của MLP.}
-\PortraitFigure{assets/e3/confusion_cnn_b.png}{E3: ma trận test của CNN-B.}
-
+\PairFigure[.37]{assets/e1/confusion_softmax.png}{Softmax}{assets/e1/confusion_mlp.png}{MLP}{E1: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e1-softmax-mlp}
+\PairFigure[.37]{assets/e1/confusion_cnn_a.png}{CNN-A}{assets/e1/confusion_cnn_b.png}{CNN-B}{E1: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e1-cnn_a-cnn_b}
+\PairFigure[.37]{assets/e2/confusion_m_r4.png}{Manual Rows H=4}{assets/e2/confusion_t_r4.png}{PyTorch Rows H=4}{E2: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e2-m_r4-t_r4}
+\PairFigure[.37]{assets/e2/confusion_m_p4.png}{Manual Patch H=4}{assets/e2/confusion_t_p4.png}{PyTorch Patch H=4}{E2: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e2-m_p4-t_p4}
+\PairFigure[.37]{assets/e2/confusion_m_c4.png}{Manual CNN-stem H=4}{assets/e2/confusion_t_c4.png}{PyTorch CNN-stem H=4}{E2: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e2-m_c4-t_c4}
+\PairFigure[.37]{assets/e2/confusion_m_c2.png}{Manual CNN-stem H=2}{assets/e2/confusion_m_c8.png}{Manual CNN-stem H=8}{E2: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e2-m_c2-m_c8}
+\PairFigure[.37]{assets/e3/confusion_l_r.png}{LSTM Rows}{assets/e3/confusion_g_r.png}{GRU Rows}{E3: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e3-l_r-g_r}
+\PairFigure[.37]{assets/e3/confusion_l_c.png}{LSTM Columns}{assets/e3/confusion_g_c.png}{GRU Columns}{E3: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e3-l_c-g_c}
+\PairFigure[.37]{assets/e3/confusion_l_p.png}{LSTM Patch}{assets/e3/confusion_g_p.png}{GRU Patch}{E3: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e3-l_p-g_p}
+\PairFigure[.37]{assets/e3/confusion_mlp.png}{MLP}{assets/e3/confusion_cnn_b.png}{CNN-B}{E3: ma trận toàn bộ 10,000 ảnh test; hàng GT/cột prediction; phần trăm theo hàng, làm tròn số nguyên (tổng có thể khác 100\%); cùng thang 0--100\%.}{app-matrix-e3-mlp-cnn_b}
 \section{Dữ liệu và chỉ số theo lớp A2}
 \DataTable{assets/a2/labels.tex}{Số bbox thường từng lớp VOC2012; difficult không nằm trong các cột này.}
-\DataTable{assets/a2/per_class_pr.tex}{P/R/F1 tại score 0,30; R=RetinaNet, F=Faster R-CNN, Rec là recall.}
+\DataTable{assets/a2/per_class_pr.tex}{P/R/F1 tại score 0.30; R=RetinaNet, F=Faster R-CNN, Rec là recall.}
 \DataTable{assets/a2/per_class_coco.tex}{AP50/AP75 COCO-style và AP11 VOC07 từng lớp; metric ở thang 0--1.}
 
 \section{Ma trận chẩn đoán A2}
 Hàng là ground truth, cột là prediction. Hàng background biểu diễn false
 positives, cột background biểu diễn false negatives. Ô ghi tỷ lệ theo hàng
 làm tròn số nguyên; tổng một hàng có thể khác 100\%. Matching class-agnostic
-dùng IoU $\geq0,5$, confidence $\geq0,30$; các chỉ số class-wise được tính riêng.
+dùng IoU $\geq 0.5$, confidence $\geq 0.30$; các chỉ số class-wise được tính riêng.
 \PortraitFigure{assets/a2/confusion_retina.png}{A2 RetinaNet: ma trận chẩn đoán chuẩn hóa theo hàng.}
 \PortraitFigure{assets/a2/confusion_faster.png}{A2 Faster R-CNN: ma trận chẩn đoán chuẩn hóa theo hàng.}
 
+\Needspace{.92\textheight}
 \section{Precision--recall theo lớp A2}
-Mỗi hình dùng cùng lớp và tập test cho hai model. AP trong legend là
-VOC AP50 all-point; đường cong cho thấy cả đánh đổi theo confidence,
-không chỉ điểm đo P/R/F1 ở score 0,30.
-\ReportFigure{assets/a2/pr_aeroplane.png}{A2: precision--recall của lớp aeroplane.}
-\ReportFigure{assets/a2/pr_bicycle.png}{A2: precision--recall của lớp bicycle.}
-\ReportFigure{assets/a2/pr_bird.png}{A2: precision--recall của lớp bird.}
-\ReportFigure{assets/a2/pr_boat.png}{A2: precision--recall của lớp boat.}
-\ReportFigure{assets/a2/pr_bottle.png}{A2: precision--recall của lớp bottle.}
-\ReportFigure{assets/a2/pr_bus.png}{A2: precision--recall của lớp bus.}
-\ReportFigure{assets/a2/pr_car.png}{A2: precision--recall của lớp car.}
-\ReportFigure{assets/a2/pr_cat.png}{A2: precision--recall của lớp cat.}
-\ReportFigure{assets/a2/pr_chair.png}{A2: precision--recall của lớp chair.}
-\ReportFigure{assets/a2/pr_cow.png}{A2: precision--recall của lớp cow.}
-\ReportFigure{assets/a2/pr_diningtable.png}{A2: precision--recall của lớp diningtable.}
-\ReportFigure{assets/a2/pr_dog.png}{A2: precision--recall của lớp dog.}
-\ReportFigure{assets/a2/pr_horse.png}{A2: precision--recall của lớp horse.}
-\ReportFigure{assets/a2/pr_motorbike.png}{A2: precision--recall của lớp motorbike.}
-\ReportFigure{assets/a2/pr_person.png}{A2: precision--recall của lớp person.}
-\ReportFigure{assets/a2/pr_pottedplant.png}{A2: precision--recall của lớp pottedplant.}
-\ReportFigure{assets/a2/pr_sheep.png}{A2: precision--recall của lớp sheep.}
-\ReportFigure{assets/a2/pr_sofa.png}{A2: precision--recall của lớp sofa.}
-\ReportFigure{assets/a2/pr_train.png}{A2: precision--recall của lớp train.}
-\ReportFigure{assets/a2/pr_tvmonitor.png}{A2: precision--recall của lớp tvmonitor.}
-
+\PairFigure[.38]{assets/a2/pr_aeroplane.png}{aeroplane}{assets/a2/pr_bicycle.png}{bicycle}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-1}
+\PairFigure[.38]{assets/a2/pr_bird.png}{bird}{assets/a2/pr_boat.png}{boat}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-2}
+\PairFigure[.38]{assets/a2/pr_bottle.png}{bottle}{assets/a2/pr_bus.png}{bus}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-3}
+\PairFigure[.38]{assets/a2/pr_car.png}{car}{assets/a2/pr_cat.png}{cat}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-4}
+\PairFigure[.38]{assets/a2/pr_chair.png}{chair}{assets/a2/pr_cow.png}{cow}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-5}
+\PairFigure[.38]{assets/a2/pr_diningtable.png}{diningtable}{assets/a2/pr_dog.png}{dog}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-6}
+\PairFigure[.38]{assets/a2/pr_horse.png}{horse}{assets/a2/pr_motorbike.png}{motorbike}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-7}
+\PairFigure[.38]{assets/a2/pr_person.png}{person}{assets/a2/pr_pottedplant.png}{pottedplant}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-8}
+\PairFigure[.38]{assets/a2/pr_sheep.png}{sheep}{assets/a2/pr_sofa.png}{sofa}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-9}
+\PairFigure[.38]{assets/a2/pr_train.png}{train}{assets/a2/pr_tvmonitor.png}{tvmonitor}{Precision--recall A2 trên test holdout: RetinaNet và Faster R-CNN; legend ghi VOC AP50, recall/precision ở [0,1].}{app-pr-10}
+\Needspace{.92\textheight}
 \section{Ảnh test và dự đoán A2}
-Cùng một ảnh được trình bày theo GT, RetinaNet và Faster R-CNN.
-GT difficult dùng nét đứt; predictions chỉ vẽ score từ 0,30, tối đa 15 boxes.
-Các ảnh được giữ độc lập từ output notebook để đọc rõ nhãn và bbox.
-\ReportFigure{assets/a2/preview_1_gt.png}{Ảnh test \texttt{2012\_2008\_000016}: ground truth.}
-\ReportFigure{assets/a2/preview_1_retina.png}{Ảnh test \texttt{2012\_2008\_000016}: RetinaNet.}
-\ReportFigure{assets/a2/preview_1_faster.png}{Ảnh test \texttt{2012\_2008\_000016}: Faster R-CNN.}
-\ReportFigure{assets/a2/preview_2_gt.png}{Ảnh test \texttt{2012\_2009\_002530}: ground truth.}
-\ReportFigure{assets/a2/preview_2_retina.png}{Ảnh test \texttt{2012\_2009\_002530}: RetinaNet.}
-\ReportFigure{assets/a2/preview_2_faster.png}{Ảnh test \texttt{2012\_2009\_002530}: Faster R-CNN.}
-\ReportFigure{assets/a2/preview_3_gt.png}{Ảnh test \texttt{2012\_2011\_003253}: ground truth.}
-\ReportFigure{assets/a2/preview_3_retina.png}{Ảnh test \texttt{2012\_2011\_003253}: RetinaNet.}
-\ReportFigure{assets/a2/preview_3_faster.png}{Ảnh test \texttt{2012\_2011\_003253}: Faster R-CNN.}
+\DetectionTriplet{preview_1}{VOC2012 test \texttt{2012\_2008\_000016}}{app-preview-1}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
+\DetectionTriplet{preview_2}{VOC2012 test \texttt{2012\_2009\_002530}}{app-preview-2}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
+\DetectionTriplet{preview_3}{VOC2012 test \texttt{2012\_2011\_003253}}{app-preview-3}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
 
+\Needspace{.92\textheight}
 \section{Trường hợp sai A2}
-Các ảnh có lỗi được đối chiếu cùng GT; số TP/nhầm lớp/FP/FN trong tiêu đề
-tính trên mọi detection vượt ngưỡng, còn hình chỉ hiển thị tối đa 15 boxes.
-\ReportFigure{assets/a2/failure_1_gt.png}{Trường hợp sai \texttt{2012\_2008\_004581}: ground truth.}
-\ReportFigure{assets/a2/failure_1_retina.png}{Trường hợp sai \texttt{2012\_2008\_004581}: RetinaNet.}
-\ReportFigure{assets/a2/failure_1_faster.png}{Trường hợp sai \texttt{2012\_2008\_004581}: Faster R-CNN.}
-\ReportFigure{assets/a2/failure_2_gt.png}{Trường hợp sai \texttt{2012\_2011\_000666}: ground truth.}
-\ReportFigure{assets/a2/failure_2_retina.png}{Trường hợp sai \texttt{2012\_2011\_000666}: RetinaNet.}
-\ReportFigure{assets/a2/failure_2_faster.png}{Trường hợp sai \texttt{2012\_2011\_000666}: Faster R-CNN.}
-\ReportFigure{assets/a2/failure_3_gt.png}{Trường hợp sai \texttt{2012\_2011\_000839}: ground truth.}
-\ReportFigure{assets/a2/failure_3_retina.png}{Trường hợp sai \texttt{2012\_2011\_000839}: RetinaNet.}
-\ReportFigure{assets/a2/failure_3_faster.png}{Trường hợp sai \texttt{2012\_2011\_000839}: Faster R-CNN.}
+\DetectionTriplet{failure_1}{VOC2012 test \texttt{2012\_2008\_004581}}{app-failure-1}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
+\DetectionTriplet{failure_2}{VOC2012 test \texttt{2012\_2011\_000666}}{app-failure-2}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
+\DetectionTriplet{failure_3}{VOC2012 test \texttt{2012\_2011\_000839}}{app-failure-3}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
 
 \section{Nguồn số liệu và hướng dẫn tái lập}
-Nguồn số liệu là output đã lưu của E1.ipynb, E2.ipynb, E3.ipynb, A1.ipynb
-và A2.kaggle.ipynb trong source\_code. Manifest của từng bài dưới assets
-ghi notebook nguồn, cell/output và bảng Markdown. Các ảnh là output độc lập
-hoặc được vẽ trực tiếp từ số liệu/dữ liệu gốc, không cắt từ hình ghép.
-Sơ đồ kiến trúc được vẽ bằng TikZ từ định nghĩa mạng.
+Số liệu lấy từ output E1.ipynb, E2.ipynb, E3.ipynb, A1.ipynb và
+A2.kaggle.ipynb trong source\_code. Manifest assets ghi notebook/cell/output;
+report\_figures.json ghi các hình tĩnh dựng từ bảng/dữ liệu nguồn đã kiểm chứng.
+Hình độc lập được ghép bằng LaTeX, không cắt từ raster ghép; TikZ theo code.
+Mã kiểm chứng cách chia tập Fashion-MNIST/GTSRB được lưu tại
+\texttt{assets/split\_identifiers.json} trong nguồn báo cáo.
 
-E1--E3/A1: chuẩn bị dữ liệu theo README trong datasets, chọn Python 3.14
-có CUDA, Restart Kernel và Run All, sau đó Save. Không cần thứ tự giữa các bài.
-E1--E3 dùng patience 4, min-delta $10^{-4}$; A1 dùng patience 2, min-delta $10^{-3}$.
+E1--E3/A1: chuẩn bị dữ liệu theo README datasets, chọn Python 3.14 CUDA,
+Restart Kernel/Run All/Save; các file độc lập. Patience/min-delta là
+4/$10^{-4}$ cho E1--E3 và 2/$10^{-3}$ cho A1.
+A2.kaggle.ipynb dùng dataset \texttt{a2-voc2012} tại đường dẫn trong code,
+accelerator T4 x2 và Internet khi cần weights/thư viện. Run All train hai
+worker, rồi test/benchmark lần lượt; batch 8, accumulation 3, effective 24,
+tối đa 30 epoch, patience 2/min-delta 0.001. Metadata ghi Python 3.13.15;
+output không có phiên bản PyTorch/torchvision nên cần ghi môi trường khi tái lập.
+Save notebook và tải \texttt{/kaggle/working/report/A2} cùng
+\texttt{/kaggle/working/model/A2} trước khi kết thúc session.
 
-A2: mở A2.kaggle.ipynb trên Kaggle, gắn dataset \texttt{a2-voc2012} đúng đường
-dẫn trong cell cấu hình và chọn accelerator T4 x2. Bật Internet nếu cần tải
-ResNet-50 ImageNet hoặc cài thư viện còn thiếu. Run All chạy hai worker train
-đồng thời rồi test/benchmark lần lượt. Cấu hình code và bảng train là batch 8,
-accumulation 3, effective batch 24, tối đa 30 epoch, patience 2, min-delta 0,001.
-Metadata notebook ghi Python 3.13.15; phiên bản PyTorch/torchvision không có
-trong output đã lưu, nên cần ghi lại môi trường khi tái lập.
-Notebook xuất thêm PNG/CSV vào \texttt{/kaggle/working/report/A2},
-checkpoint/lịch sử dưới \texttt{/kaggle/working/model/A2}; lưu notebook có output
-và tải các sản phẩm này khi kết thúc phiên Kaggle.
-
-Để chạy từ khởi tạo, dùng CHECKPOINT\_ROOT trống. Nếu có latest.pt,
-notebook tiếp tục train từ weights đó với optimizer và bộ đếm mới.
-Seed cố định không đảm bảo tái lập bitwise qua GPU, phiên bản thư viện
-hoặc đường thực thi AMP. A2.ipynb là notebook chạy local; các số liệu A2
-trong báo cáo lấy riêng từ A2.kaggle.ipynb và điều kiện đo ở Chương~\ref{chap:a2}.
+Dùng CHECKPOINT\_ROOT trống để khởi tạo theo seed; latest.pt có sẵn thay đổi
+weights đầu vào theo quy tắc Chương 1. Seed không bảo đảm bitwise qua GPU,
+thư viện hay AMP. A2.ipynb là bản local; các số A2 trong báo cáo lấy riêng
+từ A2.kaggle.ipynb và protocol Chương~\ref{chap:a2}.
 
 Báo cáo biên dịch bằng XeLaTeX và BibTeX từ report/source\_latex/main.tex;
 TikZ định nghĩa trong architectures.tex, ảnh kết quả nằm ở assets.

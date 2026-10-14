@@ -1,0 +1,411 @@
+[
+  {
+    "asset": "a1/class_distribution_report.png",
+    "sha256": "218d12314a44332ec4a68bf672f0873f43acd2cb8f4306b174da7b1e024fb913",
+    "source": {
+      "notebook": "source_code/A1.ipynb",
+      "cell": 8,
+      "output": 2
+    },
+    "method": "Bar heights copied exactly from saved 43-class count table; formatted ticks only."
+  },
+  {
+    "asset": "a2/class_distribution_report.png",
+    "sha256": "7995b59636707188fde27c084d6c11e9b9a3f7df0976804102bf9b6f01fed699",
+    "source": {
+      "notebook": "source_code/A2.kaggle.ipynb",
+      "cell": 6,
+      "output": 1
+    },
+    "method": "Grouped bars from saved class counts, preserving all three splits."
+  },
+  {
+    "asset": "a2/bbox_area_report.png",
+    "sha256": "fe0cde49ec7c30a577df86a191c532cec1af6f59370decd4cfa148dc713757de",
+    "source": [
+      {
+        "path": "datasets/voc/voc2012/train.csv",
+        "sha256": "e07f74f942bc04b032271c34752feebe5b46ef0d9934f600c9b84fd96bdf21da"
+      },
+      {
+        "path": "datasets/voc/voc2012/val.csv",
+        "sha256": "e4c01f600a2b6684585b4f3cc3bcfb8184156bcfba7d04cbd565d64bcdb7e2e0"
+      },
+      {
+        "path": "datasets/voc/voc2012/test.csv",
+        "sha256": "898735714f0f1068e1fe9ff9c20acbb8108a61dd4d3414979a1ff228747e36c5"
+      }
+    ],
+    "method": "Same regular-bbox arrays and 40-bin histogram calculation as notebook EDA; all 60 class counts verified against saved Kaggle table."
+  },
+  {
+    "asset": "a2/bbox_ratio_report.png",
+    "sha256": "0523b438f55417829f8ad4f31cbe7beba1900da56e7a8161222123cf2aecfe34",
+    "source": [
+      {
+        "path": "datasets/voc/voc2012/train.csv",
+        "sha256": "e07f74f942bc04b032271c34752feebe5b46ef0d9934f600c9b84fd96bdf21da"
+      },
+      {
+        "path": "datasets/voc/voc2012/val.csv",
+        "sha256": "e4c01f600a2b6684585b4f3cc3bcfb8184156bcfba7d04cbd565d64bcdb7e2e0"
+      },
+      {
+        "path": "datasets/voc/voc2012/test.csv",
+        "sha256": "898735714f0f1068e1fe9ff9c20acbb8108a61dd4d3414979a1ff228747e36c5"
+      }
+    ],
+    "method": "Same regular-bbox arrays and 40-bin histogram calculation as notebook EDA; all 60 class counts verified against saved Kaggle table."
+  },
+  {
+    "asset": "a2/preprocess_original_report.png",
+    "sha256": "0921ff653a4dc8c5f99a5301d99d5ea181d4696a9b740d36e942b03779961df7",
+    "source": [
+      {
+        "path": "datasets/voc/voc2012/train.csv",
+        "sha256": "e07f74f942bc04b032271c34752feebe5b46ef0d9934f600c9b84fd96bdf21da"
+      },
+      {
+        "path": "datasets/voc/voc2012/val.csv",
+        "sha256": "e4c01f600a2b6684585b4f3cc3bcfb8184156bcfba7d04cbd565d64bcdb7e2e0"
+      },
+      {
+        "path": "datasets/voc/voc2012/test.csv",
+        "sha256": "898735714f0f1068e1fe9ff9c20acbb8108a61dd4d3414979a1ff228747e36c5"
+      },
+      {
+        "path": "datasets/voc/train/images/2012_2008_000002.jpg",
+        "sha256": "e382d278a0e738a92e97f24ae7a1316a5988726ef7321d7e0f9e2fcab9af05bc",
+        "key": "2012_2008_000002"
+      }
+    ],
+    "method": "Original CSV sample and annotation; no inference."
+  },
+  {
+    "asset": "a2/preprocess_resize_report.png",
+    "sha256": "adc1898a5f804a877e5aae42805c421aaf8984341a54b3aa6d20f259edbc3be3",
+    "source": [
+      {
+        "path": "datasets/voc/voc2012/train.csv",
+        "sha256": "e07f74f942bc04b032271c34752feebe5b46ef0d9934f600c9b84fd96bdf21da"
+      },
+      {
+        "path": "datasets/voc/voc2012/val.csv",
+        "sha256": "e4c01f600a2b6684585b4f3cc3bcfb8184156bcfba7d04cbd565d64bcdb7e2e0"
+      },
+      {
+        "path": "datasets/voc/voc2012/test.csv",
+        "sha256": "898735714f0f1068e1fe9ff9c20acbb8108a61dd4d3414979a1ff228747e36c5"
+      },
+      {
+        "path": "datasets/voc/train/images/2012_2008_000002.jpg",
+        "sha256": "e382d278a0e738a92e97f24ae7a1316a5988726ef7321d7e0f9e2fcab9af05bc",
+        "key": "2012_2008_000002"
+      }
+    ],
+    "method": "Deterministic resize and bbox factors exactly as notebook preprocessing example."
+  },
+  {
+    "asset": "a2/preprocess_flip_report.png",
+    "sha256": "6cd77fa5fd6bcde0423f87863626398da4459caa09d861f4070122173efc2f62",
+    "source": [
+      {
+        "path": "datasets/voc/voc2012/train.csv",
+        "sha256": "e07f74f942bc04b032271c34752feebe5b46ef0d9934f600c9b84fd96bdf21da"
+      },
+      {
+        "path": "datasets/voc/voc2012/val.csv",
+        "sha256": "e4c01f600a2b6684585b4f3cc3bcfb8184156bcfba7d04cbd565d64bcdb7e2e0"
+      },
+      {
+        "path": "datasets/voc/voc2012/test.csv",
+        "sha256": "898735714f0f1068e1fe9ff9c20acbb8108a61dd4d3414979a1ff228747e36c5"
+      },
+      {
+        "path": "datasets/voc/train/images/2012_2008_000002.jpg",
+        "sha256": "e382d278a0e738a92e97f24ae7a1316a5988726ef7321d7e0f9e2fcab9af05bc",
+        "key": "2012_2008_000002"
+      }
+    ],
+    "method": "Deterministic demonstration of the notebook flip transform; no random augmentation run."
+  },
+  {
+    "asset": "a1/class_gallery_0_21_report.png",
+    "sha256": "d65c0617df079514540afa2b48f0349a65435a1dd02c310c662624d80cd3af6f",
+    "source": [
+      {
+        "path": "datasets/gtsrb/train/images/00000/00000_00000.png",
+        "sha256": "77efd6f10a9046d935a1cd3d8b2181c4e33e1aa15c88514d18b984702f6e7f30",
+        "class_id": 0
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00001/00001_00000.png",
+        "sha256": "34c310c057342d2cac7948e4bcc17000126b7c1da14dacad031ce1d1af444e4c",
+        "class_id": 1
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00002/00000_00000.png",
+        "sha256": "6b109a993c7355adc973ee4feab2b023a7f512d626e9baf7c99a377ade08615d",
+        "class_id": 2
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00003/00000_00000.png",
+        "sha256": "f7032e03f5842b6a1715d4eb191a516d542138a6e662461664a314aeb6b0e730",
+        "class_id": 3
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00004/00001_00000.png",
+        "sha256": "186542cda2a6a1cf9e51aaae917ecb732a11c325803b0f0f75a680c238880c32",
+        "class_id": 4
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00005/00000_00000.png",
+        "sha256": "67ea3b05d5d72b608f0c29117435f0d745c0b367185076d68b8143a470c7a8df",
+        "class_id": 5
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00006/00000_00000.png",
+        "sha256": "d2591340844d8fddf3168d60daf6672498b631154cef56b3f366623d2641a737",
+        "class_id": 6
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00007/00000_00000.png",
+        "sha256": "097130184ce9d5bd0a0282b27bcaf227afea09fbbe34b3b2e87b69c874ef2663",
+        "class_id": 7
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00008/00001_00000.png",
+        "sha256": "4fbc091fe3bd33429e68537da3ba3c0a344629be3c4c0c7a92f866217c785534",
+        "class_id": 8
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00009/00000_00000.png",
+        "sha256": "d52d21f7aa360bb9a224b40d8ae7e92697b88735b0d4ce1f22c82a575d7e7702",
+        "class_id": 9
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00010/00000_00000.png",
+        "sha256": "9d7281878042ba2de7f33833cb82d3500bc64c5dd2d57f696cae50058d4e0f39",
+        "class_id": 10
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00011/00000_00000.png",
+        "sha256": "f44e3ec92dcb91773c0574e227be2198ac03455679f270268137b990848bab0e",
+        "class_id": 11
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00012/00000_00000.png",
+        "sha256": "c9ffb5299727c5c2921fa34a0fc9c52e981535b8a9920b1cfde0d58afb9723e6",
+        "class_id": 12
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00013/00002_00000.png",
+        "sha256": "78e459dede28da736463cbac0029f1cb83390313fc62f29497b34d504e1b2833",
+        "class_id": 13
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00014/00000_00000.png",
+        "sha256": "c5a2ad7f6e999f72f55a0522c976fdc2b3744d93e9472d5baf9460f328125145",
+        "class_id": 14
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00015/00000_00000.png",
+        "sha256": "1a02e86f79d0265b2e7130bf3d8fcb915a9c516d44ae9ec0f9bc0be55ed364be",
+        "class_id": 15
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00016/00000_00000.png",
+        "sha256": "1770c28fe42d196213fcc43504e709165225fa8d30a546fc0483aff78aa8d999",
+        "class_id": 16
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00017/00000_00000.png",
+        "sha256": "05399f0e27c8a6564e154e4eaf4e53b8e64f8f4155848feb6a9a0b6f44a3817b",
+        "class_id": 17
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00018/00001_00000.png",
+        "sha256": "e5334bd5949f3eb4419914f84208b3167c5f9509eb3734932c1da95e22911e57",
+        "class_id": 18
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00019/00000_00000.png",
+        "sha256": "7cc32b9fc59a409b2edc290fcd5df459d3f2d116f7fbc914c03a9103a18c3c25",
+        "class_id": 19
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00020/00000_00000.png",
+        "sha256": "b9b0c3c5f02d9c2edbc8f0b873418f8c9a9e1f2bcf5a8c1b7da1afabd6621f2d",
+        "class_id": 20
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00021/00001_00000.png",
+        "sha256": "11c89a712f6e306057c6bf5542908c066b4b9485684fb3a75b5ea0e3224d8c9d",
+        "class_id": 21
+      }
+    ],
+    "method": "Same first sample per class as notebook gallery; 43 names from saved class-count output; redrawn independently with report-sized text."
+  },
+  {
+    "asset": "a1/class_gallery_22_42_report.png",
+    "sha256": "961ff5c969dde90bbaa8b13220c79d34988d755c296fef7cae67ea81d9dc0a25",
+    "source": [
+      {
+        "path": "datasets/gtsrb/train/images/00022/00000_00000.png",
+        "sha256": "0bc45e29f870876e5b600fcb95f9bcbaba1f4a2be4e5a6d0ee3d76218e17d937",
+        "class_id": 22
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00023/00000_00000.png",
+        "sha256": "9aef9a5970a7ee521f3a62dbd46d4c228e0bd676e899240c671b6ba22abc16c6",
+        "class_id": 23
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00024/00000_00000.png",
+        "sha256": "87adea4d7ed81cd31fdd448d91d7b779f158394f1c6132a2511b04073cfb11eb",
+        "class_id": 24
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00025/00000_00000.png",
+        "sha256": "eb6b4f99d554a49d2d89fe48684c6b4cb19791c09c2a20b6b0a1495ee74f179a",
+        "class_id": 25
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00026/00001_00000.png",
+        "sha256": "81af963ed15e97010cdc87c32b8c0b3317e6d2998d3378702b30ecd678a13537",
+        "class_id": 26
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00027/00000_00000.png",
+        "sha256": "e1267f7287181937267f9840997e6e4ef56bab3e1f8f51a343ef588456810cd0",
+        "class_id": 27
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00028/00001_00000.png",
+        "sha256": "96754a7d6bffb1fb1ff04bde60161314c03bfc193945b2f16c0cef3c04cb6ac2",
+        "class_id": 28
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00029/00000_00000.png",
+        "sha256": "fcbea5b7e4c0a475e3100585f2757138124633bed45283208fb8f51aaf0f4ada",
+        "class_id": 29
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00030/00000_00000.png",
+        "sha256": "15f15c1d30c1a54ce8e51373707f9d737ad93620940ff3d43af2afa0c8c875da",
+        "class_id": 30
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00031/00000_00000.png",
+        "sha256": "6b3de3a19399eca7832efc032c45e38e52b7f236bc8b8247148eb2eda151d912",
+        "class_id": 31
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00032/00001_00000.png",
+        "sha256": "5b4dfd40490f308b7d50a2d194a37b338b9281be6c925fa6596c2b0f3509c7bf",
+        "class_id": 32
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00033/00000_00000.png",
+        "sha256": "4e6c7c54e1711010a2822b5bcfa2a014301a2fa1869fa7e2f18a938f3894389d",
+        "class_id": 33
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00034/00001_00000.png",
+        "sha256": "2cc5ce5ac084fda47de9f62e05a91e96fe488e342ae384aa471d7ae045e7f8b8",
+        "class_id": 34
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00035/00000_00000.png",
+        "sha256": "9273eb3c838ae4b558db005b96b57042299a1a5bdc9abc8bebb560441731c67f",
+        "class_id": 35
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00036/00000_00000.png",
+        "sha256": "db216119adc8fb208d70dede054adb264cdc495472403d2f561b72c2a02a926f",
+        "class_id": 36
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00037/00000_00000.png",
+        "sha256": "f24aac311f2774d511091870e072353cd4cff78c19b4b6d16f82e51f440aa8d4",
+        "class_id": 37
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00038/00000_00000.png",
+        "sha256": "fb744448a96a254546d0237f84ba7b0917123a2ed2977656521a837cdae4f42c",
+        "class_id": 38
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00039/00000_00000.png",
+        "sha256": "32395e1a4815b0c921d8e0bec768eb5531ce56a91320619f827ca5e57d82d82a",
+        "class_id": 39
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00040/00000_00000.png",
+        "sha256": "20bfedc138f6264aefb8cb6223906426f9241a4edbfc7f558e534430872453de",
+        "class_id": 40
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00041/00000_00000.png",
+        "sha256": "857826bfefa1f239cc34ab49161e35a1a96b9cbc01bf79941d4538dd11f0c71b",
+        "class_id": 41
+      },
+      {
+        "path": "datasets/gtsrb/train/images/00042/00000_00000.png",
+        "sha256": "a02d0f6859241b66de0ef5081fe8a0fa873821db97e3de6fb215db2b48994ab0",
+        "class_id": 42
+      }
+    ],
+    "method": "Same first sample per class as notebook gallery; 43 names from saved class-count output; redrawn independently with report-sized text."
+  },
+  {
+    "asset": "e2/sample_shirt_compact.png",
+    "sha256": "b25014375c3d22d1363fa1a5aca5076525449ec3ee4f654f56f811f0b2650ba2",
+    "source": {
+      "path": "datasets/fashion_mnist/val/images.npy",
+      "index": 0,
+      "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+    },
+    "method": "Original validation pixels; sample label/prediction are kept in the LaTeX subcaption."
+  },
+  {
+    "asset": "e2/sample_boot_compact.png",
+    "sha256": "cd51b958f4968767e0ac2236bc048e8e4ac211e0e17cfb3f65e88fb77e1adca4",
+    "source": {
+      "path": "datasets/fashion_mnist/val/images.npy",
+      "index": 31,
+      "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+    },
+    "method": "Original validation pixels; sample label/prediction are kept in the LaTeX subcaption."
+  },
+  {
+    "asset": "e3/representation_rows_compact.png",
+    "sha256": "26e5b93ddcbc71446d65fd6d308f9e6eca862198cb2d36e12960d546f8fc12d8",
+    "source": {
+      "path": "datasets/fashion_mnist/val/images.npy",
+      "index": 0,
+      "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+    },
+    "method": "Original Fashion-MNIST validation image; rows/columns and non-overlapping 4x4 raster patch reshape exactly match notebook, no inference."
+  },
+  {
+    "asset": "e3/representation_columns_compact.png",
+    "sha256": "05be19f1ae0c491e29ebcf473eed6a5cb1c060e396c40eda48bdd572369c4ed2",
+    "source": {
+      "path": "datasets/fashion_mnist/val/images.npy",
+      "index": 0,
+      "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+    },
+    "method": "Original Fashion-MNIST validation image; rows/columns and non-overlapping 4x4 raster patch reshape exactly match notebook, no inference."
+  },
+  {
+    "asset": "e3/representation_patch_compact.png",
+    "sha256": "5ace6d728c186b29ab550631647371b5e37e644c3fadc44d681b23dcb118b408",
+    "source": {
+      "path": "datasets/fashion_mnist/val/images.npy",
+      "index": 0,
+      "sha256": "60276ec9666f5d49b40e7ece9d8e8545fa7722bd60f56dfbb07b7ee0655a6791"
+    },
+    "method": "Original Fashion-MNIST validation image; rows/columns and non-overlapping 4x4 raster patch reshape exactly match notebook, no inference."
+  }
+]

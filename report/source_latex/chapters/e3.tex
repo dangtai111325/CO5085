@@ -6,12 +6,22 @@ Columns quét từ trái sang phải, mỗi token là 28 pixel của một cột
 Patch 4$\times $4 không overlap, quét raster trái--phải rồi trên--dưới,
 tạo 49 bước, mỗi bước 16 pixel. Không thêm CNN/token embedding trước recurrent.
 
-\ReportFigure{assets/e3/representation_rows.png}{Rows: quét theo hàng và ma trận $T=28,F=28$.}
-\ReportFigure{assets/e3/representation_columns.png}{Columns: quét theo cột và ma trận $T=28,F=28$.}
-\ReportFigure{assets/e3/representation_patch.png}{Patch: raster trên lưới $4\times4$, chuỗi $T=49,F=16$.}
+\begin{figure}[H]\centering
+\begin{subfigure}{.49\linewidth}\centering
+\includegraphics[width=\linewidth,keepaspectratio]{assets/e3/representation_rows_compact.png}
+\caption{Rows: $T=28,F=28$.}\end{subfigure}\hfill
+\begin{subfigure}{.49\linewidth}\centering
+\includegraphics[width=\linewidth,keepaspectratio]{assets/e3/representation_columns_compact.png}
+\caption{Columns: $T=28,F=28$.}\end{subfigure}\par\smallskip
+\begin{subfigure}{.65\linewidth}\centering
+\includegraphics[width=\linewidth,keepaspectratio]{assets/e3/representation_patch_compact.png}
+\caption{Patch: $T=49,F=16$.}\end{subfigure}
+\caption{Ảnh Fashion-MNIST thành chuỗi; hướng quét và ma trận token, không dùng CNN/embedding trước recurrent.}\label{fig:e3-scans}
+\end{figure}
 \begin{figure}[H]\centering
 \resizebox{.97\linewidth}{!}{\ArchSequence}
 \caption{Classifier recurrent E3: không Conv, một recurrent layer unroll T lần và một FC head. Trạng thái khởi tạo bằng 0, chỉ dùng hidden cuối.}
+\label{figure:e3-1}
 \end{figure}
 
 \section{Cell LSTM/GRU tự hiện thực}
@@ -23,10 +33,6 @@ $128\to512$, hai bias và bốn nhóm gate:
 c_t&=f_t\odot c_{t-1}+i_t\odot g_t,\qquad
 h_t=o_t\odot\tanh c_t.
 \end{align}
-\begin{figure}[H]\centering
-\resizebox{.97\linewidth}{!}{\ArchLSTM}
-\caption{LSTM cell: hai projection dùng chung ở mọi bước; không tạo thêm bộ tham số cho mỗi timestep.}
-\end{figure}
 GRU có hai projection $ F\to 384$ và $128\to 384$ cho reset, update và candidate:
 \begin{align}
 r_t&=\sigma(x_r+h_r),\quad z_t=\sigma(x_z+h_z),\\
@@ -35,69 +41,52 @@ h_t=(1-z_t)\odot n_t+z_t\odot h_{t-1}.
 \end{align}
 $x_\cdot$ và $h_\cdot$ đã gồm bias. Reset nhân \emph{sau} projection hidden,
 kể cả hidden bias, theo convention PyTorch.
-\begin{figure}[H]\centering
-\resizebox{.97\linewidth}{!}{\ArchGRU}
-\caption{GRU cell: hai projection cho ba nhóm gate, chỉ duy trì hidden state.}
-\end{figure}
+\ArchitecturePair{\ArchLSTM}{LSTM: input/hidden projections cho bốn gate, hidden và cell state.}
+{\ArchGRU}{GRU: hai projections cho ba gate, reset sau hidden projection kể cả bias.}
+{Recurrent cell E3, $H=128$: cùng bộ tham số ở mọi timestep; chỉ dùng hidden cuối để phân loại.}{e3-cells}
 Kể cả head, số tham số là $4 H(F+H+2)+10 H+10$ cho LSTM và
 $3 H(F+H+2)+10 H+10$ cho GRU. Cùng $F$, GRU ít tham số hơn vì dùng
 ba nhóm thay cho bốn. Kiểm tra copy weight sang \texttt{nn.LSTMCell}/
 \texttt{nn.GRUCell} trên CUDA float64 qua 4 bước: sai số forward tối đa
-là $5,551\times 10^{-17}$ (LSTM) và $3,331\times 10^{-16}$ (GRU).
+là $5.551\times 10^{-17}$ (LSTM) và $3.331\times 10^{-16}$ (GRU).
 Gradient của state/input/tất cả tham số khớp theo kiểm tra.
 
 \section{Mô hình đối chiếu và thiết lập huấn luyện}
-LSTM/GRU được thử với Rows, Columns và Patch. MLP và CNN-B giữ kiến trúc
-E1 nhưng được định nghĩa, huấn luyện độc lập trong E3 trên cùng split.
-AdamW learning rate $10^{-3}$, weight decay $10^{-4}$, batch 128,
-tối đa 100 epoch, patience 4 và min-delta $10^{-4}$ theo validation loss.
-Checkpoint là trọng số có validation loss nhỏ nhất. Gradient clipping
-norm 1 chỉ áp dụng cho recurrent; không augmentation hoặc scheduler.
+LSTM/GRU dùng Rows, Columns và Patch; MLP/CNN-B giữ kiến trúc E1 nhưng
+được định nghĩa/train độc lập trên cùng split. AdamW LR $10^{-3}$,
+weight decay $10^{-4}$, batch 128, tối đa 100 epoch; patience 4,
+min-delta $10^{-4}$ theo validation loss, test bằng best weights.
+Clip norm 1 chỉ áp dụng cho recurrent; không augmentation/scheduler.
 
 \section{So sánh LSTM, GRU và cách biểu diễn}
 \DataTable{assets/e3/results.tex}{Metric E3 trên validation và test; F1 là macro-F1.}
 \DataTable{assets/e3/cost.tex}{Số tham số, epoch và chi phí E3; cell được unroll bằng Python/PyTorch, không dùng fused kernel.}
-\DataTable{assets/e3/paired.tex}{LSTM và GRU trên cùng biểu diễn; chênh lệch test tính theo điểm phần trăm.}
-Rows tốt nhất ở cả hai họ, đạt test 89,70\% (LSTM) và 90,06\% (GRU).
-GRU cao hơn LSTM 0,36; 0,70; 0,89 điểm với Rows, Columns và Patch.
-Với Rows, GRU dùng 61.962 tham số so với 82.186 của LSTM, giảm 24,6\%.
-Rows và Columns cùng $T=28,F=28$, nhưng đổi hướng quét; Patch đổi cả
-feature ($F=16$) lẫn chiều dài ($T=49$), nên không cô lập riêng tác động
-thứ tự token.
+Trên cùng biểu diễn, GRU vượt LSTM lần lượt 0.36, 0.70 và 0.89 điểm
+phần trăm ở Rows, Columns và Patch. Rows/Columns giữ $T=28,F=28$ nhưng đổi
+hướng quét; Patch đổi cả $F=16$ và $T=49$, nên không cô lập riêng thứ tự token.
 
-GRU ít tham số hơn nhưng thời gian đo cao hơn LSTM: Rows là
-28,824/26,230 s/epoch, Patch là 48,802/46,445 s/epoch.
-Tốc độ còn phụ thuộc gate, unroll, kernel và tải máy.
-
-\subsection{Đối chiếu với MLP và CNN}
-\DataTable{assets/e3/baselines.tex}{Recurrent đại diện chọn bằng validation và hai mô hình không hồi tiếp.}
-GRU Rows hơn MLP 0,61 điểm test nhưng thấp hơn CNN-B 1,39 điểm.
-Chênh lệch validation GRU--CNN-B là $-1,47$ điểm, tính từ số chưa làm tròn.
-CNN-B đạt 3,839 s/epoch; cấu trúc không gian và tính song song giúp CNN
-phù hợp ảnh tĩnh trong thiết lập này.
-
-Hidden state tích lũy thông tin qua 28/49 bước; LSTM thêm cell state,
-GRU duy trì hidden với ba gate. Accuracy hiện có không chứng minh mô
-hình đã học phụ thuộc xa: cần thêm thí nghiệm che token hoặc thay đổi
-độ dài để kiểm tra giả thuyết đó.
+Để đánh giá vai trò của tính hồi tiếp, các cấu hình recurrent được đối chiếu
+với MLP và CNN-B huấn luyện độc lập trên cùng split.
+Rows là biểu diễn tốt nhất trong các cấu hình recurrent đã thử. GRU dùng ít
+tham số hơn LSTM cùng đầu vào, nhưng thời gian đo không thấp hơn: cell được
+unroll bằng các phép toán PyTorch thay vì fused kernel. CNN-B đạt accuracy
+cao hơn các recurrent representative với thời gian mỗi epoch thấp hơn đáng kể.
+Kết luận chỉ áp dụng cho ảnh tĩnh Fashion-MNIST và protocol hiện tại;
+accuracy không đủ chứng minh mô hình đã học phụ thuộc xa.
 
 \section{Đường cong học và phân tích lỗi}
 
-LSTM Columns có train--validation gap 4,07 điểm; GRU Rows là 3,48 điểm.
-Các đường train tiếp tục cải thiện trong khi validation chững lại,
-cho thấy cần chọn checkpoint theo validation. Đường cong của ba cách
-biểu diễn được tách riêng trong Phụ lục để đọc rõ từng model.
+Gap LSTM Columns là 4.07 điểm, GRU Rows là 3.48 điểm: train cải thiện
+khi validation chững lại. Hình~\ref{fig:e3-baseline} đối chiếu representative
+với MLP/CNN-B; đường cong từng representation ở Phụ lục.
 
-\DataTable{assets/e3/errors.tex}{Cặp nhầm lớn nhất của tám mô hình E3; mỗi lớp test có 1.000 ảnh.}
-LSTM Rows và GRU Rows nhầm Shirt thành T-shirt/top 133/125 ảnh.
-CNN-B nhầm Shirt thành Coat 103 ảnh; vì đây là cặp khác, không dùng ba
-số đếm đó để xếp hạng riêng khả năng nhận diện Shirt. Ma trận cho thấy
-recall Shirt làm tròn là 70\%, 71\%, 73\% tương ứng; các lớp giày/túi
-nhìn chung dễ phân biệt hơn nhóm áo.
-Ma trận của tám mô hình nằm ở Phụ lục. Kết luận giới hạn ở một seed,
-Fashion-MNIST và cell unroll không fused.
+\DataTable{assets/e3/errors.tex}{Cặp nhầm lớn nhất của tám mô hình E3; mỗi lớp test có 1,000 ảnh.}
+LSTM/GRU Rows nhầm Shirt thành T-shirt/top 133/125 ảnh; CNN-B nhầm Shirt
+thành Coat 103 ảnh. Vì cặp lớp khác nhau, không dùng ba counts này xếp hạng
+nhận diện Shirt. Recall Shirt làm tròn là 70/71/73\%; giày/túi dễ phân biệt
+hơn nhóm áo. Ma trận tám model ở Phụ lục; kết luận giới hạn ở một seed và
+cell unroll không fused.
 
-\PortraitFigure{assets/e3/baseline_loss.png}{Loss của LSTM/GRU Rows và MLP/CNN-B; nét đứt train, nét liền validation.}
-\PortraitFigure{assets/e3/baseline_accuracy.png}{Accuracy của recurrent đại diện và hai mô hình không hồi tiếp.}
-\PortraitFigure{assets/e3/errors_g_r.png}{Mẫu lỗi của GRU Rows, bố cục $2\times5$.}
-\PortraitFigure{assets/e3/errors_cnn_b.png}{Mẫu lỗi của CNN-B huấn luyện độc lập trong E3.}
+\ComparisonFigure[.39]{assets/e3/baseline_loss.png}{Cross-entropy}{assets/e3/baseline_accuracy.png}{Accuracy (\%).}{E3: LSTM/GRU Rows và baseline MLP/CNN-B trên train/validation; train nét đứt, validation nét liền.}{e3-baseline}
+
+\ComparisonFigure[.32]{assets/e3/errors_g_r.png}{GRU Rows}{assets/e3/errors_cnn_b.png}{CNN-B}{Mẫu lỗi test E3, mỗi panel $2	imes5$ ảnh; cùng split, mỗi model train độc lập.}{e3-errors}
