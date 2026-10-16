@@ -178,22 +178,31 @@ chiếu với output của phiên Run All trên toàn bộ dữ liệu.
 
 ## Trang public và Git
 
-[Trang GitHub Pages](https://dangtai111325.github.io/CO5085/public/) tổng hợp kết quả,
-liên kết xem/tải notebook của năm bài, báo cáo PDF, đề bài và thông tin dataset.
+[Trang GitHub Pages](https://dangtai111325.github.io/CO5085/) tổng hợp kết quả,
+protocol, đối chiếu yêu cầu đề, notebook, PDF, nguồn dữ liệu và paper.
+Mỗi mục E1–E3/A1/A2 có liên kết trực tiếp tới phần tương ứng trong báo cáo.
+Bảng đầy đủ có thể cuộn ngang; các hình mở được ở kích thước gốc.
+Video demo A2 chưa có liên kết công bố; giấy phép cụ thể và quyền phân phối
+lại archive GTSRB chưa được xác minh (xem nguồn trong README dataset).
+
 HTML nguồn ở [public/index.html](public/index.html). Xem trên máy:
 
 ```powershell
 python -m http.server 5085 --bind 127.0.0.1
 ```
 
-Mở `http://127.0.0.1:5085/public/`. Các file dành cho website nằm trong
-`public`; project không chứa workflow hoặc script tự deploy. Nhóm thực hiện
-tự cấu hình và deploy GitHub Pages.
+Mở `http://127.0.0.1:5085/public/`. Giữ cấu trúc tương đối giữa `public`,
+`assignment`, `source_code` và `report` để các liên kết tài liệu hoạt động.
+Dataset và pretrained weights không được đóng gói vào website.
 
-Nếu publish trực tiếp từ `main` với folder `/(root)`, trang nằm tại
-`/CO5085/public/`. Giữ cấu trúc tương đối giữa `public`, `assignment`,
-`source_code` và `report` để các liên kết tải tài liệu hoạt động. Nguồn LaTeX
-được xem trên GitHub.
+Workflow [Pages và release](.github/workflows/pages.yml) chạy khi push `main`:
+đóng gói HTML/tài liệu/ảnh, kiểm tra đường dẫn và anchor, deploy Pages,
+kiểm tra trang/PDF công khai rồi cập nhật GitHub Release. Trang chính được
+phục vụ trực tiếp tại `/CO5085/`; `/CO5085/public/` vẫn truy cập được.
+[Release](https://github.com/dangtai111325/CO5085/releases/latest) cung cấp bản
+phát hành và PDF đính kèm. Workflow dùng tag `v2026.10.17`; khi release đã
+tồn tại, workflow cập nhật ghi chú và trạng thái latest, giữ tag và asset
+của lần tạo. Mã nguồn hiện hành nằm trên `main`.
 
 Git chỉ chứa đề bài, notebook/output, HTML, README, PDF và nguồn/assets LaTeX.
 Toàn bộ raw data, pretrained cache, thư mục `model` và file build bị ignore; trong `datasets`

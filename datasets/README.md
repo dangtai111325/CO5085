@@ -363,8 +363,9 @@ A2.ipynb đọc `/kaggle/input/datasets/dangtai1720/a2-voc2012`.
 Dataset gắn vào session cần giữ `voc2012/train.csv`, `val.csv`, `test.csv`
 và các JPEG/XML tại đúng đường dẫn tương đối ghi trong CSV. Thư mục input
 chỉ đọc; không nhân bản ảnh theo split. Số liệu báo cáo dùng bản Kaggle,
-batch 8/eval 8, accumulation 3. A2.ipynb chạy local dùng `datasets/voc`,
-batch 4/eval 4, accumulation 3; các split và quy tắc annotation giống nhau.
+batch 8/eval 8, accumulation 3. Notebook A2 công bố yêu cầu kernel Kaggle
+với hai GPU; kho `datasets/voc` trên máy dùng để chuẩn bị JPEG/XML và
+manifest cho input Kaggle, không phải một cấu hình Run All local khác.
 
 ### Tái tạo trên máy khác
 
