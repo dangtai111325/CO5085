@@ -1,0 +1,157 @@
+name: Deploy CO5085 Pages and publish release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: co5085-pages-release
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}public/
+    steps:
+      - name: Check out the latest main commit
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Assemble static site and linked source files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import unquote, urlsplit
+          import shutil
+
+          site = Path("_site")
+          site.mkdir(exist_ok=True)
+          for folder in ("public", "assignment", "source_code"):
+              shutil.copytree(folder, site / folder)
+          (site / "report" / "source_latex").mkdir(parents=True)
+          shutil.copy2("report/CO5085_Report.pdf", site / "report/CO5085_Report.pdf")
+          shutil.copytree("report/source_latex/assets", site / "report/source_latex/assets")
+          (site / ".nojekyll").touch()
+          (site / "index.html").write_text(
+              '<!doctype html><html lang="vi"><head><meta charset="utf-8">'
+              '<meta http-equiv="refresh" content="0; url=./public/">'
+              '<title>CO5085</title></head><body>'
+              '<a href="./public/">Mở trang CO5085</a></body></html>',
+              encoding="utf-8",
+          )
+
+          class LinkChecker(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = set()
+                  self.links = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if "id" in attrs:
+                      if attrs["id"] in self.ids:
+                          raise ValueError("Duplicate HTML id: " + attrs["id"])
+                      self.ids.add(attrs["id"])
+                  for key in ("href", "src"):
+                      if attrs.get(key):
+                          self.links.append(attrs[key])
+
+          checker = LinkChecker()
+          checker.feed((site / "public" / "index.html").read_text(encoding="utf-8"))
+          for link in checker.links:
+              if link.startswith("#"):
+                  if link[1:] and link[1:] not in checker.ids:
+                      raise ValueError("Broken anchor: " + link)
+                  continue
+              parsed = urlsplit(link)
+              if parsed.scheme or parsed.netloc or link.startswith("//"):
+                  continue
+              target = (site / "public" / unquote(parsed.path)).resolve()
+              if not target.is_relative_to(site.resolve()) or not target.is_file():
+                  raise ValueError("Missing or unsafe local asset: " + link)
+          print("PASS: HTML anchors and local linked assets:", len(checker.links))
+          PY
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Live-site smoke test
+        env:
+          BASE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import os
+          import time
+          import urllib.request
+
+          base = os.environ["BASE_URL"].rstrip("/")
+          url = base + "/public/"
+          expected = "Đối chiếu paper gốc với pipeline thực nghiệm"
+          for attempt in range(1, 16):
+              try:
+                  with urllib.request.urlopen(url, timeout=30) as response:
+                      body = response.read().decode("utf-8")
+                  if expected not in body:
+                      raise RuntimeError("Pages still serves an older HTML version")
+                  with urllib.request.urlopen(base + "/report/CO5085_Report.pdf", timeout=30) as response:
+                      if response.status != 200:
+                          raise RuntimeError("Report PDF is unavailable")
+                  print("PASS: live Pages HTML and report PDF", url)
+                  break
+              except Exception as exc:
+                  if attempt == 15:
+                      raise
+                  print("Waiting for Pages propagation:", attempt, str(exc))
+                  time.sleep(12)
+          PY
+
+  release:
+    runs-on: ubuntu-latest
+    needs: deploy
+    permissions:
+      contents: write
+    steps:
+      - name: Check out release content
+        uses: actions/checkout@v4
+
+      - name: Publish GitHub Release for this version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: v2026.10.17
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release already exists: $RELEASE_TAG"
+            exit 0
+          fi
+          cat > /tmp/release-notes.md <<'NOTES'
+          CO5085 — Deep Learning & Applications in Computer Vision
+
+          Public coursework release with five PyTorch notebooks (E1, E2, E3, A1, A2), a 100-page report, assignment PDFs and the updated GitHub Pages landing page.
+
+          This release includes the latest A1 and A2 website presentation, source links and experimental comparison tables. All reported results remain those stored in the existing notebooks and report. Video demo A2 is not included because no verified public video link exists.
+
+          Live website: https://dangtai111325.github.io/CO5085/public/
+          Source: https://github.com/dangtai111325/CO5085
+          NOTES
+          gh release create "$RELEASE_TAG" report/CO5085_Report.pdf \
+            --target "$GITHUB_SHA" \
+            --title "CO5085 | Coursework release | 2026-10-17" \
+            --notes-file /tmp/release-notes.md \
+            --latest
+          echo "Published: https://github.com/$GITHUB_REPOSITORY/releases/tag/$RELEASE_TAG"
