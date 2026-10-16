@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}public/
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out the latest main commit
         uses: actions/checkout@v4
@@ -43,13 +43,12 @@ jobs:
           shutil.copy2("report/CO5085_Report.pdf", site / "report/CO5085_Report.pdf")
           shutil.copytree("report/source_latex/assets", site / "report/source_latex/assets")
           (site / ".nojekyll").touch()
-          (site / "index.html").write_text(
-              '<!doctype html><html lang="vi"><head><meta charset="utf-8">'
-              '<meta http-equiv="refresh" content="0; url=./public/">'
-              '<title>CO5085</title></head><body>'
-              '<a href="./public/">Mở trang CO5085</a></body></html>',
-              encoding="utf-8",
-          )
+          # Serve the same full website at /CO5085/ (not a redirect to /public/).
+          # Only references starting with ../ need adjustment for root hosting.
+          root_html = (site / "public" / "index.html").read_text(encoding="utf-8")
+          root_html = root_html.replace('href="../', 'href="./')
+          root_html = root_html.replace('src="../', 'src="./')
+          (site / "index.html").write_text(root_html, encoding="utf-8")
 
           class LinkChecker(HTMLParser):
               def __init__(self):
@@ -67,7 +66,7 @@ jobs:
                           self.links.append(attrs[key])
 
           checker = LinkChecker()
-          checker.feed((site / "public" / "index.html").read_text(encoding="utf-8"))
+          checker.feed((site / "index.html").read_text(encoding="utf-8"))
           for link in checker.links:
               if link.startswith("#"):
                   if link[1:] and link[1:] not in checker.ids:
@@ -76,7 +75,7 @@ jobs:
               parsed = urlsplit(link)
               if parsed.scheme or parsed.netloc or link.startswith("//"):
                   continue
-              target = (site / "public" / unquote(parsed.path)).resolve()
+              target = (site / unquote(parsed.path)).resolve()
               if not target.is_relative_to(site.resolve()) or not target.is_file():
                   raise ValueError("Missing or unsafe local asset: " + link)
           print("PASS: HTML anchors and local linked assets:", len(checker.links))
@@ -101,7 +100,7 @@ jobs:
           import urllib.request
 
           base = os.environ["BASE_URL"].rstrip("/")
-          url = base + "/public/"
+          url = base + "/"
           expected = "Đối chiếu paper gốc với pipeline thực nghiệm"
           for attempt in range(1, 16):
               try:
@@ -135,10 +134,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: v2026.10.17
         run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Release already exists: $RELEASE_TAG"
-            exit 0
-          fi
           cat > /tmp/release-notes.md <<'NOTES'
           CO5085 — Deep Learning & Applications in Computer Vision
 
@@ -146,12 +141,17 @@ jobs:
 
           This release includes the latest A1 and A2 website presentation, source links and experimental comparison tables. All reported results remain those stored in the existing notebooks and report. Video demo A2 is not included because no verified public video link exists.
 
-          Live website: https://dangtai111325.github.io/CO5085/public/
+          Live website (opens directly): https://dangtai111325.github.io/CO5085/
           Source: https://github.com/dangtai111325/CO5085
           NOTES
-          gh release create "$RELEASE_TAG" report/CO5085_Report.pdf \
-            --target "$GITHUB_SHA" \
-            --title "CO5085 | Coursework release | 2026-10-17" \
-            --notes-file /tmp/release-notes.md \
-            --latest
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --notes-file /tmp/release-notes.md --latest
+            echo "Updated existing release with direct home page URL"
+          else
+            gh release create "$RELEASE_TAG" report/CO5085_Report.pdf \
+              --target "$GITHUB_SHA" \
+              --title "CO5085 | Coursework release | 2026-10-17" \
+              --notes-file /tmp/release-notes.md \
+              --latest
+          fi
           echo "Published: https://github.com/$GITHUB_REPOSITORY/releases/tag/$RELEASE_TAG"
