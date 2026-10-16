@@ -4,6 +4,15 @@ Thực nghiệm E1–E3, A1 và A2 gồm năm bài thực nghiệm độc lập 
 Mỗi notebook chứa toàn bộ code cần thiết; bảng, đồ thị và ảnh kết quả được lưu
 trong output cell sau khi chạy và Save.
 
+## Nhóm thực hiện
+
+| Thành viên | Mã số học viên |
+|---|---|
+| Đặng Nguyễn Tấn Tài | 2570357 |
+| Lương Minh Duy | 2570083 |
+
+**Giảng viên:** Lê Thành Sách. **Lớp:** CH01. **Học kỳ:** 261 (2026–2027).
+
 ## Nội dung
 
 | Notebook | Phương pháp | Dataset | Train / validation / test | Lượt train |
@@ -179,7 +188,7 @@ python -m http.server 5085 --bind 127.0.0.1
 ```
 
 Mở `http://127.0.0.1:5085/public/`. Các file dành cho website nằm trong
-`public`; project không chứa workflow hoặc script tự deploy. Người thực hiện
+`public`; project không chứa workflow hoặc script tự deploy. Nhóm thực hiện
 tự cấu hình và deploy GitHub Pages.
 
 Nếu publish trực tiếp từ `main` với folder `/(root)`, trang nằm tại
@@ -198,7 +207,7 @@ Phần ghi nhận này áp dụng chung cho **E1, E2, E3, A1 và A2**, cùng bá
 tổng và tài liệu của project. Công cụ AI hỗ trợ các công việc sau:
 
 - Tổ chức, format code và Markdown trong notebook; hỗ trợ viết mã PyTorch
-  theo phương pháp, kiến trúc và cấu hình được người thực hiện chỉ định;
+  theo phương pháp, kiến trúc và cấu hình được nhóm thực hiện chỉ định;
   triển khai vòng lặp train, validation và test trong từng notebook độc lập.
 - Triển khai các tiện ích theo yêu cầu: đặt seed, theo dõi tiến trình và ETA,
   ghi nhận metric, lưu best weights vào `latest.pt` và nạp weights để train tiếp.
@@ -214,7 +223,7 @@ tổng và tài liệu của project. Công cụ AI hỗ trợ các công việc
 - Soạn hướng dẫn chuẩn bị dữ liệu, môi trường, chạy thí nghiệm và tra cứu
   kết quả; tổ chức thông tin trong README và trang giới thiệu của project.
 
-Số liệu và hình thực nghiệm lấy từ output notebook. Người thực hiện chịu
+Số liệu và hình thực nghiệm lấy từ output notebook. Nhóm thực hiện chịu
 trách nhiệm xác định hướng nghiên cứu, kiểm chứng kết quả, hiểu và bảo vệ
 mã nguồn cùng phần phân tích. Phạm vi hỗ trợ được ghi nhận theo mục 1.6
 của [đề E1–E3](assignment/exercise-vne.pdf).

@@ -4,7 +4,7 @@
   "table_numeric_values": 1764,
   "original_pngs_preserved": 168,
   "pdf": "report/CO5085_Report.pdf",
-  "pdf_sha256": "83f1aa1f0ad2c5b5d3bd6c9c8c45f18fcd9b2fad0905063686bce3fe0140c64e",
+  "pdf_sha256": "20df37ab5bc19d146749b06f28a62bae1cb513a4727bd739cd68bc17320b2948",
   "pages": 99,
   "pages_before": 160,
   "figure_groups": 70,
@@ -13,16 +13,16 @@
   "portrait_pages": 99,
   "blank_pages": 0,
   "fonts": [
-    "/AWFGSG+CambriaMath",
-    "/KSUVGF+TimesNewRomanPS-BoldMT",
-    "/LJGWYU+TimesNewRomanPSMT",
-    "/PWZDRS+TimesNewRomanPS-ItalicMT"
+    "/ENXBMJ+TimesNewRomanPSMT",
+    "/MMKZWH+CambriaMath",
+    "/MRPZWI+TimesNewRomanPS-ItalicMT",
+    "/PWGCUH+TimesNewRomanPS-BoldMT"
   ],
   "visual_review": "All 99 final pages rendered and reviewed; selected diagrams, matrices, class galleries, and bbox triplets checked at higher resolution.",
   "compile_errors": [],
   "unresolved_references": [],
   "numeric_format_exceptions_in_used_figures": [],
-  "scope": "Report only; notebooks, output cells, datasets, checkpoints, README, and public files unchanged.",
+  "scope": "Participant and instructor metadata synchronized across report, README and public HTML; notebooks, output cells, datasets and checkpoints unchanged.",
   "original_pngs_unchanged": true,
   "semantic_guard": "Intervals [0,1] and [2,5], versions, image IDs, and TikZ coordinates preserved.",
   "character_review": {
@@ -50,5 +50,30 @@
     "unchanged_notebooks": 6,
     "unchanged_table_assets": 40,
     "unchanged_png_assets": 182
+  },
+  "team": [
+    {
+      "name": "Đặng Nguyễn Tấn Tài",
+      "student_id": "2570357"
+    },
+    {
+      "name": "Lương Minh Duy",
+      "student_id": "2570083"
+    }
+  ],
+  "instructor": "Lê Thành Sách",
+  "team_review": {
+    "pages": 99,
+    "changed_pdf_pages": [
+      1,
+      56
+    ],
+    "pixel_identical_pages": 97,
+    "unchanged_notebooks": 6,
+    "unchanged_chapters_tables_figures_bibliography": true,
+    "html_links_and_sections_preserved": true,
+    "html_result_tables_preserved": true,
+    "relative_links_valid": true,
+    "single_combined_report": true
   }
 }

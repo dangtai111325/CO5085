@@ -7,7 +7,8 @@ Tài liệu bàn giao biên tập, không được chèn vào PDF học thuật.
 - PDF trước: 160 trang. PDF bàn giao: 99 trang, giảm 61 trang (38.125%).
 - Bố cục: 4 trang bìa/tóm tắt/mục lục; 52 trang Chương 1–7; 2 trang tài liệu tham khảo; 41 trang phụ lục.
 - Giữ A4 dọc, body 12 pt, Times New Roman; công thức Cambria Math; thụt đầu dòng 1 cm và lề hiện có.
-- Chỉ sửa báo cáo và tài nguyên của báo cáo. Không chạy train/inference, chỉnh notebook/output, dataset, checkpoint, README hoặc public HTML.
+- Giữ một báo cáo tổng; thông tin nhóm được đồng bộ giữa bìa, metadata PDF, README và public HTML. Không chạy train/inference, chỉnh notebook/output, dataset hoặc checkpoint.
+- Giảng viên: Lê Thành Sách. Nhóm thực hiện: Đặng Nguyễn Tấn Tài (2570357) và Lương Minh Duy (2570083), lớp CH01.
 - `A2.kaggle.ipynb` là nguồn kết quả A2; cấu hình thực chạy batch/eval 8, accumulation 3, effective batch 24, patience 2, min_delta 0.001.
 - Bản TikZ hiện có được giữ làm cơ sở; hình khối/kênh/cổng/head vẫn theo implementation. Hình dùng mực đen và nền trắng.
 
@@ -67,7 +68,7 @@ Dựng hình tĩnh khi prepared datasets có sẵn:
 python report/source_latex/assets/render_report_figures.py
 ```
 
-Các hình mới là tài nguyên báo cáo; notebook không phụ thuộc vào renderer này. Nguồn LaTeX và mọi assets đi cùng PDF. README/public không đổi theo phạm vi yêu cầu của tác vụ.
+Các hình mới là tài nguyên báo cáo; notebook không phụ thuộc vào renderer này. Nguồn LaTeX và mọi assets đi cùng PDF. README/public sử dụng cùng thông tin nhóm và đường dẫn báo cáo tổng.
 
 ## Rà soát chuỗi mã và ký tự hiển thị
 
