@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Bài tập CO5085 của Đặng Nguyễn Tấn Tài và Lương Minh Duy: năm notebook, kết quả thực nghiệm E1–E3, A1–A2 và báo cáo tổng trên Fashion-MNIST, GTSRB, VOC2012." />
+  <meta name="description" content="CO5085: báo cáo kỹ thuật và thực nghiệm E1–E3, A1–A2. Fashion-MNIST, GTSRB, VOC2012; pipeline, phương pháp, kết quả và giới hạn có đối chiếu notebook." />
   <meta name="author" content="Đặng Nguyễn Tấn Tài; Lương Minh Duy" />
   <meta name="theme-color" content="#164e9b" />
+  <meta name="color-scheme" content="light" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23164e9b'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='sans-serif' font-size='32' font-weight='bold' fill='white'%3ECO%3C/text%3E%3C/svg%3E" />
   <title>CO5085 · Deep Learning & Computer Vision</title>
   <style>
@@ -83,6 +84,78 @@
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
     @media(max-width:450px){.wrap{width:calc(100% - 32px)}nav{align-items:center}.navlinks{gap:0 10px}.hero h1{font-size:36px}.card{padding:20px}.kv{grid-template-columns:1fr;gap:4px}.kv dd{margin-bottom:8px}.deadline{max-width:65%;text-align:right}.section-head{display:block}}
     @media print{header,.skip,.links,.resource-list{display:none}.hero{padding-top:12px}.card{box-shadow:none;break-inside:avoid}body{background:white}.wrap{width:100%}a{overflow-wrap:anywhere}}
+  
+    :root{--surface-alt:#f8fbff;--accent2:#3875c3}
+    .overline{display:inline-block;font-size:11px;font-weight:850;color:var(--accent);letter-spacing:.13em;margin-bottom:8px}
+    .study{border-top:1px solid var(--line);padding-top:56px;padding-bottom:48px}
+    .study:nth-of-type(even){background:#f2f6fc}
+    .study-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}
+    .study-heading h2{font-size:clamp(25px,3vw,36px)}
+    .study-heading p{color:var(--muted);margin:7px 0 0;max-width:750px}
+    .study-heading>.btn{flex-shrink:0}
+    .study-jump{display:flex;gap:8px;flex-wrap:wrap;margin:17px 0 26px}
+    .study-jump a{display:inline-flex;align-items:center;min-height:40px;padding:8px 13px;border:1px solid #bed2ef;border-radius:9px;color:var(--accent);background:#fff;font-size:13px;font-weight:750;text-decoration:none}
+    .study-jump a:hover{background:var(--accent-soft)}
+    .dataset-card{display:flex;flex-direction:column;gap:10px}
+    .dataset-card h3{margin:0}.dataset-card small{color:var(--muted);line-height:1.65}
+    .dataset-tag{font-size:10px;font-weight:850;letter-spacing:.07em;color:var(--accent)}
+    .data-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:7px 0;gap:7px}
+    .data-facts>div{border-radius:8px;background:var(--surface-alt);border:1px solid var(--line);padding:10px 7px}
+    .data-facts dt{font-size:10px;color:var(--muted);line-height:1.4}
+    .data-facts dd{font-weight:800;font-size:17px;font-variant-numeric:tabular-nums;margin:3px 0 0}
+    .method-bar{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .method-bar>div{padding:12px 14px;border-left:2px solid #a2bfeb}
+    .method-bar strong{display:block;font-size:13px}
+    .method-bar span{color:var(--muted);font-size:12px}
+    .steps{padding-left:21px;margin:13px 0 0;color:var(--muted);font-size:14px}
+    .steps li{padding-left:3px;margin:9px 0}
+    .study .grid+.grid,.study .grid+.visual-grid{margin-top:16px}
+    .study .card h3{font-size:18px}
+    .study .card p+p{margin-top:12px}
+    .study .subheading{margin-top:22px}
+    .table-scroll{overflow-x:auto;max-width:100%;scrollbar-width:thin;margin-top:10px}
+    .table-scroll .result-table{min-width:480px;margin-top:6px}
+    .table-scroll .result-table td,.table-scroll .result-table th{padding:9px 10px;white-space:nowrap}
+    .table-scroll .result-table th:first-child{white-space:normal;min-width:150px}
+    .table-scroll .result-table th:not(:first-child),.table-scroll .result-table td:not(:first-child){text-align:right}
+    .table-scroll .result-table tbody tr:hover{background:var(--surface-alt)}
+    .table-scroll:focus-visible{outline:2px solid var(--accent)}
+    .fact-list{margin:14px 0;display:grid;gap:8px}
+    .fact-list>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border:1px solid var(--line);background:var(--surface-alt);border-radius:9px}
+    .fact-list span{color:var(--muted);font-size:13px}
+    .visual-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:16px 0}
+    .visual{margin:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:15px;min-width:0}
+    .visual a{display:block;overflow:hidden;border-radius:10px;background:#fff}
+    .visual img{width:100%;height:auto;max-height:365px;object-fit:contain;display:block}
+    .visual a:hover img{transform:scale(1.01)}
+    .visual img{transition:transform .2s ease}
+    .visual figcaption{font-size:12px;color:var(--muted);margin-top:9px}
+    .technical-note{background:var(--accent-soft);padding:13px 15px;border-radius:10px;border-left:3px solid var(--accent);font-size:13px!important;margin-top:14px!important}
+    .disclosure{background:var(--surface);border:1px solid var(--line);border-radius:13px;margin-top:16px;overflow:hidden}
+    .disclosure summary{cursor:pointer;font-size:15px;font-weight:750;min-height:50px;display:flex;justify-content:space-between;align-items:center;padding:13px 18px;list-style:none}
+    .disclosure summary::-webkit-details-marker{display:none}
+    .disclosure summary span{font-size:23px;color:var(--accent)}
+    .disclosure[open] summary span{transform:rotate(45deg)}
+    .disclosure[open] summary{border-bottom:1px solid var(--line);background:var(--surface-alt)}
+    .disclosure-body{padding:18px}
+    .disclosure-body p{margin:0 0 10px;color:var(--muted)}
+    .disclosure-body p:last-child{margin-bottom:0}
+    .result-focus{margin:16px 0}
+    .result-focus .result-table{max-width:730px}
+    .result-focus .section-head{margin-bottom:0}
+    .availability-line{margin-top:18px;display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border:1px dashed #a9b4c3;border-radius:11px;background:#fff}
+    .availability-line>span{color:#7f8794;font-size:13px}
+    .availability-line strong{font-size:14px}
+    .availability-line p{font-size:13px;color:var(--muted);margin:4px 0 0}
+    .navlinks{gap:12px}
+    .navlinks a{border-bottom:2px solid transparent}
+    .navlinks a:hover{border-bottom-color:var(--accent)}
+    .navlinks .repo{border:1px solid var(--line)}
+    section[id]{scroll-margin-top:90px}
+    @media(max-width:900px){.method-bar{grid-template-columns:1fr}.navlinks{gap:9px}.navlinks a{font-size:12px}.study-heading{align-items:flex-start;flex-direction:column}}
+    @media(max-width:680px){nav{flex-wrap:wrap}.navlinks{width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;justify-content:flex-start;padding-bottom:4px;scrollbar-width:thin}.navlinks .repo{display:none}.visual-grid{grid-template-columns:1fr}.data-facts dd{font-size:15px}.study{padding-top:38px;padding-bottom:30px}.study .card{padding:18px}.study-heading h2{font-size:27px}.study-jump{gap:6px}.study-jump a{font-size:12px}.table-scroll .result-table{font-size:12px}.dataset-card{grid-column:span 12}}
+    @media(prefers-reduced-motion:reduce){.visual img{transition:none}}
+
   </style>
 </head>
 <body>
@@ -92,8 +165,8 @@
     <nav aria-label="Điều hướng chính">
       <a class="brand" href="#top">CO<span>5085</span></a>
       <div class="navlinks">
-        <a href="#team">Thông tin</a><a href="#coursework">Bài tập</a><a href="#resources">Tài liệu</a>
-        <a class="repo" href="https://github.com/dangtai111325/CO5085" target="_blank" rel="noreferrer">GitHub Repository ↗</a>
+        <a href="#team">Nhóm</a><a href="#protocol">Dữ liệu</a><a href="#coursework">Tổng quan</a><a href="#e1">E1–E3</a><a href="#a1">A1</a><a href="#a2">A2</a><a href="#resources">Tài liệu</a>
+        <a class="repo" href="https://github.com/dangtai111325/CO5085" target="_blank" rel="noopener noreferrer">GitHub Repository ↗</a>
       </div>
     </nav>
   </div>
@@ -106,7 +179,7 @@
       <h1>Deep Learning & Applications in Computer Vision</h1>
       <p>Từ phân loại ảnh đến phát hiện đối tượng: code, kết quả thực nghiệm và báo cáo cho năm bài tập E1–E3, A1–A2.</p>
       <div class="links"><a class="btn primary" href="../report/CO5085_Report.pdf">Đọc báo cáo tổng · PDF</a><a class="btn" href="#coursework">Khám phá các bài tập</a></div>
-      <div class="summary-stats" aria-label="Quy mô thực nghiệm"><span><strong>5</strong> bài thực nghiệm</span><span><strong>36</strong> lượt huấn luyện</span><span><strong>3</strong> bộ dữ liệu</span><span><strong>99</strong> trang báo cáo</span></div>
+      <div class="summary-stats" aria-label="Quy mô thực nghiệm"><span><strong>5</strong> bài thực nghiệm</span><span><strong>36</strong> lượt huấn luyện</span><span><strong>3</strong> bộ dữ liệu</span><span><strong>100</strong> trang báo cáo</span></div>
       <div class="hero-meta">
         <span class="chip">Học kỳ 261 · 2026–2027</span>
         <span class="chip">Giảng viên: Lê Thành Sách</span>
@@ -139,38 +212,52 @@
     </div>
   </section>
 
+  
+  <section class="section" id="protocol">
+    <div class="wrap">
+      <div class="section-head"><div><span class="overline">EXPERIMENTAL SETUP</span><h2>Dữ liệu và phương pháp đánh giá</h2><p>Ba dataset độc lập; mỗi thí nghiệm sử dụng validation để chọn cấu hình/weights và chỉ đánh giá test sau lựa chọn.</p></div></div>
+      <div class="grid">
+        <article class="card span-4 dataset-card"><span class="dataset-tag">E1–E3 · IMAGE CLASSIFICATION</span><h3>Fashion-MNIST</h3><p>10 lớp, ảnh xám 28 × 28. Cùng split phân tầng theo lớp, seed 42; không augmentation.</p><dl class="data-facts"><div><dt>Train</dt><dd>54,000</dd></div><div><dt>Validation</dt><dd>6,000</dd></div><div><dt>Test chính thức</dt><dd>10,000</dd></div></dl><small>Chuẩn hóa theo mean 0.285886, std 0.352960 lấy từ train.</small></article>
+        <article class="card span-4 dataset-card"><span class="dataset-tag">A1 · LARGE-SCALE CLASSIFICATION</span><h3>GTSRB</h3><p>43 loại biển báo giao thông. Chia train/validation theo <em>physical-sign track</em>, giữ test nguồn.</p><dl class="data-facts"><div><dt>Train</dt><dd>31,380</dd></div><div><dt>Validation</dt><dd>7,829</dd></div><div><dt>Test nguồn</dt><dd>12,630</dd></div></dl><small>Có 8 ảnh test trùng byte với train; báo cáo thêm kết quả trên 12,622 ảnh không trùng. Điều khoản phân phối lại archive chưa xác minh.</small></article>
+        <article class="card span-4 dataset-card"><span class="dataset-tag">A2 · OBJECT DETECTION</span><h3>PASCAL VOC2012</h3><p>20 lớp phát hiện đối tượng, dùng 11,540 ảnh trainval có nhãn; chia theo image ID, seed 42.</p><dl class="data-facts"><div><dt>Train</dt><dd>9,232</dd></div><div><dt>Validation</dt><dd>1,154</dd></div><div><dt>Test nội bộ</dt><dd>1,154</dd></div></dl><small>Không phải official VOC test/leaderboard. GT <em>difficult</em> được học khi train và bỏ qua theo quy tắc VOC lúc đánh giá.</small></article>
+      </div>
+      <div class="method-bar"><div><strong>Chọn mô hình</strong><span>Validation loss: E1–E3/A1 · Validation VOC mAP50: A2</span></div><div><strong>Tái lập</strong><span>Seed, optimizer, batch, best weights và giới hạn resume ghi trong notebook/README</span></div><div><strong>Diễn giải</strong><span>Accuracy/F1 cho classification; VOC AP và COCO-style AP/AR trên VOC cho detection</span></div></div>
+    </div>
+  </section>
+
   <section class="section" id="coursework">
     <div class="wrap">
-      <div class="section-head"><div><h2>Bài tập và kết quả</h2><p>Mỗi notebook chứa toàn bộ pipeline và output đã lưu. Xem trên GitHub hoặc tải về để chạy bằng Jupyter.</p></div></div>
-      <div class="results-note">Các số liệu dưới đây lấy từ test sau khi chọn mô hình bằng validation. Bảng đầy đủ, đường học, ma trận và ảnh dự đoán nằm trong notebook và <a href="../report/CO5085_Report.pdf">báo cáo tổng</a>.</div>
+      <div class="section-head"><div><h2>Tổng quan 5 bài tập</h2><p>Mỗi notebook chứa toàn bộ pipeline và output đã lưu. Xem trên GitHub hoặc tải về để chạy bằng Jupyter.</p></div></div>
+      <div class="results-note" role="note">Các số liệu dưới đây lấy từ test sau khi chọn mô hình bằng validation. Bảng đầy đủ, đường học, ma trận và ảnh dự đoán nằm trong notebook và <a href="../report/CO5085_Report.pdf">báo cáo tổng</a>.</div>
+      <div class="study-jump" aria-label="Đi tới từng thực nghiệm"><a href="#e1">E1 · Classifiers</a><a href="#e2">E2 · Attention</a><a href="#e3">E3 · Recurrent</a><a href="#a1">A1 · CNN vs DeiT</a><a href="#a2">A2 · Detection</a></div>
       <div class="grid">
-        <article class="card span-4" id="e1">
+        <article class="card span-4" id="overview-e1">
           <div class="assignment-top"><span class="code">E1</span><span class="deadline">02/11/2026 · 23:59</span></div>
           <h3>Softmax · MLP · CNN</h3>
           <p>Phân loại ảnh với training loop PyTorch tự viết và phân tích lỗi.</p>
           <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
-          <table class="result-table"><caption>Test accuracy · 10.000 ảnh</caption><tbody><tr><th scope="row">Softmax</th><td>84,11%</td></tr><tr><th scope="row">MLP</th><td>89,45%</td></tr><tr><th scope="row">CNN-A</th><td><strong>91,66%</strong></td></tr><tr><th scope="row">CNN-B</th><td>91,45%</td></tr></tbody></table>
-          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E1.ipynb">Xem E1</a><a class="btn" href="../source_code/E1.ipynb" download>Tải .ipynb</a></div>
+          <table class="result-table"><caption>Test accuracy · 10,000 ảnh</caption><tbody><tr><th scope="row">Softmax</th><td>84.11%</td></tr><tr><th scope="row">MLP</th><td>89.45%</td></tr><tr><th scope="row">CNN-A</th><td><strong>91.66%</strong></td></tr><tr><th scope="row">CNN-B</th><td>91.45%</td></tr></tbody></table>
+          <div class="links"><a class="btn primary" href="#e1">Phân tích E1 ↓</a><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E1.ipynb">Notebook ↗</a><a class="btn" href="../source_code/E1.ipynb" download>Tải .ipynb</a></div>
         </article>
-        <article class="card span-4" id="e2">
+        <article class="card span-4" id="overview-e2">
           <div class="assignment-top"><span class="code">E2</span><span class="deadline">02/11/2026 · 23:59</span></div>
           <h3>MSA · Tokenization</h3>
           <p>Multi-Head Self-Attention tự hiện thực, bản PyTorch đối chiếu và nhiều cách token hóa.</p>
           <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
-          <table class="result-table"><caption>Cấu hình chọn bằng validation trong E2</caption><tbody><tr><th scope="row">MSA thủ công<br>CNN-stem · 4 heads</th><td><strong>90,50%</strong></td></tr></tbody></table>
+          <table class="result-table"><caption>Cấu hình chọn bằng validation trong E2</caption><tbody><tr><th scope="row">MSA thủ công<br>CNN-stem · 4 heads</th><td><strong>90.50%</strong></td></tr></tbody></table>
           <p class="context">8 cấu hình đối chiếu MSA thủ công/PyTorch, token theo hàng, patch, CNN-stem và số attention heads.</p>
-          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E2.ipynb">Xem E2</a><a class="btn" href="../source_code/E2.ipynb" download>Tải .ipynb</a></div>
+          <div class="links"><a class="btn primary" href="#e2">Phân tích E2 ↓</a><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E2.ipynb">Notebook ↗</a><a class="btn" href="../source_code/E2.ipynb" download>Tải .ipynb</a></div>
         </article>
-        <article class="card span-4" id="e3">
+        <article class="card span-4" id="overview-e3">
           <div class="assignment-top"><span class="code">E3</span><span class="deadline">09/11/2026 · 23:59</span></div>
           <h3>LSTM · GRU</h3>
           <p>Mô hình hóa ảnh dưới dạng chuỗi và so sánh với baseline không hồi tiếp.</p>
           <dl class="kv"><dt>Dataset</dt><dd><span class="fixed">Fashion-MNIST</span></dd><dt>Trạng thái</dt><dd>Đã huấn luyện và lưu kết quả</dd></dl>
-          <table class="result-table"><caption>Test accuracy · chuỗi theo hàng và baseline</caption><tbody><tr><th scope="row">LSTM rows</th><td>89,70%</td></tr><tr><th scope="row">GRU rows</th><td>90,06%</td></tr><tr><th scope="row">CNN-B baseline</th><td>91,45%</td></tr></tbody></table>
-          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E3.ipynb">Xem E3</a><a class="btn" href="../source_code/E3.ipynb" download>Tải .ipynb</a></div>
+          <table class="result-table"><caption>Test accuracy · chuỗi theo hàng và baseline</caption><tbody><tr><th scope="row">LSTM rows</th><td>89.70%</td></tr><tr><th scope="row">GRU rows</th><td>90.06%</td></tr><tr><th scope="row">CNN-B baseline</th><td>91.45%</td></tr></tbody></table>
+          <div class="links"><a class="btn primary" href="#e3">Phân tích E3 ↓</a><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E3.ipynb">Notebook ↗</a><a class="btn" href="../source_code/E3.ipynb" download>Tải .ipynb</a></div>
         </article>
 
-        <article class="card span-6" id="a1">
+        <article class="card span-6" id="overview-a1">
           <div class="assignment-top"><span class="code">A1</span><span class="deadline">A1.1 · 26/10 · A1.2 · 09/11</span></div>
           <h3>CNN vs Transformer</h3>
           <p>So sánh CNN và Transformer trên tập ảnh lớn, gồm from-scratch, pretrained và các chế độ freeze/fine-tune.</p>
@@ -179,24 +266,24 @@
             <dt>CNN</dt><dd><span class="fixed">ResNet-50</span></dd>
             <dt>Transformer</dt><dd><span class="fixed">DeiT-Small/16 · non-distilled</span></dd>
           </dl>
-          <table class="result-table"><caption>Pretrained full · seed 42 · test GTSRB</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">Accuracy</th><th scope="col">Macro-F1</th></tr></thead><tbody><tr><th scope="row">ResNet-50</th><td>97,83%</td><td>0,9678</td></tr><tr><th scope="row">DeiT-Small</th><td>98,92%</td><td>0,9790</td></tr></tbody></table>
+          <table class="result-table"><caption>Pretrained full · seed 42 · test GTSRB</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">Accuracy</th><th scope="col">Macro-F1</th></tr></thead><tbody><tr><th scope="row">ResNet-50</th><td>97.83%</td><td>0.9678</td></tr><tr><th scope="row">DeiT-Small</th><td>98.92%</td><td>0.9790</td></tr></tbody></table>
           <p class="context">14 lượt train: scratch, head-only, partial/full fine-tuning, ảnh hưởng augmentation và lặp ba seed. Train/validation được chia theo track biển báo.</p>
-          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A1.ipynb">Xem A1</a><a class="btn" href="../source_code/A1.ipynb" download>Tải .ipynb</a></div>
+          <div class="links"><a class="btn primary" href="#a1">Phân tích A1 ↓</a><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A1.ipynb">Notebook ↗</a><a class="btn" href="../source_code/A1.ipynb" download>Tải .ipynb</a></div>
         </article>
 
-        <article class="card span-6" id="a2">
+        <article class="card span-6" id="overview-a2">
           <div class="assignment-top"><span class="code">A2</span><span class="deadline">A2.1 · 02/11 · A2.2 · 16/11</span></div>
           <h3>Object Detection · One-stage vs Two-stage</h3>
           <p>Cùng backbone ResNet-50 pretrained ImageNet: RetinaNet với FPN P3–P7 và Faster R-CNN với FPN P2–P6. Hai detection head được huấn luyện trên VOC2012.</p>
           <dl class="kv">
             <dt>Chủ đề</dt><dd><span class="fixed">Object Detection</span></dd>
-            <dt>Dataset</dt><dd><span class="fixed">VOC2012 · 20 lớp · 9.232/1.154/1.154 local holdout</span></dd>
+            <dt>Dataset</dt><dd><span class="fixed">VOC2012 · 20 lớp · 9,232 / 1,154 / 1,154 (holdout nội bộ)</span></dd>
             <dt>Huấn luyện</dt><dd>T4 x2, hai model song song; batch 8 × accumulation 3; 21 / 17 epoch; best 19 / 15.</dd>
-            <dt>Video demo</dt><dd>Chưa có liên kết video.</dd>
+            <dt>Video demo</dt><dd>Chưa được công bố trong repository.</dd>
           </dl>
-          <table class="result-table"><caption>Test holdout VOC2012 · 1.154 ảnh</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">VOC mAP50</th><th scope="col">AP50:95</th></tr></thead><tbody><tr><th scope="row">RetinaNet</th><td>70,88%</td><td>39,13%</td></tr><tr><th scope="row">Faster R-CNN</th><td>73,16%</td><td>40,98%</td></tr></tbody></table>
-          <p class="context">Kaggle Tesla T4: FPS batch 1 25,08 / 22,68 (RetinaNet / Faster R-CNN). Notebook có AP/AR, precision, recall, F1, AP từng lớp, PR curves, ma trận, ảnh GT/dự đoán/lỗi và benchmark latency/FPS/VRAM.</p>
-          <div class="links"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A2.ipynb">Xem A2</a><a class="btn" href="../source_code/A2.ipynb" download>Tải .ipynb</a></div>
+          <table class="result-table"><caption>Test holdout VOC2012 · 1,154 ảnh</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">VOC mAP50</th><th scope="col">AP50:95</th></tr></thead><tbody><tr><th scope="row">RetinaNet</th><td>70.88%</td><td>39.13%</td></tr><tr><th scope="row">Faster R-CNN</th><td>73.16%</td><td>40.98%</td></tr></tbody></table>
+          <p class="context">Kaggle Tesla T4: FPS batch 1 25.08 / 22.68 (RetinaNet / Faster R-CNN). Notebook có AP/AR, precision, recall, F1, AP từng lớp, PR curves, ma trận, ảnh GT/dự đoán/lỗi và benchmark latency/FPS/VRAM.</p>
+          <div class="links"><a class="btn primary" href="#a2">Phân tích A2 ↓</a><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A2.ipynb">Notebook ↗</a><a class="btn" href="../source_code/A2.ipynb" download>Tải .ipynb</a></div>
         </article>
 
         <article class="card span-12">
@@ -206,6 +293,81 @@
     </div>
   </section>
 
+  
+  <div class="wrap"><div class="study-jump" aria-label="Đi tới từng thực nghiệm"><a href="#e1">E1 · Classifiers</a><a href="#e2">E2 · Attention</a><a href="#e3">E3 · Recurrent</a><a href="#a1">A1 · CNN vs DeiT</a><a href="#a2">A2 · Detection</a></div></div>
+
+  <section class="section study" id="e1"><div class="wrap">
+    <div class="study-heading"><div><span class="overline">EXERCISE 01 · IMAGE CLASSIFICATION</span><h2>E1 — Softmax, MLP và CNN</h2><p>Kiểm tra ảnh hưởng của phi tuyến và inductive bias không gian trên cùng Fashion-MNIST.</p></div><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E1.ipynb">Notebook E1 ↗</a></div>
+    <div class="grid">
+      <article class="card span-5"><h3>Dataset → DataLoader → Train</h3><ol class="steps"><li>Flatten 28 × 28 → 784 chiều cho Softmax và MLP; CNN nhận tensor 1 × 28 × 28.</li><li>Chuẩn hóa từ thống kê train; DataLoader batch 128, không augmentation.</li><li>AdamW (LR 0.001, weight decay 0.0001), tối đa 100 epoch; early stopping validation loss, patience 4.</li><li>Training loop PyTorch tự viết; lưu best weights, đo accuracy, macro-F1 và lỗi test.</li></ol></article>
+      <article class="card span-7"><h3>Bốn kiến trúc đối chiếu</h3><p>Softmax: Linear 784 → 10. MLP: 784 → 256 → 128 → 10. CNN-A: 2 Conv/Pool, head flatten → FC. CNN-B: 3 Conv/BatchNorm/Pool và global average pooling; số tham số head thấp hơn.</p>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="E1 · Kết quả validation/test từ notebook, seed 42"><table class="result-table"><caption>E1 · Kết quả validation/test từ notebook, seed 42</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">Val acc.</th><th scope="col">Test acc.</th><th scope="col">Test F1</th><th scope="col">Tham số</th></tr></thead><tbody><tr><th scope="row">Softmax</th><td>85.05%</td><td>84.11%</td><td>0.8401</td><td>7,850</td></tr><tr><th scope="row">MLP</th><td>89.47%</td><td>89.45%</td><td>0.8948</td><td>235,146</td></tr><tr><th scope="row">CNN-A</th><td>92.00%</td><td><strong>91.66%</strong></td><td>0.9169</td><td>421,642</td></tr><tr><th scope="row">CNN-B</th><td>91.93%</td><td>91.45%</td><td>0.9144</td><td>94,186</td></tr></tbody></table></div>
+      </article>
+    </div>
+    <div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/e1/dataset_gallery_report.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: 10 ảnh đại diện cho 10 lớp Fashion-MNIST"><img src="../report/source_latex/assets/e1/dataset_gallery_report.png" alt="10 ảnh đại diện cho 10 lớp Fashion-MNIST" loading="lazy" decoding="async"></a><figcaption>EDA: một ảnh đại diện cho mỗi lớp Fashion-MNIST.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/e1/learning_accuracy.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Đường cong accuracy train và validation của bốn bộ phân loại E1"><img src="../report/source_latex/assets/e1/learning_accuracy.png" alt="Đường cong accuracy train và validation của bốn bộ phân loại E1" loading="lazy" decoding="async"></a><figcaption>Learning curves: accuracy train/validation cho 4 mô hình.</figcaption></figure></div>
+    <details class="disclosure"><summary>Phân tích lỗi và đánh đổi<span aria-hidden="true">＋</span></summary><div class="disclosure-body"><p>CNN-A đạt test accuracy cao nhất trong bốn cấu hình; CNN-B đạt 91.45% với ít tham số hơn khoảng 4.48 lần. Nhưng hai CNN khác cả độ sâu, BatchNorm và head, nên không thể quy chênh lệch chỉ cho số tham số.</p><p>Nhóm lớp áo (Shirt, T-shirt/top, Pullover, Coat) thường nhầm nhau. Đây là lỗi thống kê từ confusion matrix; ảnh minh họa không thể thay cho tần suất trên toàn test.</p><div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/e1/confusion_cnn_a.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Ma trận nhầm lẫn CNN-A trên Fashion-MNIST"><img src="../report/source_latex/assets/e1/confusion_cnn_a.png" alt="Ma trận nhầm lẫn CNN-A trên Fashion-MNIST" loading="lazy" decoding="async"></a><figcaption>Ma trận nhầm lẫn của CNN-A.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/e1/errors_cnn_a.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Các ảnh phân loại sai của CNN-A"><img src="../report/source_latex/assets/e1/errors_cnn_a.png" alt="Các ảnh phân loại sai của CNN-A" loading="lazy" decoding="async"></a><figcaption>Một số mẫu lỗi test; xem toàn bộ ma trận trong notebook.</figcaption></figure></div></div></details>
+  </div></section>
+
+
+  <section class="section study" id="e2"><div class="wrap">
+    <div class="study-heading"><div><span class="overline">EXERCISE 02 · SELF-ATTENTION</span><h2>E2 — Multi-Head Self-Attention</h2><p>Đối chiếu MSA tự viết với <code>nn.MultiheadAttention</code>, đồng thời khảo sát tokenization và số heads.</p></div><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E2.ipynb">Notebook E2 ↗</a></div>
+    <div class="grid"><article class="card span-5"><h3>Protocol và biểu diễn token</h3>
+      <div class="fact-list"><div><strong>Rows</strong><span>28 tokens × 28 features</span></div><div><strong>Patch 4 × 4</strong><span>49 tokens × 16 features</span></div><div><strong>CNN-stem</strong><span>49 tokens × 16 features</span></div></div>
+      <p class="context">Embedding D=64, 2 pre-norm encoder blocks, FFN 64 → 128 → 64, mean pooling và FC 10 lớp. Sáu phép so sánh chính: 2 loại MSA × 3 tokenizers, H=4; hai ablation bổ sung dùng H=2/8.</p>
+      <p class="context">Hai implementation được so parity forward/gradient trên CUDA float64 với dropout tắt; không đồng nghĩa hai quá trình huấn luyện trùng hoàn toàn.</p>
+    </article><article class="card span-7"><h3>So sánh 8 cấu hình</h3>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="E2 · Cùng split, validation chọn cấu hình"><table class="result-table"><caption>E2 · Cùng split, validation chọn cấu hình</caption><thead><tr><th scope="col">MSA / tokenizer</th><th scope="col">Val acc.</th><th scope="col">Test acc.</th><th scope="col">Tham số</th><th scope="col">s/epoch</th></tr></thead><tbody><tr><th scope="row">Manual · Rows · H4</th><td>89.97%</td><td>89.51%</td><td>71,370</td><td>9.497</td></tr><tr><th scope="row">Manual · Patch · H4</th><td>88.60%</td><td>88.35%</td><td>71,946</td><td>10.577</td></tr><tr><th scope="row">Manual · CNN-stem · H4</th><td><strong>90.65%</strong></td><td><strong>90.50%</strong></td><td>74,426</td><td>10.128</td></tr><tr><th scope="row">PyTorch · Rows · H4</th><td>89.90%</td><td>89.22%</td><td>71,370</td><td>9.332</td></tr><tr><th scope="row">PyTorch · Patch · H4</th><td>88.35%</td><td>88.47%</td><td>71,946</td><td>10.554</td></tr><tr><th scope="row">PyTorch · CNN-stem · H4</th><td>90.47%</td><td>90.17%</td><td>74,426</td><td>8.641</td></tr><tr><th scope="row">Manual · CNN-stem · H2</th><td>90.33%</td><td>90.21%</td><td>74,426</td><td>9.711</td></tr><tr><th scope="row">Manual · CNN-stem · H8</th><td>90.35%</td><td>90.23%</td><td>74,426</td><td>9.793</td></tr></tbody></table></div>
+    </article></div>
+    <div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/e2/head_accuracy.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Accuracy train và validation của MSA với 2, 4, 8 heads"><img src="../report/source_latex/assets/e2/head_accuracy.png" alt="Accuracy train và validation của MSA với 2, 4, 8 heads" loading="lazy" decoding="async"></a><figcaption>Head ablation: giữ D=64 và cùng số tham số.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/e2/attention_boot.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Trọng số attention của ảnh Ankle boot"><img src="../report/source_latex/assets/e2/attention_boot.png" alt="Trọng số attention của ảnh Ankle boot" loading="lazy" decoding="async"></a><figcaption>Bản đồ attention cho ảnh validation Ankle boot; không phải saliency hay bằng chứng nhân quả.</figcaption></figure></div>
+    <details class="disclosure"><summary>Thảo luận kết quả và lỗi<span aria-hidden="true">＋</span></summary><div class="disclosure-body"><p>CNN-stem có validation tốt nhất ở cả bản Manual và PyTorch tại H=4, nhưng thêm 2,480 tham số so với patch thuần và thay đổi inductive bias. Chênh lệch Manual/PyTorch ở cùng tokenizer là 0.07–0.25 điểm phần trăm validation. Trên các cấu hình H=2/4/8 đã thử, H=4 cao nhất; kết quả mới đo một seed.</p><p>Nhầm lẫn vẫn tập trung giữa Shirt và T-shirt/top. Chi tiết confusion matrices của 8 cấu hình có trong notebook và phụ lục PDF.</p></div></details>
+  </div></section>
+
+
+  <section class="section study" id="e3"><div class="wrap">
+    <div class="study-heading"><div><span class="overline">EXERCISE 03 · RECURRENT VISION</span><h2>E3 — LSTM, GRU và baseline</h2><p>Chuyển ảnh thành chuỗi để khảo sát vai trò của recurrence so với MLP/CNN.</p></div><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/E3.ipynb">Notebook E3 ↗</a></div>
+    <div class="grid">
+      <article class="card span-5"><h3>Ảnh → chuỗi → hidden state</h3><div class="fact-list"><div><strong>Rows</strong><span>T=28, F=28</span></div><div><strong>Columns</strong><span>T=28, F=28</span></div><div><strong>Patch 4 × 4</strong><span>T=49, F=16</span></div></div><p class="context">Manual LSTM/GRU cell, hidden size 128; lấy hidden state cuối → FC 10. Đối chiếu phép toán và gradient với PyTorch Cell. Hai baseline MLP/CNN-B được train độc lập cùng split.</p><p class="context">AdamW LR 0.001, batch 128, clip norm 1 cho recurrent, early stopping validation loss.</p></article>
+      <article class="card span-7"><h3>Accuracy và capacity</h3><div class="table-scroll" tabindex="0" role="region" aria-label="E3 · Sáu recurrent models và hai baseline"><table class="result-table"><caption>E3 · Sáu recurrent models và hai baseline</caption><thead><tr><th scope="col">Mô hình</th><th scope="col">Val acc.</th><th scope="col">Test acc.</th><th scope="col">Tham số</th></tr></thead><tbody><tr><th scope="row">LSTM · Rows</th><td>89.95%</td><td>89.70%</td><td>82,186</td></tr><tr><th scope="row">LSTM · Columns</th><td>88.72%</td><td>88.81%</td><td>82,186</td></tr><tr><th scope="row">LSTM · Patch</th><td>87.63%</td><td>87.55%</td><td>76,042</td></tr><tr><th scope="row">GRU · Rows</th><td><strong>90.47%</strong></td><td><strong>90.06%</strong></td><td>61,962</td></tr><tr><th scope="row">GRU · Columns</th><td>89.83%</td><td>89.51%</td><td>61,962</td></tr><tr><th scope="row">GRU · Patch</th><td>89.05%</td><td>88.44%</td><td>57,354</td></tr><tr><th scope="row">MLP baseline</th><td>89.47%</td><td>89.45%</td><td>235,146</td></tr><tr><th scope="row">CNN-B baseline</th><td>91.93%</td><td>91.45%</td><td>94,186</td></tr></tbody></table></div></article>
+    </div>
+    <div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/e3/scan_rows.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Ảnh Fashion-MNIST được quét theo hàng tạo chuỗi"><img src="../report/source_latex/assets/e3/scan_rows.png" alt="Ảnh Fashion-MNIST được quét theo hàng tạo chuỗi" loading="lazy" decoding="async"></a><figcaption>Rows: quét theo 28 hàng.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/e3/baseline_accuracy.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Đường cong accuracy LSTM GRU theo hàng và baseline MLP CNN-B"><img src="../report/source_latex/assets/e3/baseline_accuracy.png" alt="Đường cong accuracy LSTM GRU theo hàng và baseline MLP CNN-B" loading="lazy" decoding="async"></a><figcaption>Learning curves recurrent so với baseline không hồi tiếp.</figcaption></figure></div>
+    <details class="disclosure"><summary>Diễn giải có điều kiện<span aria-hidden="true">＋</span></summary><div class="disclosure-body"><p>GRU cao hơn LSTM 0.36 / 0.70 / 0.89 điểm test ở Rows / Columns / Patch. Rows là biểu diễn recurrent tốt nhất trong các cấu hình đã thử; CNN-B vẫn cao hơn về accuracy và có thời gian/epoch ngắn hơn đáng kể.</p><p>Cell thủ công được unroll ở Python/PyTorch thay vì fused kernels: ít tham số hơn không đồng nghĩa train nhanh hơn. Patch thay đổi cả chiều dài chuỗi và số features, không cô lập riêng thứ tự token. Accuracy ảnh tĩnh chưa đủ chứng minh khả năng học phụ thuộc xa.</p></div></details>
+  </div></section>
+
+
+  <section class="section study" id="a1"><div class="wrap">
+    <div class="study-heading"><div><span class="overline">ASSIGNMENT 01 · LARGE IMAGE DATASET</span><h2>A1 — ResNet-50 vs DeiT-Small/16</h2><p>From-scratch, ImageNet pretraining, head-only, partial và full fine-tuning trên GTSRB 43 lớp.</p></div><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A1.ipynb">Notebook A1 ↗</a></div>
+    <div class="grid">
+      <article class="card span-5"><h3>Dataset và kiến trúc</h3><p>Ảnh RGB resize toàn ảnh về 224 × 224 và chuẩn hóa ImageNet. Train dùng RandomAffine ±10°, translate 5%, ColorJitter brightness/contrast 0.2 và saturation 0.1; không flip vì đổi nghĩa biển báo.</p><p class="context"><strong>ResNet-50:</strong> bottleneck 3/4/6/3, GAP, head 43 lớp. <strong>DeiT-Small/16:</strong> 196 patch + CLS, embedding 384, 12 blocks, 6 heads, non-distilled.</p><p class="context">ResNet partial mở <code>layer4 + FC</code> (63.79% tham số); DeiT partial mở 2 blocks cuối + norm + head (16.45%). Phép so sánh partial không có cùng ngân sách trainable.</p></article>
+      <article class="card span-7"><h3>Tám cấu hình chính (seed 42)</h3><div class="table-scroll" tabindex="0" role="region" aria-label="A1 · Full pretrained được chọn theo validation cho cả hai họ"><table class="result-table"><caption>A1 · Full pretrained được chọn theo validation cho cả hai họ</caption><thead><tr><th scope="col">Kiến trúc / chế độ</th><th scope="col">Val acc.</th><th scope="col">Test acc.</th><th scope="col">Trainable</th><th scope="col">Peak MiB</th></tr></thead><tbody><tr><th scope="row">ResNet · scratch</th><td>98.26%</td><td>96.33%</td><td>23,596,139</td><td>5,828</td></tr><tr><th scope="row">ResNet · head-only</th><td>66.84%</td><td>67.33%</td><td>88,107</td><td>1,567</td></tr><tr><th scope="row">ResNet · partial</th><td>97.02%</td><td>95.21%</td><td>15,052,843</td><td>1,682</td></tr><tr><th scope="row">ResNet · full pretrained</th><td><strong>99.32%</strong></td><td><strong>97.83%</strong></td><td>23,596,139</td><td>5,827</td></tr><tr><th scope="row">DeiT · scratch</th><td>91.76%</td><td>88.64%</td><td>21,682,219</td><td>6,631</td></tr><tr><th scope="row">DeiT · head-only</th><td>70.26%</td><td>69.41%</td><td>16,555</td><td>636</td></tr><tr><th scope="row">DeiT · partial</th><td>89.32%</td><td>87.85%</td><td>3,566,251</td><td>1,373</td></tr><tr><th scope="row">DeiT · full pretrained</th><td><strong>99.39%</strong></td><td><strong>98.92%</strong></td><td>21,682,219</td><td>6,635</td></tr></tbody></table></div></article>
+    </div>
+    <div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/a1/class_distribution_report.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Biểu đồ số ảnh 43 lớp GTSRB theo ba split"><img src="../report/source_latex/assets/a1/class_distribution_report.png" alt="Biểu đồ số ảnh 43 lớp GTSRB theo ba split" loading="lazy" decoding="async"></a><figcaption>EDA: GTSRB không cân bằng giữa các lớp.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/a1/comparison_quality.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: So sánh accuracy trên validation và test của các chế độ A1"><img src="../report/source_latex/assets/a1/comparison_quality.png" alt="So sánh accuracy trên validation và test của các chế độ A1" loading="lazy" decoding="async"></a><figcaption>So sánh CNN và Transformer qua bốn chế độ huấn luyện.</figcaption></figure></div>
+    <div class="grid"><article class="card span-6"><h3>Ablation và seed repeats</h3><div class="table-scroll" tabindex="0" role="region" aria-label="A1 · Mean ± sample standard deviation, cùng split seed 42"><table class="result-table"><caption>A1 · Mean ± sample standard deviation, cùng split seed 42</caption><thead><tr><th scope="col">Full pretrained</th><th scope="col">Val acc. trung bình</th><th scope="col">Test acc. trung bình</th></tr></thead><tbody><tr><th scope="row">ResNet-50 · seeds 42/43/44</th><td>99.14 ± 0.29%</td><td>97.95 ± 0.21%</td></tr><tr><th scope="row">DeiT-Small/16 · seeds 42/43/44</th><td>99.26 ± 0.21%</td><td>98.50 ± 0.36%</td></tr></tbody></table></div><p class="context">Ở seed 42, augmentation tăng test accuracy 0.63 điểm cho ResNet và 1.12 điểm cho DeiT so với no-augmentation; không suy rộng cho mọi split.</p></article><article class="card span-6"><h3>Trade-off và giới hạn</h3><p>Full pretrained thắng về validation trong hai họ. DeiT cao hơn về test accuracy ở seed 42 và mean ba seed; ResNet có GPU-only inference throughput cao hơn trên RTX A3000 trong phép đo đã thực hiện.</p><p class="context">GTSRB có lớp hiếm, frame cùng physical-sign track và 8 ảnh test trùng train theo SHA256. Ba seed chỉ đo cho full, và scratch/pretrained không dùng cùng learning-rate/budget; không quy mọi chênh lệch cho kiến trúc.</p></article></div>
+    <details class="disclosure"><summary>Kiểm tra lớp khó và dữ liệu trùng<span aria-hidden="true">＋</span></summary><div class="disclosure-body"><p>ResNet full nhầm 30/60 mẫu Pedestrians thành Road work; DeiT full nhầm 30/60 Speed limit 20 thành Speed limit 120. Accuracy toàn tập không phản ánh đầy đủ hiệu quả của các lớp hiếm. Kết quả trên test 12,622 ảnh loại trùng SHA256 là 97.83% / 98.91% cho hai mô hình full.</p><div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/a1/confusion_resnet.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Ma trận nhầm lẫn ResNet-50 full trên GTSRB"><img src="../report/source_latex/assets/a1/confusion_resnet.png" alt="Ma trận nhầm lẫn ResNet-50 full trên GTSRB" loading="lazy" decoding="async"></a><figcaption>ResNet-50: 10 lớp có nhiều lỗi nhất.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/a1/confusion_deit.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Ma trận nhầm lẫn DeiT-Small full trên GTSRB"><img src="../report/source_latex/assets/a1/confusion_deit.png" alt="Ma trận nhầm lẫn DeiT-Small full trên GTSRB" loading="lazy" decoding="async"></a><figcaption>DeiT-Small/16: 10 lớp có nhiều lỗi nhất.</figcaption></figure></div></div></details>
+  </div></section>
+
+
+  <section class="section study" id="a2"><div class="wrap">
+    <div class="study-heading"><div><span class="overline">ASSIGNMENT 02 · DETECTION &amp; PAPER REVIEW</span><h2>A2 — RetinaNet vs Faster R-CNN</h2><p>One-stage vs two-stage trên cùng VOC2012 holdout; cùng ResNet-50 ImageNet + FPN nhưng khác anchors, neck levels, head và loss.</p></div><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/source_code/A2.ipynb">Notebook A2 ↗</a></div>
+    <div class="grid">
+      <article class="card span-5"><h3>Dataset → preprocessing</h3><p>11,540 ảnh VOC2012 trainval có nhãn → split 9,232 / 1,154 / 1,154. Parse XML, giữ <em>difficult</em> và <em>truncated</em>; chuyển VOC 1-based inclusive sang 0-based half-open.</p><p class="context">RGB [0,1], resize giữ tỷ lệ cạnh ngắn 600 / dài tối đa 1,000, ImageNet normalization, pad batch theo bội số 32; train horizontal flip p=0.5 và biến đổi bbox đồng bộ. Eval bỏ qua difficult theo VOC.</p><h3 class="subheading">Huấn luyện</h3><p>SGD LR 0.01, momentum 0.9, weight decay 0.0001; warmup 1 epoch + cosine, clip norm 10; patience 2 theo validation VOC mAP50.</p><p class="context">Kaggle Tesla T4 x2: RetinaNet GPU 0, Faster R-CNN GPU 1 train song song; batch train/eval 8, accumulation 3, effective batch 24. Best epochs 19/15; chạy 21/17 epoch.</p></article>
+      <article class="card span-7"><h3>Hai pipeline phát hiện</h3><div class="table-scroll" tabindex="0" role="region" aria-label="A2 · Cấu hình trong notebook, không coi là cùng kiến trúc chỉ khác số giai đoạn"><table class="result-table"><caption>A2 · Cấu hình trong notebook, không coi là cùng kiến trúc chỉ khác số giai đoạn</caption><thead><tr><th scope="col">Thành phần</th><th scope="col">RetinaNet · one-stage</th><th scope="col">Faster R-CNN · two-stage</th></tr></thead><tbody><tr><th scope="row">FPN</th><td>P3–P7; P6 từ C5, P7 từ ReLU(P6)</td><td>P2–P6; P6 max-pool(P5)</td></tr><tr><th scope="row">Anchors</th><td>3 scales × 3 ratios = 9/vị trí</td><td>3 ratios = 3/vị trí</td></tr><tr><th scope="row">Head</th><td>2 subnet riêng; mỗi subnet 4 Conv + output</td><td>RPN → RoI Pool 7 × 7 → FC 1,024 × 2</td></tr><tr><th scope="row">Classes / bbox</th><td>9 × 20 sigmoid / 9 × 4 offsets</td><td>21 logits / 84 offsets mỗi RoI</td></tr><tr><th scope="row">Loss</th><td>Focal Loss + Smooth L1</td><td>RPN objectness/bbox + RoI CE/bbox</td></tr><tr><th scope="row">Post-process</th><td>Class-wise Hard-NMS 0.5</td><td>RPN NMS 0.7; Hard-NMS 0.5</td></tr></tbody></table></div>
+      <p class="technical-note"><strong>Phạm vi:</strong> Backbone nạp pretrained ImageNet-1K; các head/neck học từ đầu trên VOC. Không nạp checkpoint detector đã train trên COCO.</p>
+      </article>
+    </div>
+    <div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/a2/class_distribution_report.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Phân bố regular bounding boxes theo 20 lớp và ba split của VOC2012"><img src="../report/source_latex/assets/a2/class_distribution_report.png" alt="Phân bố regular bounding boxes theo 20 lớp và ba split của VOC2012" loading="lazy" decoding="async"></a><figcaption>EDA: số bbox theo lớp, không phải số ảnh.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/a2/bbox_area_report.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Phân bố căn bậc hai diện tích bounding boxes của VOC2012"><img src="../report/source_latex/assets/a2/bbox_area_report.png" alt="Phân bố căn bậc hai diện tích bounding boxes của VOC2012" loading="lazy" decoding="async"></a><figcaption>EDA: phân bố kích thước vật thể ở ảnh gốc.</figcaption></figure></div>
+    <div class="grid">
+      <article class="card span-6"><h3>Paper 01 · Feature Pyramid Networks</h3><p><strong>Lin et al., CVPR 2017</strong> — <em>Feature Pyramid Networks for Object Detection</em>. Lateral 1 × 1, top-down nearest upsample, cộng feature và smoothing 3 × 3, cùng 256 channels ở mỗi mức.</p><p class="context">Paper báo RPN AR@1k 48.3 → 56.3 trên COCO khi dùng FPN; bỏ top-down/lateral giảm còn 49.5/46.1. Pipeline đã triển khai các kết nối và pyramid nhưng <strong>chưa ablate riêng FPN</strong> trên VOC.</p><div class="links"><a class="btn" href="https://arxiv.org/abs/1612.03144">Paper · FPN ↗</a></div></article>
+      <article class="card span-6"><h3>Paper 02 · Focal Loss</h3><p><strong>Lin et al., ICCV 2017</strong> — <em>Focal Loss for Dense Object Detection</em>. Focal Loss giảm trọng số easy negatives với α=0.25, γ=2, phù hợp dense anchors của RetinaNet.</p><p class="context">Paper báo alpha-balanced CE 31.1 AP → Focal Loss 34.0 AP trên COCO minival. Đây là <strong>số của tác giả trên COCO</strong>, không phải số benchmark VOC của nhóm.</p><div class="links"><a class="btn" href="https://arxiv.org/abs/1708.02002">Paper · Focal Loss ↗</a></div></article>
+    </div>
+    <article class="card result-focus"><div class="section-head"><div><h3>Detection benchmark · test holdout</h3><p>1,154 ảnh, 2,687 regular GT boxes. Chọn checkpoint trên validation, không theo test.</p></div></div>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="A2 · Số liệu hai detector trên cùng VOC2012 holdout"><table class="result-table"><caption>A2 · Số liệu hai detector trên cùng VOC2012 holdout</caption><thead><tr><th scope="col">Chỉ số</th><th scope="col">RetinaNet</th><th scope="col">Faster R-CNN</th></tr></thead><tbody><tr><th scope="row">VOC mAP50 · all-point</th><td>70.88%</td><td><strong>73.16%</strong></td></tr><tr><th scope="row">COCO-style AP50:95 trên VOC</th><td>39.13%</td><td><strong>40.98%</strong></td></tr><tr><th scope="row">COCO-style AP75</th><td>37.67%</td><td><strong>41.89%</strong></td></tr><tr><th scope="row">Precision · score 0.30</th><td>0.5037</td><td>0.3873</td></tr><tr><th scope="row">Recall · score 0.30</th><td>0.7838</td><td>0.8366</td></tr><tr><th scope="row">Micro-F1 · score 0.30</th><td>0.6133</td><td>0.5295</td></tr><tr><th scope="row">Params</th><td>36,670,872</td><td>41,396,536</td></tr><tr><th scope="row">Peak allocated MiB</th><td>12,818.5</td><td>12,939.5</td></tr><tr><th scope="row">Median batch-1 latency</th><td>39.87 ms</td><td>44.09 ms</td></tr><tr><th scope="row">Batch-1 FPS</th><td>25.08</td><td>22.68</td></tr></tbody></table></div>
+      <p class="context">Faster R-CNN cao hơn về AP và recall; RetinaNet cao hơn về precision/micro-F1 tại score 0.30 và median FPS. AP tổng hợp đường precision–recall, F1 đo tại một ngưỡng; không phải kết quả mâu thuẫn.</p>
+    </article>
+    <div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/a2/validation_voc.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Đường cong VOC mAP50 trên validation của hai detector qua epoch"><img src="../report/source_latex/assets/a2/validation_voc.png" alt="Đường cong VOC mAP50 trên validation của hai detector qua epoch" loading="lazy" decoding="async"></a><figcaption>Validation VOC mAP50 và best epoch.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/a2/per_class_voc.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: VOC AP50 theo từng lớp của RetinaNet và Faster R-CNN"><img src="../report/source_latex/assets/a2/per_class_voc.png" alt="VOC AP50 theo từng lớp của RetinaNet và Faster R-CNN" loading="lazy" decoding="async"></a><figcaption>Theo lớp: nhóm pottedplant/chair còn khó với hai detector.</figcaption></figure></div>
+    <details class="disclosure"><summary>Failure cases, giới hạn và phạm vi tái hiện paper<span aria-hidden="true">＋</span></summary><div class="disclosure-body"><p>Hai detector khác đồng thời FPN levels, anchors, matching, loss và head: <strong>chưa cô lập được hiệu ứng one-stage vs two-stage</strong>. Chưa chạy COCO benchmark/ablation nguyên bản và chỉ có một seed. COCO-style AP ở đây là metric tính trên VOC, không phải official COCO score.</p><p>Các giới hạn khác: vật nhỏ, che khuất, lượng tử hóa RoI Pool, Hard-NMS, score threshold và annotation thiếu/khó. Đánh giá difficult theo VOC không tương đương annotation crowd của COCO.</p><div class="visual-grid"><figure class="visual"><a href="../report/source_latex/assets/a2/failure_2_gt.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Ground-truth của một ví dụ lỗi A2 trên VOC2012"><img src="../report/source_latex/assets/a2/failure_2_gt.png" alt="Ground-truth của một ví dụ lỗi A2 trên VOC2012" loading="lazy" decoding="async"></a><figcaption>Ground truth của ảnh minh họa lỗi.</figcaption></figure><figure class="visual"><a href="../report/source_latex/assets/a2/failure_2_faster.png" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh gốc: Dự đoán Faster R-CNN của cùng ví dụ lỗi A2"><img src="../report/source_latex/assets/a2/failure_2_faster.png" alt="Dự đoán Faster R-CNN của cùng ví dụ lỗi A2" loading="lazy" decoding="async"></a><figcaption>Dự đoán Faster R-CNN ở cùng ảnh; chỉ là ví dụ định tính.</figcaption></figure></div></div></details>
+    <div class="availability-line"><span aria-hidden="true">●</span><div><strong>Video demo / trình bày A2</strong><p>Chưa có liên kết video được công bố trong repository. Đây vẫn là mục cần bổ sung theo đề A2; trang không giả định video đã được thực hiện.</p></div></div>
+  </div></section>
+
   <section class="section" id="resources">
     <div class="wrap">
       <div class="section-head"><div><h2>Báo cáo và tài liệu</h2><p>Đề bài, dữ liệu, nguồn LaTeX và các paper dùng trong thực nghiệm.</p></div></div>
@@ -213,7 +375,7 @@
         <article class="card span-6"><h3>Báo cáo tổng · 100 trang</h3><p>Thiết lập thực nghiệm, sơ đồ mạng TikZ, kết quả và thảo luận cho cả năm bài. Notebook và các hình trong báo cáo được công bố cùng mã nguồn.</p><div class="resource-list"><a class="btn primary" href="../report/CO5085_Report.pdf">Mở PDF</a><a class="btn" href="../report/CO5085_Report.pdf" download>Tải PDF</a><a class="btn" href="https://github.com/dangtai111325/CO5085/tree/main/report/source_latex">Nguồn LaTeX</a></div></article>
         <article class="card span-6"><h3>Dữ liệu và cách chạy</h3><p>Fashion-MNIST, GTSRB và PASCAL VOC2012. README mô tả số lượng, phân bố lớp, định dạng nhãn, cách chia tập và nguồn tải. Dataset được giữ local, không đưa lên Git.</p><div class="resource-list"><a class="btn" href="https://github.com/dangtai111325/CO5085/blob/main/datasets/README.md">Thông tin dataset</a><a class="btn" href="https://github.com/dangtai111325/CO5085#readme">Hướng dẫn chạy</a></div></article>
         <article class="card span-6"><h3>Đề bài</h3><p>Các yêu cầu về code, so sánh mô hình, đầu ra thực nghiệm và báo cáo.</p><div class="resource-list"><a class="btn" href="../assignment/exercise-vne.pdf">Đề E1–E3 · PDF</a><a class="btn" href="../assignment/assignment1-vne.pdf">Đề A1 · PDF</a><a class="btn" href="../assignment/assignment2-vne.pdf">Đề A2 · PDF</a></div></article>
-        <article class="card span-6"><h3>Paper cho A2</h3><p>Feature pyramid đa tỉ lệ và Focal Loss cho phát hiện đối tượng one-stage.</p><div class="resource-list"><a class="btn" href="https://arxiv.org/abs/1612.03144">FPN · CVPR 2017</a><a class="btn" href="https://arxiv.org/abs/1708.02002">Focal Loss · ICCV 2017</a></div><p class="context">A2 còn yêu cầu video demo riêng theo đề. Liên kết video sẽ được công bố khi có video.</p></article>
+        <article class="card span-6"><h3>Paper cho A2</h3><p>Lin et al., <em>Feature Pyramid Networks for Object Detection</em> (CVPR 2017) và <em>Focal Loss for Dense Object Detection</em> (ICCV 2017). Phân tích phương pháp, ablation gốc và phạm vi tái hiện trong mục A2.</p><div class="resource-list"><a class="btn" href="https://arxiv.org/abs/1612.03144">FPN · CVPR 2017</a><a class="btn" href="https://arxiv.org/abs/1708.02002">Focal Loss · ICCV 2017</a></div><p class="context">A2 còn yêu cầu video demo riêng theo đề. Liên kết video sẽ được công bố khi có video.</p></article>
       </div>
     </div>
   </section>
@@ -245,7 +407,7 @@
 <footer>
   <div class="wrap foot">
     <span>CO5085 · Học kỳ 261 · 2026–2027</span>
-    <span>Source: <a href="https://github.com/dangtai111325/CO5085">github.com/dangtai111325/CO5085</a></span>
+    <span>Thống kê và hình ảnh từ output notebook/báo cáo · <a href="https://github.com/dangtai111325/CO5085">Mã nguồn GitHub ↗</a></span>
   </div>
 </footer>
 </body>
