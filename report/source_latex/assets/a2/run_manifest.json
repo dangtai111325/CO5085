@@ -1,5 +1,5 @@
 {
-  "source_notebook": "source_code/A2.kaggle.ipynb",
+  "source_notebook": "source_code/A2.ipynb",
   "source_sha256": "eb69653f672930ef7dfe9a4ed5ce5b5d116b73082a990ac12b1cc1fd76f38204",
   "training_config": {
     "batch": 8,

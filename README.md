@@ -21,7 +21,7 @@ trong output cell sau khi chạy và Save.
 | [E2](source_code/E2.ipynb) | MSA thủ công/PyTorch; Rows, Patch, CNN-stem; H=2/4/8 | Fashion-MNIST | 54.000 / 6.000 / 10.000 | 8 |
 | [E3](source_code/E3.ipynb) | LSTM/GRU theo hàng, cột, patch; baseline MLP/CNN-B | Fashion-MNIST | 54.000 / 6.000 / 10.000 | 8 |
 | [A1](source_code/A1.ipynb) | ResNet-50 và DeiT-Small/16; scratch, transfer, freeze, augmentation, seeds | GTSRB, 43 lớp | 31.380 / 7.829 / 12.630 | 14 |
-| [A2](source_code/A2.kaggle.ipynb) | RetinaNet và Faster R-CNN, cùng ResNet-50/FPN | VOC2012, 20 lớp | 9.232 / 1.154 / 1.154 | 2 |
+| [A2](source_code/A2.ipynb) | RetinaNet và Faster R-CNN, cùng ResNet-50/FPN | VOC2012, 20 lớp | 9.232 / 1.154 / 1.154 | 2 |
 
 Số liệu trong báo cáo gồm **36 lượt train, 541 epoch và 210.351 optimizer updates**.
 Validation chọn weights/cấu hình; test dùng để đánh giá sau lựa chọn.
@@ -53,7 +53,7 @@ là 0,6133 / 0,5295. E1–E3/A1 chạy trên RTX A3000 12GB Laptop.
 CO5085/
 ├── assignment/              # Đề PDF và báo cáo mẫu
 ├── public/                  # index.html và .nojekyll
-├── source_code/             # E1–E3, A1, A2 local và A2.kaggle.ipynb
+├── source_code/             # Năm notebook E1–E3, A1 và A2
 ├── report/
 │   ├── CO5085_Report.pdf
 │   └── source_latex/        # main, preamble, architectures, chapters, bibliography, assets
@@ -65,9 +65,9 @@ CO5085/
 └── .gitignore
 ```
 
-`source_code` chứa notebook cho năm bài; A2 có bản local `A2.ipynb` và bản
-[Kaggle](source_code/A2.kaggle.ipynb). Số liệu A2 trong báo cáo lấy từ bản Kaggle.
-Mỗi file tự chứa code và không đọc notebook khác. Bản Kaggle tự tạo worker
+`source_code` chứa năm notebook E1–E3, A1 và [A2](source_code/A2.ipynb).
+Số liệu A2 trong báo cáo lấy từ output chạy trên Kaggle.
+Mỗi file tự chứa code và không đọc notebook khác. A2 tự tạo worker
 để train hai model song song, không cần upload module của project. Không cần chạy theo thứ tự. Notebook hiển thị bảng và hình trong output cell. Mỗi thí nghiệm giữ một file
 `model/<bài>/<thí nghiệm>/latest.pt`, chỉ chứa trọng số tốt nhất theo validation.
 File chỉ được thay khi validation cải thiện. `report/source_latex/assets` chứa hình/bảng phục vụ biên tập báo cáo, được trích
@@ -114,9 +114,8 @@ Cấu hình tạo ra số liệu báo cáo:
 | A1 | 128 / 128 | 1 | Scratch 40; pretrained 25 | Val loss, patience 2, min_delta 0,001 |
 | A2 Kaggle | 8 / 8 | 3 | 30 | Val VOC mAP50, patience 2, min_delta 0,001 |
 
-A2 Kaggle có effective batch 24; cấu hình trong bảng lấy từ cell code và
-output train. Bản local A2.ipynb dùng batch 4 / eval 4, accumulation 3, effective
-batch 12; không dùng output của bản local để đối chiếu số liệu A2 trong báo cáo.
+A2 có effective batch 24; cấu hình trong bảng lấy từ cell code và
+output train của A2.ipynb trên Kaggle.
 
 Khi Run All, notebook nạp `latest.pt` nếu có rồi tiếp tục train từ trọng số
 đó; nếu chưa có thì khởi tạo model theo cấu hình. Vòng epoch, optimizer,
@@ -146,7 +145,7 @@ ma trận phần trăm theo hàng và gallery GT/dự đoán/lỗi. COCO-style l
 
 ## Chạy A2 trên Kaggle
 
-1. Mở [A2.kaggle.ipynb](source_code/A2.kaggle.ipynb) với kernel Kaggle,
+1. Mở [A2.ipynb](source_code/A2.ipynb) với kernel Kaggle,
    chọn **GPU T4 x2** và bật Internet để tải weights khi thiếu.
 2. Gắn dataset **A2 VOC2012** tại
    `/kaggle/input/datasets/dangtai1720/a2-voc2012`, gồm thư mục `voc2012`

@@ -51,7 +51,7 @@ def build_eda():
     ax.tick_params(axis='x',labelsize=9);ax.yaxis.set_major_formatter(countfmt);ax.legend()
     save(fig,'a1/class_distribution_report.png',dict(notebook='source_code/A1.ipynb',cell=8,output=2),'Bar heights copied exactly from saved 43-class count table; formatted ticks only.')
 
-    nb=json.loads((root/'source_code/A2.kaggle.ipynb').read_text(encoding='utf-8'))
+    nb=json.loads((root/'source_code/A2.ipynb').read_text(encoding='utf-8'))
     rows=mdrows(''.join(nb['cells'][6]['outputs'][1]['data']['text/markdown']))
     names=[r[0] for r in rows];assert len(rows)==20
     fig,ax=plt.subplots(figsize=(10,5.8),layout='constrained');pos=np.arange(20)
@@ -59,7 +59,7 @@ def build_eda():
         ax.bar(pos+offset,[int(r[j].replace(',','')) for r in rows],.25,label=label,color=color)
     ax.set(xticks=pos,xticklabels=names,xlabel='Lớp VOC2012',ylabel='Số bbox thường',title='VOC2012: phân bố 20 lớp theo split')
     ax.tick_params(axis='x',rotation=65,labelsize=10);ax.yaxis.set_major_formatter(countfmt);ax.legend()
-    save(fig,'a2/class_distribution_report.png',dict(notebook='source_code/A2.kaggle.ipynb',cell=6,output=1),'Grouped bars from saved class counts, preserving all three splits.')
+    save(fig,'a2/class_distribution_report.png',dict(notebook='source_code/A2.ipynb',cell=6,output=1),'Grouped bars from saved class counts, preserving all three splits.')
 
     base=root/'datasets/voc';data={}
     sources=[]

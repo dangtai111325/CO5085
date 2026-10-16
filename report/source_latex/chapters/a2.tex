@@ -14,16 +14,18 @@ test chính thức/leaderboard VOC. Manifest tham chiếu JPEG/XML, không nhân
 Nhãn XML gồm tên lớp, \texttt{bndbox}, \texttt{difficult} và \texttt{truncated}.
 Tọa độ VOC đánh số từ 1, bao gồm cả hai đầu, được chuyển thành khoảng nửa mở
 đánh số từ 0: $[x_{\min}-1,y_{\min}-1,x_{\max},y_{\max}]$.
-Dataset trả về tensor RGB và danh sách bbox, class ID 1--20 cùng các cờ annotation.
+Manifest lưu bbox, nhãn lớp và các cờ difficult/truncated.
+Dataset tạo tensor RGB và target gồm bbox, class ID 1--20, difficult và image ID;
+truncated được giữ trong metadata để thống kê.
 RetinaNet ánh xạ nhãn sang 0--19 khi tính loss, rồi chuyển về 1--20 khi suy luận.
 Faster R-CNN dành ID 0 cho background.
 
-\ReportFigure{assets/a2/class_distribution_report.png}{VOC2012: số bbox thường theo 20 lớp và ba split, từ bảng output; difficult không nằm trong counts.}
+\ReportFigure{assets/a2/class_distribution_report.png}{VOC2012: số bbox thường theo 20 lớp và ba split, từ bảng output; difficult không nằm trong số lượng.}
 Person chiếm 6,802/21,975 bbox thường train (30.95\%), sofa có 447.
-Counts theo lớp là số đối tượng, không phải ảnh; AP từng lớp/macro-F1
+Số lượng theo lớp là số đối tượng, không phải ảnh; AP từng lớp/macro-F1
 giúp đọc ảnh hưởng mất cân bằng.
 
-\ComparisonFigure[.32]{assets/a2/bbox_area_report.png}{Căn bậc hai diện tích (px).}{assets/a2/bbox_ratio_report.png}{Log-ratio chiều rộng/chiều cao.}{BBox thường của VOC2012: scale và aspect ratio trên ảnh gốc, cùng ba split.}{a2-bbox}
+\PairFigure[.32]{assets/a2/bbox_area_report.png}{Căn bậc hai diện tích (px).}{assets/a2/bbox_ratio_report.png}{Log-ratio chiều rộng/chiều cao.}{BBox thường của VOC2012: scale và aspect ratio trên ảnh gốc, cùng ba split.}{a2-bbox}
 
 BBox đa dạng về scale và tỷ lệ cạnh. FPN cung cấp nhiều stride, còn ba
 aspect ratio bao phủ vật thể cao, vuông và rộng.
@@ -34,7 +36,7 @@ Resize giữ tỷ lệ, short side 600/max long side 1,000; pad batch tới bộ
 phục hồi chi tiết đã mất. Tensor ở $[0,1]$, chuẩn hóa ImageNet một lần, không tiling.
 Train flip ngang $p=0.5$ cùng bbox; val/test không augmentation.
 DataLoader shuffle train, workers 0, giữ batch cuối. Train học cả difficult;
-eval bỏ GT/detection khớp difficult theo VOC, giữ truncated.
+eval bỏ GT/detection khớp difficult theo VOC, không lọc đối tượng theo cờ truncated.
 
 \begin{figure}[H]\centering
 \begin{subfigure}{.32\linewidth}\centering
@@ -43,7 +45,7 @@ eval bỏ GT/detection khớp difficult theo VOC, giữ truncated.
 \includegraphics[width=\linewidth,keepaspectratio]{assets/a2/preprocess_resize_report.png}\caption{Resize 600/max 1,000.}\end{subfigure}\hfill
 \begin{subfigure}{.32\linewidth}\centering
 \includegraphics[width=\linewidth,keepaspectratio]{assets/a2/preprocess_flip_report.png}\caption{Flip ngang, $p=0.5$.}\end{subfigure}
-\caption{Một ảnh train VOC2012: bbox đi cùng phép biến đổi; các tọa độ lấy từ CSV nguồn, không dự đoán lại.}\label{fig:a2-preprocess}
+\caption{Một ảnh train VOC2012: bbox đi cùng phép biến đổi; tọa độ lấy từ CSV đã chuẩn bị từ annotation VOC, không dự đoán lại.}\label{fig:a2-preprocess}
 \end{figure}
 \section{FPN: phương pháp, thí nghiệm và giới hạn}
 Feature tầng sớm giữ chi tiết vị trí, trong khi tầng sâu có ngữ nghĩa mạnh
@@ -158,7 +160,7 @@ hai bbox loss dùng Smooth L1 beta $1/9$.
 {Hai detection head trên FPN: (a) dense sigmoid/Focal Loss, (b) proposals và RoI classification/regression. Các subnet RetinaNet chia sẻ trọng số qua P3--P7.}{a2-heads}
 Hai mạng cùng decode bbox, score floor 0.05, class-wise Hard-NMS 0.5,
 cap 100 detections/ảnh. RetinaNet lọc top 1,000 candidates/mức trước NMS.
-Gallery dùng score từ 0.30 và tối đa 15 boxes; metric không bị giới hạn
+Bộ ảnh minh họa dùng score từ 0.30 và tối đa 15 boxes; metric không bị giới hạn
 theo số box hiển thị.
 \DataTable{assets/a2/capacity.tex}{Số tham số trainable. FrozenBatchNorm giữ statistics/buffers cố định.}
 
@@ -188,15 +190,17 @@ Vì chạy song song, thời gian chờ chung là 465.1 phút, không cộng run
 Best epoch và validation score nằm trong bảng.
 
 \noindent\textbf{Phạm vi đối chiếu paper.}
-FPN paper dùng COCO và feature sharing bốn bước; cài đặt VOC train joint
-RPN/RoI. RetinaNet paper dùng batch 16/lịch 90k iterations với các mốc giảm LR;
-ở đây dùng effective batch 24, epoch/cosine/dừng sớm. Resize chung 600/max 1,000,
+\textit{Đã tái hiện:} lateral connections, top-down pathway, smoothing,
+cách tạo các mức pyramid và head/loss theo cấu hình triển khai.
+\textit{Đã thay đổi:} dùng VOC2012 thay COCO, train joint RPN/RoI thay lịch
+feature sharing bốn bước của FPN. RetinaNet paper dùng batch 16 và lịch
+90k iterations với các mốc giảm LR; ở đây dùng effective batch 24,
+lịch SGD theo epoch/cosine/dừng sớm và resize chung 600/max 1,000.
 ResNet-v1.5, anchor rounding, low-quality matching và Smooth L1 theo torchvision
-cũng khác một số chi tiết của tác giả. Thí nghiệm tái hiện nguyên lý
-top-down/lateral/smoothing của FPN và head/Focal Loss của RetinaNet;
-không tái lập điểm benchmark COCO của paper. Hai detector dùng chung
-split, backbone khởi tạo, resize, optimizer và protocol đánh giá để so sánh
-trong phạm vi holdout VOC.
+cũng khác một số chi tiết của tác giả.
+\textit{Chưa tái hiện:} benchmark COCO và các phép ablation cô lập đóng góp
+của FPN/Focal Loss. Hai detector dùng chung split, backbone khởi tạo, resize,
+optimizer và protocol đánh giá để so sánh trong phạm vi holdout VOC.
 
 \section{Chỉ số đánh giá}
 VOC2010--2012 mAP50 all-point là metric chính: sort score, matching
@@ -248,10 +252,11 @@ Hình~\ref{fig:a2-loss} khác nhau về số lượng/chuẩn hóa, không dùng
 \ComparisonFigure[.39]{assets/a2/loss_retina.png}{RetinaNet: classification và bbox.}{assets/a2/loss_faster.png}{Faster R-CNN: hai loss RPN và hai loss RoI.}{Thành phần loss train A2; mỗi panel giữ nhãn loss trong output, không dùng độ lớn loss xếp hạng kiến trúc.}{a2-loss}
 
 
+\Needspace{.30\textheight}
 \noindent\textbf{Chi phí huấn luyện và suy luận.}
-\DataTable{assets/a2/cost.tex}{Chi phí trên Tesla T4. Peak là allocated PyTorch từng worker; benchmark hai model lần lượt trên cùng GPU 0.}
+\DataTable{assets/a2/cost.tex}{Chi phí trên Tesla T4. Peak là allocated PyTorch từng worker; benchmark hai model lần lượt trên cùng GPU 0. VRAM làm tròn một chữ số; thời gian và tốc độ làm tròn hai chữ số thập phân.}
 Train/validation trung bình 22.14/25.31 phút mỗi epoch; Faster R-CNN có
-tổng runtime riêng thấp hơn do ít epoch. Capacity không đủ dự đoán chi phí.
+tổng runtime riêng thấp hơn do ít epoch. Số tham số không đủ dự đoán chi phí.
 
 Benchmark AMP/CUDA events: warmup 3 lượt, batch 1 đo 20 lần, batch 8 đo 10 lần.
 GPU latency gồm resize/normalize, backbone/FPN/head và decode/NMS;
@@ -264,7 +269,8 @@ Faster R-CNN cao hơn ở phép đo này. Peak dùng allocated PyTorch từng wo
 Kết quả áp dụng cho workload T4 đã đo, không suy tốc độ mọi ảnh/phần cứng.
 
 \section{Theo lớp, ma trận và trường hợp sai}
-\DataTable{assets/a2/per_class.tex}{R=RetinaNet, F=Faster R-CNN; AP là COCO-style AP50:95, F1 tại score 0.30.}
+\label{sec:a2-errors}
+\DataTable{assets/a2/per_class.tex}{AP50 là VOC all-point AP tại IoU 0.5; AP là COCO-style AP50:95. R và F lần lượt chỉ RetinaNet và Faster R-CNN. F1 tính tại confidence 0.30.}
 Cat, bus và dog có VOC AP50 cao; pottedplant/chair khó hơn ở cả hai model.
 Faster R-CNN cải thiện diningtable từ 0.3173 lên 0.5423 (22.50 điểm phần trăm)
 và cow từ 0.6813 lên 0.7748. RetinaNet cao hơn ở bird (0.8353/0.7748)
@@ -280,9 +286,15 @@ lần lượt 0/3 (tvmonitor), 1/0 (boat), 3/2 (horse).
 Ba failure cases minh họa các nhóm lỗi: car/bottle có FP 4/11; kiosk có
 một FN ở RetinaNet, Faster R-CNN tìm được GT nhưng có 10 FP; boat còn lại
 có TP=1, FP=3 ở RetinaNet và nhầm lớp=1, FP=9 ở Faster R-CNN.
-Chẩn đoán dùng mọi detection score $\geq0.30$, gallery chỉ vẽ tối đa 15 boxes.
+Chẩn đoán dùng mọi detection score $\geq0.30$, bộ ảnh minh họa chỉ vẽ tối đa 15 boxes.
 Không suy tần suất toàn tập từ mẫu chọn sau test. Prediction không ghép GT
 có thể lặp, lệch bbox, nhầm lớp hoặc vật thể không có annotation; cần đọc cùng GT.
+
+\DetectionTriplet{failure_2}{Đối chiếu lỗi trên ảnh VOC2012 test \texttt{2012\_2011\_000666}}{a2-failure-kiosk}{Cùng confidence $\geq0.30$; ảnh dự đoán hiển thị tối đa 15 bbox, còn số chẩn đoán dùng mọi detection vượt ngưỡng.}
+Một GT lớp chair nằm ở góc dưới phải. RetinaNet có TP=0, FN=1 và 2 FP;
+Faster R-CNN có TP=1, FN=0 và 10 FP. FP theo annotation/matching có thể gồm
+dự đoán lặp hoặc vật thể không được gán nhãn. Mẫu chọn sau test chỉ minh họa
+đánh đổi giữa bỏ sót và dự đoán thừa, không ước lượng tần suất lỗi.
 
 \section{Kết luận A2 và giới hạn}
 Faster R-CNN tốt hơn về VOC mAP50, COCO-style AP50:95/AP75, recall tại score

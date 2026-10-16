@@ -11,7 +11,7 @@ ba tokenizer được định nghĩa độc lập trong E2.
 \end{figure}
 Rows có $ N=28,F=28$; patch/CNN-stem có $ N=49,F=16$.
 CNN-stem thêm 2,480 tham số học so với patch cùng chiều feature, nên so sánh
-tokenizer thay đổi cả inductive bias và capacity.
+tokenizer thay đổi cả inductive bias và số tham số.
 
 \section{Kiến trúc encoder và MSA}
 \begin{figure}[H]\centering
@@ -42,8 +42,7 @@ dropout/RNG tạo cùng đường tối ưu khi train.
 \section{Thiết lập huấn luyện và tám cấu hình}
 AdamW learning rate $10^{-3}$, weight decay $10^{-4}$, batch 128,
 tối đa 100 epoch; early stopping dùng validation loss, patience 4,
-min-delta $10^{-4}$. Checkpoint có validation loss nhỏ nhất được dùng để test.
-Sáu cấu hình chính là Manual/PyTorch $\times$ Rows/Patch/CNN-stem với H=4.
+min-delta $10^{-4}$. Sáu cấu hình chính là Manual/PyTorch $\times$ Rows/Patch/CNN-stem với H=4.
 CNN-stem được chọn từ các cấu hình Manual bằng validation, rồi thử thêm
 H=2 và H=8; giữ $D=64$, tương ứng mỗi head có 32/16/8 chiều.
 
@@ -52,7 +51,7 @@ số cuối là số head. M-C4 là Manual CNN-stem với bốn head.
 
 \section{Kết quả và hai phép so sánh bắt buộc}
 \DataTable{assets/e2/results.tex}{Kết quả tám cấu hình E2; test dùng đầy đủ 10,000 ảnh, F1 là macro-F1.}
-\DataTable{assets/e2/cost.tex}{Capacity, epoch và thời gian của tám cấu hình E2.}
+\DataTable{assets/e2/cost.tex}{Số tham số, epoch và thời gian của tám cấu hình E2.}
 \DataTable{assets/e2/implementation.tex}{Manual và PyTorch ở H=4 với cùng tokenizer; chênh lệch tính theo điểm phần trăm.}
 
 Với cùng tokenizer và $H=4$, hai cách cài đặt MSA cho chất lượng gần
@@ -91,7 +90,7 @@ saliency pixel hay bằng chứng nhân quả; hai ảnh không đại diện to
 \DataTable{assets/e2/errors.tex}{Cặp lớp nhầm nhiều nhất của từng cấu hình E2 trên test.}
 M-C4 nhầm Shirt thành T-shirt/top 94 ảnh, so với M-R4 139;
 T-C4 nhầm chiều ngược 151 ảnh. Nhóm áo vẫn khó dù CNN-stem có accuracy cao hơn.
-Ma trận tám cấu hình ở Phụ lục. Encoder nhỏ, một seed và tokenizer khác capacity
+Ma trận tám cấu hình ở Phụ lục. Encoder nhỏ, một seed và tokenizer khác số tham số
 giới hạn khả năng suy rộng kết quả.
 
 \ComparisonFigure[.39]{assets/e2/loss_stem.png}{Cross-entropy}{assets/e2/accuracy_stem.png}{Accuracy (\%).}{E2 CNN-stem H=4: Manual/PyTorch trên train/validation, train nét đứt và validation nét liền.}{e2-curves}
@@ -109,4 +108,4 @@ confidence 97.5\%.}\label{fig:e2-sample:b}\end{subfigure}
 \end{figure}
 \ComparisonFigure[.33]{assets/e2/attention_shirt.png}{Shirt}{assets/e2/attention_boot.png}{Ankle boot}{Attention M-C4: hàng query, cột key, bảy nhóm token sau CNN-stem; trung bình bốn head, mỗi hàng chuẩn hóa về 1, cùng thang 0--100\%.}{e2-attention}
 
-\ComparisonFigure[.32]{assets/e2/errors_m_c4.png}{Manual CNN-stem H=4}{assets/e2/errors_t_c4.png}{PyTorch CNN-stem H=4}{Mẫu lỗi test E2, mỗi panel $2	imes5$ ảnh có nhãn thật/dự đoán; không dùng gallery suy tần suất toàn tập.}{e2-errors}
+\ComparisonFigure[.32]{assets/e2/errors_m_c4.png}{Manual CNN-stem H=4}{assets/e2/errors_t_c4.png}{PyTorch CNN-stem H=4}{Mẫu lỗi test E2, mỗi panel $2\times 5$ ảnh có nhãn thật/dự đoán; không dùng bộ ảnh minh họa suy tần suất toàn tập.}{e2-errors}

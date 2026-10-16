@@ -349,27 +349,27 @@
   };
 
   % Linear projection block
-  \draw[arch_line] (r_tok.east) -- (7.9, 2.3) -- (7.9, 0);
-  \draw[arch_arrow] (7.9, 0) -- (8.5, 0);
-  \draw[arch_arrow] (p_tok.east) -- (8.5, 0);
-  \draw[arch_line] (s_tok.east) -- (7.9, -2.3) -- (7.9, 0);
-
-  \node[arch_box, text width=2.5cm, minimum height=1.45cm] (proj) at (9.9, 0) {
+  \node[arch_box, text width=2.5cm, minimum height=1.45cm] (proj) at (10.6, 0) {
     \textbf{Chiếu tuyến tính}\\[2pt]
     \scriptsize $\mathbf{E} \in \mathbb{R}^{F \times 64}$\\[1pt]
     FC $F \to 64$
   };
 
+  \draw[arch_line] (r_tok.east) -- (8.7, 2.3) -- (8.7, 0);
+  \draw[arch_line] (p_tok.east) -- (8.7, 0);
+  \draw[arch_line] (s_tok.east) -- (8.7, -2.3) -- (8.7, 0);
+  \draw[arch_arrow] (8.7, 0) -- (proj.west);
+
   % Tokens out
-  \draw[arch_arrow] (proj.east) -- (11.6, 0);
-  \node[arch_box_dark, text width=2.6cm, minimum height=1.45cm] (out) at (13.0, 0) {
+  \node[arch_box_dark, text width=2.6cm, minimum height=1.45cm] (out) at (13.9, 0) {
     \textbf{Đầu vào Transformer}\\[2pt]
     $\mathbf{X}_0 \in \mathbb{R}^{N\times 64}$\\[1pt]
     \scriptsize $N \in \{28, 49\}$
   };
+  \draw[arch_arrow] (proj.east) -- (out.west);
 
   % Note below
-  \node[arch_badge] at (6.5, -3.3) {Ba tokenizer biểu diễn ảnh $28\times 28$ thành chuỗi $N\times D$ ($D=64$); CNN-stem bổ sung inductive bias cục bộ ($2,480$ tham số)};
+  \node[arch_badge] at (6.9, -3.3) {Ba tokenizer biểu diễn ảnh $28\times 28$ thành chuỗi $N\times D$ ($D=64$); CNN-stem bổ sung inductive bias cục bộ ($2,480$ tham số)};
 \end{tikzpicture}}
 
 % =============================================================
@@ -377,65 +377,70 @@
 % =============================================================
 \newcommand{\ArchEncoder}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-  % Input tokens
-  \node[arch_box, text width=1.8cm, minimum height=1.0cm] (tok) at (0, 0) {
+  % Row 1: Token Input and Transformer Encoders (y = 1.5)
+  \node[arch_box, text width=1.8cm, minimum height=1.0cm] (tok) at (0.8, 1.5) {
     $\mathbf{X}_0 \in \mathbb{R}^{N\times 64}$
   };
 
   % Position embedding addition
-  \draw[arch_arrow] (tok.east) -- (1.4, 0);
-  \node[arch_op] (add_pos) at (1.75, 0) {$+$};
+  \node[arch_op] (add_pos) at (2.8, 1.5) {$+$};
+  \draw[arch_arrow] (tok.east) -- (add_pos.west);
 
-  \node[arch_box, text width=1.6cm, minimum height=0.8cm] (pos) at (1.75, 1.25) {
+  \node[arch_box, text width=1.6cm, minimum height=0.8cm] (pos) at (2.8, 2.85) {
     \scriptsize $\mathbf{E}_{\mathrm{pos}}$
   };
   \draw[arch_arrow] (pos.south) -- (add_pos.north);
 
   % Encoder Block 1
-  \draw[arch_arrow] (add_pos.east) -- (2.6, 0);
-  \node[arch_box_gray, text width=2.6cm, minimum height=1.65cm] (b1) at (4.0, 0) {
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.65cm] (b1) at (5.4, 1.5) {
     \textbf{Encoder 1}\\[2pt]
     \scriptsize Pre-norm, $H=4$\\[1pt]
     $D=64, d_h=16$\\[1pt]
     FFN $64\to 128\to 64$
   };
+  \draw[arch_arrow] (add_pos.east) -- (b1.west);
 
   % Encoder Block 2
-  \draw[arch_arrow] (b1.east) -- (5.8, 0);
-  \node[arch_box_gray, text width=2.6cm, minimum height=1.65cm] (b2) at (7.2, 0) {
+  \node[arch_box_gray, text width=2.6cm, minimum height=1.65cm] (b2) at (9.2, 1.5) {
     \textbf{Encoder 2}\\[2pt]
     \scriptsize Pre-norm, $H=4$\\[1pt]
     $D=64, d_h=16$\\[1pt]
     FFN $64\to 128\to 64$
   };
+  \draw[arch_arrow] (b1.east) -- (b2.west);
 
-  % Final LayerNorm
-  \draw[arch_arrow] (b2.east) -- (8.8, 0);
-  \node[arch_box, minimum width=1.1cm, minimum height=0.9cm] (ln) at (9.5, 0) {
+  % Row 2: Final Norm, Pooling, and Classifier Head (y = -1.3)
+  \node[arch_box, minimum width=1.3cm, minimum height=0.9cm] (ln) at (0.8, -1.3) {
     $\mathrm{LN}$
   };
 
+  % Bus transition from Row 1 to Row 2
+  \draw[arch_line] (b2.east) -- (11.2, 1.5) -- (11.2, 0.1) -- (-0.5, 0.1) -- (-0.5, -1.3);
+  \draw[arch_arrow] (-0.5, -1.3) -- (ln.west);
+  \node[above=1pt, font=\scriptsize, fill=white, inner sep=1.5pt] at (5.3, 0.1) {Đặc trưng sau Encoder 2: $\mathbf{X}_2 \in \mathbb{R}^{N\times 64}$};
+
   % Mean Pooling
-  \draw[arch_arrow] (ln.east) -- (10.4, 0);
-  \node[arch_box, text width=2.0cm, minimum height=1.35cm] (pool) at (11.5, 0) {
+  \node[arch_box, text width=2.2cm, minimum height=1.35cm] (pool) at (3.6, -1.3) {
     \textbf{Mean Pooling}\\[2pt]
     \scriptsize $\bar{\mathbf{h}} = \frac{1}{N}\sum \mathbf{x}_i$
   };
+  \draw[arch_arrow] (ln.east) -- (pool.west);
 
   % FC Head
-  \draw[arch_arrow] (pool.east) -- (12.8, 0);
-  \node[arch_box_dark, text width=1.7cm, minimum height=1.0cm] (head) at (13.8, 0) {
+  \node[arch_box_dark, text width=1.9cm, minimum height=1.1cm] (head) at (6.6, -1.3) {
     \textbf{FC Head}\\[1pt]
     \scriptsize $64 \to 10$
   };
+  \draw[arch_arrow] (pool.east) -- (head.west);
 
   % Logits
-  \draw[arch_arrow] (head.east) -- (14.9, 0);
-  \node[arch_box_dark, minimum width=1.0cm, minimum height=1.0cm] (out) at (15.5, 0) {};
-  \node[font=\scriptsize, align=center] at (15.5, 0) {Logits\\$\mathbf{z}$};
+  \node[arch_box_dark, minimum width=1.2cm, minimum height=1.0cm] (out) at (9.2, -1.3) {
+    \scriptsize Logits\\[1pt]$\mathbf{z}$
+  };
+  \draw[arch_arrow] (head.east) -- (out.west);
 
   % Note below
-  \node[arch_badge] at (7.7, -1.5) {Mô hình E2: 2 khối Pre-norm Transformer ($D=64, H=4$), gộp đặc trưng bằng Mean Pooling, phân loại qua FC $64\to 10$ ($650$ tham số)};
+  \node[arch_badge] at (5.0, -2.6) {Mô hình E2: 2 khối Pre-norm Transformer ($D=64, H=4$), gộp đặc trưng bằng Mean Pooling, phân loại qua FC $64\to 10$ ($650$ tham số)};
 \end{tikzpicture}}
 
 % =============================================================
@@ -444,8 +449,8 @@
 \newcommand{\ArchMSA}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
   % Container frame
-  \draw[draw=black, dashed, rounded corners=3mm, fill=white] (-1.2, -0.8) rectangle (13.2, 8.1);
-  \node[font=\footnotesize\bfseries, anchor=north west] at (-0.9, 7.85) {Pre-norm Transformer Encoder Block ($D=64$, $H=4$ heads)};
+  \draw[draw=black, dashed, rounded corners=3mm, fill=white] (-1.2, -0.8) rectangle (13.2, 9.2);
+  \node[font=\footnotesize\bfseries, anchor=north west] at (-0.9, 8.95) {Pre-norm Transformer Encoder Block ($D=64$, $H=4$ heads)};
 
   % ---------------- TOWER 1: MSA SUB-LAYER ----------------
   % Input X
@@ -454,45 +459,41 @@
   };
 
   % LN 1
-  \draw[arch_arrow] (x_in.north) -- (2.4, 0.7);
-  \node[arch_box, minimum width=1.6cm, minimum height=0.65cm] (ln1) at (2.4, 1.05) {
+  \node[arch_box, minimum width=1.6cm, minimum height=0.65cm] (ln1) at (2.4, 1.25) {
     $\mathrm{LN}$
   };
+  \draw[arch_arrow] (x_in.north) -- (ln1.south);
 
   % QKV Linear
-  \draw[arch_arrow] (ln1.north) -- (2.4, 1.7);
-  \node[arch_box_dark, text width=2.8cm, minimum height=0.65cm] (qkv) at (2.4, 2.05) {
+  \node[arch_box_dark, text width=2.8cm, minimum height=0.65cm] (qkv) at (2.4, 2.50) {
     $\mathbf{W}_{qkv} \in \mathbb{R}^{64 \times 192}$
   };
+  \draw[arch_arrow] (ln1.north) -- (qkv.south);
 
   % Attention computation
-  \node[arch_box_gray, text width=3.4cm, minimum height=0.95cm] (att) at (2.4, 4.05) {
+  \node[arch_box_gray, text width=3.4cm, minimum height=0.95cm] (att) at (2.4, 4.85) {
     \textbf{Scaled Dot-Product ($4$ heads)}\\[2pt]
-    \scriptsize $A_h = \operatorname{softmax}\left(\frac{Q_h K_h^\top}{\sqrt{16}}\right) V_h$
+    \scriptsize $O_h = \operatorname{softmax}\left(\frac{Q_h K_h^\top}{\sqrt{16}}\right) V_h$
   };
 
-  % Three parallel vertical arrows directly from QKV to Attention
-  \draw[arch_arrow] (1.6, 2.40) -- node[left=1pt, font=\tiny] {$Q$} (1.6, 3.55);
-  \draw[arch_arrow] (2.4, 2.40) -- node[fill=white, inner sep=0.5pt, font=\tiny] {$K$} (2.4, 3.55);
-  \draw[arch_arrow] (3.2, 2.40) -- node[right=1pt, font=\tiny] {$V$} (3.2, 3.55);
+  % Three parallel vertical arrows directly from QKV top border to Attention bottom border
+  \draw[arch_arrow] (qkv.north -| 1.6, 0) -- node[left=1pt, font=\tiny] {$Q$} (att.south -| 1.6, 0);
+  \draw[arch_arrow] (qkv.north) -- node[fill=white, inner sep=0.5pt, font=\tiny] {$K$} (att.south);
+  \draw[arch_arrow] (qkv.north -| 3.2, 0) -- node[right=1pt, font=\tiny] {$V$} (att.south -| 3.2, 0);
 
   % Out Linear
-  \draw[arch_arrow] (att.north) -- (2.4, 5.0);
-  \node[arch_box, text width=2.4cm, minimum height=0.65cm] (proj) at (2.4, 5.35) {
+  \node[arch_box, text width=2.4cm, minimum height=0.65cm] (proj) at (2.4, 6.65) {
     $\mathbf{W}_O \in \mathbb{R}^{64\times 64}$
   };
+  \draw[arch_arrow] (att.north) -- (proj.south);
 
   % Addition 1
-  \node[arch_op] (add1) at (2.4, 6.5) {$+$};
+  \node[arch_op] (add1) at (2.4, 7.85) {$+$};
   \draw[arch_arrow] (proj.north) -- (add1.south);
 
   % Residual 1 highway
-  \draw[arch_line] (x_in.west) -- (-0.4, 0.0) -- (-0.4, 6.5);
-  \draw[arch_arrow] (-0.4, 6.5) -- (add1.west);
-
-  % ---------------- BRIDGE: TOWER 1 TO TOWER 2 ----------------
-  \draw[arch_line] (add1.east) -- (5.0, 6.5) -- (5.0, 0.0);
-  \draw[arch_arrow] (5.0, 0.0) -- (7.4, 0.0);
+  \draw[arch_line] (x_in.west) -- (-0.4, 0.0) -- (-0.4, 7.85);
+  \draw[arch_arrow] (-0.4, 7.85) -- (add1.west);
 
   % ---------------- TOWER 2: FFN SUB-LAYER ----------------
   % Intermediate tensor U
@@ -500,39 +501,44 @@
     $\mathbf{U} = \mathbf{X} + \text{MSA}(\text{LN}(\mathbf{X}))$
   };
 
+  % ---------------- BRIDGE: TOWER 1 TO TOWER 2 ----------------
+  \draw[arch_line] (add1.east) -- (5.0, 7.85) -- (5.0, 0.0);
+  \draw[arch_arrow] (5.0, 0.0) -- (u_mid.west);
+
   % LN 2
-  \draw[arch_arrow] (u_mid.north) -- (8.8, 0.9);
   \node[arch_box, minimum width=1.6cm, minimum height=0.65cm] (ln2) at (8.8, 1.25) {
     $\mathrm{LN}$
   };
+  \draw[arch_arrow] (u_mid.north) -- (ln2.south);
 
   % FFN 1 (widened to 3.0cm for clean single line)
-  \draw[arch_arrow] (ln2.north) -- (8.8, 2.1);
-  \node[arch_box, text width=3.0cm, minimum height=0.65cm] (ffn1) at (8.8, 2.5) {
-    $\mathbf{W}_1 \in \mathbb{R}^{64\times 128} + \text{GELU}$
+  \node[arch_box, text width=3.0cm, minimum height=0.65cm] (ffn1) at (8.8, 2.70) {
+    $\mathbf{W}_1 \in \mathbb{R}^{64\times 128}$\\[1pt]
+    GELU
   };
+  \draw[arch_arrow] (ln2.north) -- (ffn1.south);
 
   % FFN 2
-  \draw[arch_arrow] (ffn1.north) -- (8.8, 3.35);
-  \node[arch_box, text width=2.4cm, minimum height=0.65cm] (ffn2) at (8.8, 3.75) {
+  \node[arch_box, text width=2.4cm, minimum height=0.65cm] (ffn2) at (8.8, 4.35) {
     $\mathbf{W}_2 \in \mathbb{R}^{128\times 64}$
   };
+  \draw[arch_arrow] (ffn1.north) -- (ffn2.south);
 
   % Addition 2
-  \node[arch_op] (add2) at (8.8, 5.1) {$+$};
+  \node[arch_op] (add2) at (8.8, 6.00) {$+$};
   \draw[arch_arrow] (ffn2.north) -- (add2.south);
 
   % Residual 2 highway
-  \coordinate (tap_u) at (8.8, 0.625);
+  \coordinate (tap_u) at (8.8, 0.75);
   \fill[black] (tap_u) circle (1.5pt);
-  \draw[arch_line] (tap_u) -- (6.0, 0.625) -- (6.0, 5.1);
-  \draw[arch_arrow] (6.0, 5.1) -- (add2.west);
+  \draw[arch_line] (tap_u) -- (6.0, 0.75) -- (6.0, 6.00);
+  \draw[arch_arrow] (6.0, 6.00) -- (add2.west);
 
   % Output Y
-  \draw[arch_arrow] (add2.north) -- (8.8, 6.0);
-  \node[arch_box_dark, text width=2.6cm, minimum height=0.75cm] (y_out) at (8.8, 6.4) {
+  \node[arch_box_dark, text width=2.6cm, minimum height=0.75cm] (y_out) at (8.8, 7.35) {
     Đầu ra $\mathbf{Y} \in \mathbb{R}^{N\times 64}$
   };
+  \draw[arch_arrow] (add2.north) -- (y_out.south);
 \end{tikzpicture}}
 
 % =============================================================
@@ -553,7 +559,7 @@
   };
 
   % Initial state h0 (centered at 0.0 with clear separation from im at -1.5)
-  \node[font=\small] (h0) at (0.0, 0.7) {$h_0 = \mathbf{0}$};
+  \node[font=\small] (h0) at (-0.25, 0.7) {$h_0 = \mathbf{0}$};
 
   % Step 1
   \node[arch_box, text width=1.6cm, minimum height=0.95cm] (c1) at (1.6, 0.7) {
@@ -685,71 +691,57 @@
 % =============================================================
 \newcommand{\ArchGRU}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-  % Boundary of GRU cell
-  \draw[draw=black, rounded corners=3mm, line width=0.8pt, fill=white] (-0.8, -1.1) rectangle (12.2, 4.3);
-  \node[font=\footnotesize\bfseries, anchor=north west] at (-0.6, 4.15) {GRU Cell (Hidden size $H=128$)};
+  \draw[draw=black, rounded corners=3mm, line width=0.8pt, fill=white]
+    (-3.0, -0.8) rectangle (12.7, 5.2);
+  \node[font=\footnotesize\bfseries, anchor=north west] at (-2.7, 5.0)
+    {GRU Cell ($H=128$; reset sau hidden projection)};
 
-  % External Inputs
-  \node[font=\small, anchor=east] (hp) at (-1.4, 3.4) {$h_{t-1}$};
-  \node[font=\small, anchor=north] (xt) at (1.4, -1.55) {$x_t$};
-
-  % Wide Linear Projections Bar
-  \node[arch_box_gray, minimum width=5.6cm, minimum height=0.65cm] (proj) at (3.8, -0.5) {
-    $\mathbf{W}x_t + \mathbf{U}h_{t-1}$
+  \node[font=\small, anchor=east] (xt) at (-3.5, 1.0) {$x_t$};
+  \node[font=\small, anchor=east] (hp) at (-3.5, 2.0) {$h_{t-1}$};
+  \node[arch_box_gray, text width=4.0cm, minimum height=1.6cm] (proj) at (0, 1.5) {
+    \textbf{Hai projection độc lập}\\[2pt]
+    $x_\bullet=W_{i\bullet}x_t+b_{i\bullet}$\\[1pt]
+    $h_\bullet=W_{h\bullet}h_{t-1}+b_{h\bullet}$\\[1pt]
+    $\bullet\in\{r,z,n\}$
   };
-  \draw[arch_arrow] (xt.north) -- (proj.south -| xt.north);
+  \draw[arch_arrow] (xt.east) -- (proj.west |- xt.east);
+  \draw[arch_arrow] (hp.east) -- (proj.west |- hp.east);
 
-  % h_{t-1} branch down to proj.west at x = -0.2
-  \coordinate (tap_p) at (-0.2, 3.4);
-  \fill[black] (tap_p) circle (1.5pt);
-  \draw[arch_arrow] (tap_p) |- (proj.west);
+  \node[arch_box, text width=2.7cm, minimum height=0.85cm] (reset) at (5.0, 0.2)
+    {$r_t=\sigma(x_r+h_r)$};
+  \node[arch_box, text width=2.7cm, minimum height=0.85cm] (update) at (5.0, 3.1)
+    {$z_t=\sigma(x_z+h_z)$};
+  \coordinate (fork) at (2.6, 1.5);
+  \draw[arch_line] (proj.east) -- (fork);
+  \draw[arch_arrow] (fork) |- (reset.west);
+  \draw[arch_arrow] (fork) |- (update.west);
 
-  % 1. Update Gate z_t on Left (x = 2.2)
-  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (gz) at (2.2, 0.7) {$\sigma$};
-  \draw[arch_arrow] (proj.north -| gz.south) -- (gz.south);
+  \node[arch_box, text width=3.5cm, minimum height=1.0cm] (candidate) at (9.4, 0.2) {
+    \textbf{Ứng viên}\\[2pt]
+    $n_t=\tanh(x_n+r_t\odot h_n)$
+  };
+  \draw[arch_arrow] (reset.east) -- node[above=1pt,font=\scriptsize] {$r_t$} (candidate.west);
+  \draw[arch_line] (fork) -- (9.4, 1.5);
+  \draw[arch_arrow] (9.4, 1.5) -- node[right=1pt,font=\scriptsize] {$x_n,h_n$} (candidate.north);
 
-  % mul_keep: z_t * h_{t-1} directly on highway at (2.2, 3.4)
-  \node[arch_op] (mul_keep) at (2.2, 3.4) {$\odot$};
-  \draw[arch_arrow] (hp.east) -- (mul_keep.west);
-  \draw[arch_arrow] (gz.north) -- node[right=1pt, font=\scriptsize] {$z_t$} (mul_keep.south);
+  \node[arch_box_dark, text width=4.1cm, minimum height=1.1cm] (mix) at (9.4, 3.1) {
+    \textbf{Cập nhật hidden state}\\[2pt]
+    $h_t=(1-z_t)\odot n_t$\\[1pt]
+    $\phantom{h_t={}}+z_t\odot h_{t-1}$
+  };
+  \draw[arch_arrow] (update.east) -- node[above=1pt,font=\scriptsize] {$z_t$} (mix.west);
+  \draw[arch_line] (candidate.east) -- (12.2, 0.2) -- (12.2, 1.85)
+    -- node[above=2pt,font=\scriptsize] {$n_t$} (9.4, 1.85);
+  \draw[arch_arrow] (9.4, 1.85) -- (mix.south);
+  \coordinate (tap_h) at (-2.7, 2.0);
+  \fill[black] (tap_h) circle (1.5pt);
+  \draw[arch_line] (tap_h) -- (-2.7, 4.3) -- (9.4, 4.3);
+  \draw[arch_arrow] (9.4, 4.3) -- node[right=1pt,font=\scriptsize] {$h_{t-1}$} (mix.north);
+  \node[font=\small, anchor=west] (out) at (13.3, 3.1) {$h_t$};
+  \draw[arch_arrow_thick] (mix.east) -- (out.west);
 
-  % 2. Reset Gate r_t in Middle (x = 4.5)
-  \node[arch_box, minimum width=0.9cm, minimum height=0.7cm] (gr) at (4.5, 0.7) {$\sigma$};
-  \draw[arch_arrow] (proj.north -| gr.south) -- (gr.south);
-
-  % mul_r at (4.5, 2.0)
-  \node[arch_op] (mul_r) at (4.5, 2.0) {$\odot$};
-  \draw[arch_arrow] (gr.north) -- node[right=1pt, font=\scriptsize] {$r_t$} (mul_r.south);
-
-  % h_{t-1} tap to mul_r at x = 3.4
-  \coordinate (tap_r) at (3.4, 3.4);
-  \fill[black] (tap_r) circle (1.5pt);
-  \draw[arch_arrow] (tap_r) |- (mul_r.west);
-
-  % 3. Candidate Cell gn (\tanh) at (6.5, 2.0)
-  \node[arch_box, minimum width=1.1cm, minimum height=0.7cm] (gn) at (6.5, 2.0) {$\tanh$};
-  \draw[arch_arrow] (mul_r.east) -- (gn.west);
-
-  % Blend box: (1 - z_t) at (6.5, 0.7)
-  \node[arch_box, minimum width=1.1cm, minimum height=0.6cm] (inv_z) at (6.5, 0.7) {\scriptsize $1 - z_t$};
-  \draw[arch_arrow] (gz.east) -- (inv_z.west);
-
-  % 4. Candidate Multiplier at (8.5, 2.0): (1 - z_t) * \tilde{h}_t
-  \node[arch_op] (mul_cand) at (8.5, 2.0) {$\odot$};
-  \draw[arch_arrow] (gn.east) -- node[above=1pt, font=\scriptsize] {$\tilde{h}_t$} (mul_cand.west);
-  \draw[arch_arrow] (inv_z.east) -| (mul_cand.south);
-
-  % 5. Output Addition at (10.4, 2.7)
-  \node[arch_op] (add_h) at (10.4, 2.7) {$\oplus$};
-  \draw[arch_arrow] (mul_keep.east) -| (add_h.north);
-  \draw[arch_arrow] (mul_cand.east) -| (add_h.south);
-
-  % Output h_t
-  \node[font=\small, anchor=west] (hn) at (12.7, 2.7) {$h_t$};
-  \draw[arch_arrow_thick] (add_h.east) -- (hn.west);
-
-  % Explanatory badge below
-  \node[arch_badge] at (5.7, -2.45) {GRU: cổng reset $r_t = \sigma(W_r x_t + U_r h_{t-1})$; cổng cập nhật $z_t = \sigma(W_z x_t + U_z h_{t-1})$; ứng viên $\tilde{h}_t = \tanh(W_n x_t + r_t \odot U_n h_{t-1})$; đầu ra $h_t = z_t \odot h_{t-1} + (1 - z_t) \odot \tilde{h}_t$};
+  \node[arch_badge] at (4.8, -1.35)
+    {Input projection $F\to384$; hidden projection $128\to384$; reset nhân trên $h_n$, gồm hidden bias};
 \end{tikzpicture}}
 
 % =============================================================
@@ -876,7 +868,8 @@
     \textbf{Transformer}\\[2pt]
     \scriptsize $12\times$ DeiT Blocks\\[1pt]
     $D=384, H=6, d_h=64$\\[1pt]
-    $\text{FFN } 384\to 1536$
+    FFN\\[1pt]
+    $384\to 1536\to 384$
   };
 
   % Extract CLS & LayerNorm
@@ -905,7 +898,7 @@
   \node[arch_box, text width=2.0cm, minimum height=0.65cm] (d_msa) at (5.5, \by) {\scriptsize MSA ($H=6$)};
   \node[arch_op] (d_add1) at (7.5, \by) {$+$};
   \node[arch_box, minimum width=1.0cm, minimum height=0.65cm] (d_ln2) at (8.9, \by) {\scriptsize LN};
-  \node[arch_box, text width=2.5cm, minimum height=0.65cm] (d_ffn) at (11.1, \by) {\scriptsize FFN $384\to 1536$};
+  \node[arch_box, text width=2.8cm, minimum height=0.85cm] (d_ffn) at (11.1, \by) {\scriptsize FFN\\[1pt]$384\to 1536\to 384$};
   \node[arch_op] (d_add2) at (13.3, \by) {$+$};
   \node[font=\footnotesize] (dx_out) at (14.6, \by) {$\mathbf{z}_l$};
 
@@ -1024,9 +1017,10 @@
   \TensorMap{p}{-0.5}{0.8}{1.4}{1.4}{0.45}{0.7}{$P_l \in \mathbb{R}^{H_l\times W_l\times 256}$\\[1pt]\scriptsize($l \in \{3,4,5,6,7\}$)}
 
   % Fork to Classification Subnet (Top) and Regression Subnet (Bottom)
-  \draw[arch_line] (p-east) -- (1.8, 1.5);
-  \draw[arch_arrow] (1.8, 1.5) |- (2.6, 3.0);
-  \draw[arch_arrow] (1.8, 1.5) |- (2.6, -0.8);
+  \coordinate (p_fork) at (1.8, 0 |- p-east);
+  \draw[arch_line] (p-east) -- (p_fork);
+  \draw[arch_arrow] (p_fork) |- (2.6, 3.0);
+  \draw[arch_arrow] (p_fork) |- (2.6, -0.8);
 
   % Top Branch: Classification Subnet
   \node[arch_box_gray, text width=3.8cm, minimum height=1.45cm] (c_sub) at (4.6, 3.0) {
@@ -1081,8 +1075,9 @@
   \TensorMap{p}{-0.4}{1.5}{1.4}{1.4}{0.45}{0.7}{$P_l \in \mathbb{R}^{H_l\times W_l\times 256}$\\[1pt]\scriptsize($l \in \{2,3,4,5,6\}$)}
 
   % Branch 1: RPN (Top row at y = 4.2)
-  \draw[arch_line] (p-east) -- (1.8, 2.2);
-  \draw[arch_arrow] (1.8, 2.2) |- (2.8, 4.2);
+  \coordinate (p_fork) at (1.8, 0 |- p-east);
+  \draw[arch_line] (p-east) -- (p_fork);
+  \draw[arch_arrow] (p_fork) |- (2.8, 4.2);
 
   \node[arch_box_gray, text width=3.2cm, minimum height=1.45cm] (rpn) at (4.5, 4.2) {
     \textbf{RPN}\\[1pt]
@@ -1103,7 +1098,7 @@
     \scriptsize Mức FPN $k \in [2,5]$\\[1pt]
     \textbf{$7\times 7\times 256$}
   };
-  \draw[arch_arrow] (1.8, 2.2) |- (roipool.west);
+  \draw[arch_arrow] (p_fork) |- (roipool.west);
 
   % Proposal line from RPN: drops from props.south at y=3.475 to corridor at y=2.4, then left into roipool.north
   \draw[arch_line] (props.south) -- (8.4, 2.4);

@@ -13,7 +13,7 @@
     "asset": "a2/class_distribution_report.png",
     "sha256": "7995b59636707188fde27c084d6c11e9b9a3f7df0976804102bf9b6f01fed699",
     "source": {
-      "notebook": "source_code/A2.kaggle.ipynb",
+      "notebook": "source_code/A2.ipynb",
       "cell": 6,
       "output": 1
     },

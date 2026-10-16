@@ -55,7 +55,7 @@ Gradient của state/input/tất cả tham số khớp theo kiểm tra.
 LSTM/GRU dùng Rows, Columns và Patch; MLP/CNN-B giữ kiến trúc E1 nhưng
 được định nghĩa/train độc lập trên cùng split. AdamW LR $10^{-3}$,
 weight decay $10^{-4}$, batch 128, tối đa 100 epoch; patience 4,
-min-delta $10^{-4}$ theo validation loss, test bằng best weights.
+min-delta $10^{-4}$ theo validation loss.
 Clip norm 1 chỉ áp dụng cho recurrent; không augmentation/scheduler.
 
 \section{So sánh LSTM, GRU và cách biểu diễn}
@@ -70,23 +70,23 @@ với MLP và CNN-B huấn luyện độc lập trên cùng split.
 Rows là biểu diễn tốt nhất trong các cấu hình recurrent đã thử. GRU dùng ít
 tham số hơn LSTM cùng đầu vào, nhưng thời gian đo không thấp hơn: cell được
 unroll bằng các phép toán PyTorch thay vì fused kernel. CNN-B đạt accuracy
-cao hơn các recurrent representative với thời gian mỗi epoch thấp hơn đáng kể.
+cao hơn các cấu hình hồi tiếp đại diện với thời gian mỗi epoch thấp hơn đáng kể.
 Kết luận chỉ áp dụng cho ảnh tĩnh Fashion-MNIST và protocol hiện tại;
 accuracy không đủ chứng minh mô hình đã học phụ thuộc xa.
 
 \section{Đường cong học và phân tích lỗi}
 
 Gap LSTM Columns là 4.07 điểm, GRU Rows là 3.48 điểm: train cải thiện
-khi validation chững lại. Hình~\ref{fig:e3-baseline} đối chiếu representative
-với MLP/CNN-B; đường cong từng representation ở Phụ lục.
+khi validation chững lại. Hình~\ref{fig:e3-baseline} đối chiếu cấu hình đại diện
+với MLP/CNN-B; đường cong theo từng cách biểu diễn ở Phụ lục.
 
 \DataTable{assets/e3/errors.tex}{Cặp nhầm lớn nhất của tám mô hình E3; mỗi lớp test có 1,000 ảnh.}
 LSTM/GRU Rows nhầm Shirt thành T-shirt/top 133/125 ảnh; CNN-B nhầm Shirt
-thành Coat 103 ảnh. Vì cặp lớp khác nhau, không dùng ba counts này xếp hạng
+thành Coat 103 ảnh. Vì cặp lớp khác nhau, không dùng ba số đếm này xếp hạng
 nhận diện Shirt. Recall Shirt làm tròn là 70/71/73\%; giày/túi dễ phân biệt
 hơn nhóm áo. Ma trận tám model ở Phụ lục; kết luận giới hạn ở một seed và
 cell unroll không fused.
 
 \ComparisonFigure[.39]{assets/e3/baseline_loss.png}{Cross-entropy}{assets/e3/baseline_accuracy.png}{Accuracy (\%).}{E3: LSTM/GRU Rows và baseline MLP/CNN-B trên train/validation; train nét đứt, validation nét liền.}{e3-baseline}
 
-\ComparisonFigure[.32]{assets/e3/errors_g_r.png}{GRU Rows}{assets/e3/errors_cnn_b.png}{CNN-B}{Mẫu lỗi test E3, mỗi panel $2	imes5$ ảnh; cùng split, mỗi model train độc lập.}{e3-errors}
+\ComparisonFigure[.32]{assets/e3/errors_g_r.png}{GRU Rows}{assets/e3/errors_cnn_b.png}{CNN-B}{Mẫu lỗi test E3, mỗi panel $2\times 5$ ảnh; cùng split, mỗi model train độc lập.}{e3-errors}

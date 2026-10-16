@@ -15,7 +15,7 @@ thí nghiệm trong báo cáo.
    Python trong phần **Chuẩn bị dữ liệu từ nguồn** ở cuối tài liệu, từ project root.
 3. Chạy kiểm tra prepared một lần trước khi mở notebook. Không kiểm tra hash
    từng ảnh trong vòng lặp train.
-4. E1–E3/A1 dùng Python 3.14 có CUDA trên máy; A2.kaggle.ipynb dùng kernel
+4. E1–E3/A1 dùng Python 3.14 có CUDA trên máy; A2.ipynb dùng kernel
    Kaggle T4 x2. Run All và Save output. Checkpoint train nằm trong `model`,
    tách khỏi dataset và pretrained weights.
 
@@ -152,9 +152,12 @@ Nguồn tải: [kho tác giả GTSRB trên ERDA](https://sid.erda.dk/public/arch
 Tải `GTSRB_Final_Training_Images.zip`, `GTSRB_Final_Test_Images.zip` và
 `GTSRB_Final_Test_GT.zip`; không cần HOG/Haar/Hue features.
 [Trang benchmark của tác giả](https://benchmark.ini.rub.de/gtsrb_dataset.html)
-cho phép sử dụng dữ liệu miễn phí và đề nghị trích dẫn Stallkamp, Schlipsing,
-Salmen và Igel (IJCNN 2011). Archive không gắn mã SPDX; không suy diễn thành
-MIT/CC hoặc dùng giấy phép phần mềm phân tích cho ảnh.
+ghi trong mục Citation: “The data is free to use” và đề nghị trích dẫn Stallkamp,
+Schlipsing, Salmen và Igel (IJCNN 2011). Nội dung này được đối chiếu qua bản
+trang do công cụ tìm kiếm lưu chỉ mục; truy cập trực tiếp không khả dụng ngày
+17/10/2026. **Giấy phép cụ thể và điều khoản phân phối lại của archive ERDA
+chưa được xác minh.** Không gán mã SPDX, MIT/CC hay giấy phép của phần mềm
+phân tích kết quả cho dữ liệu ảnh.
 
 ### Chia dữ liệu
 
@@ -356,7 +359,7 @@ tham số. Báo cáo nêu rõ workload và phần xử lý được tính trong 
 
 ### Dữ liệu cho Kaggle
 
-A2.kaggle.ipynb đọc `/kaggle/input/datasets/dangtai1720/a2-voc2012`.
+A2.ipynb đọc `/kaggle/input/datasets/dangtai1720/a2-voc2012`.
 Dataset gắn vào session cần giữ `voc2012/train.csv`, `val.csv`, `test.csv`
 và các JPEG/XML tại đúng đường dẫn tương đối ghi trong CSV. Thư mục input
 chỉ đọc; không nhân bản ảnh theo split. Số liệu báo cáo dùng bản Kaggle,

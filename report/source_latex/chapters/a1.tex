@@ -3,8 +3,13 @@
 GTSRB \cite{gtsrb,gtsrb2011} có 43 lớp, 39,209 ảnh train nguồn và 12,630 test;
 khác Fashion-MNIST/CIFAR-10, có biến đổi ánh sáng/góc nhìn và lớp gần nhau.
 Archive ERDA \cite{gtsrbarchive} cung cấp ảnh PPM/nhãn ClassId 0--42;
-prepared giữ pixel bằng PNG lossless. Metadata nguồn chưa xác nhận SPDX,
-nên chỉ ghi tác giả/điều kiện nguồn, không tự gán MIT/CC.
+prepared giữ pixel bằng PNG lossless.
+
+\textbf{Điều kiện sử dụng và giấy phép.} Mục Citation của trang benchmark gốc
+\cite{gtsrbterms} ghi ``The data is free to use'' và đề nghị trích dẫn
+Stallkamp và cộng sự (IJCNN 2011). Giấy phép cụ thể và điều khoản phân phối
+lại của archive ERDA chưa được xác minh; không gán mã SPDX hay giấy phép
+MIT/CC cho dữ liệu ảnh.
 
 Train/validation chia theo nhóm \texttt{class\_id + physical\_sign\_track},
 seed 42, giữ khoảng 20\% track mỗi lớp cho validation. Cách chia hạn chế
@@ -25,7 +30,7 @@ Train mất cân bằng: Speed limit 50 có 1,800 ảnh, trong khi Speed limit 2
 Pedestrians và một số lớp hiếm có 180 ảnh. Validation Turn right ahead
 có 149 ảnh, phản ánh split theo track không ép đúng tỷ lệ ảnh 20\%.
 \ReportFigure{assets/a1/class_gallery_0_21_report.png}{Ảnh train đại diện các lớp GTSRB 0--21; giữ ID và tên lớp.}
-\ReportFigure{assets/a1/class_gallery_22_42_report.png}{Ảnh train đại diện các lớp GTSRB 22--42; hai gallery có đủ 43 lớp.}
+\ReportFigure{assets/a1/class_gallery_22_42_report.png}{Ảnh train đại diện các lớp GTSRB 22--42; hai bộ ảnh minh họa có đủ 43 lớp.}
 
 \section{DataLoader, augmentation và kiến trúc}
 Ảnh RGB resize toàn ảnh về $224\times224$, không center-crop; chuẩn hóa
@@ -70,7 +75,7 @@ DeiT & Partial & Hai block cuối, norm, head &3,566,251&16.45\\\bottomrule
 \end{tabularx}\label{table:a1-4}
 \end{table}
 Partial mở 63.79\% tham số ResNet và 16.45\% DeiT; vì vậy phép so sánh này
-không giữ capacity trainable ngang nhau. BatchNorm bị freeze dùng eval
+không có cùng số tham số trainable. BatchNorm bị freeze dùng eval
 mode, không cập nhật running statistics.
 
 AdamW weight decay 0.01; scratch LR $3\times10^{-4}$, tối đa 40 epoch;
@@ -95,7 +100,7 @@ Epoch, updates và thời gian trong bảng chỉ tính vòng train/validation
 
 \section{Kết quả chính: CNN, Transformer và pretraining}
 \DataTable{assets/a1/results.tex}{Accuracy và macro-F1 của tám cấu hình chính; test có 12,630 ảnh.}
-\DataTable{assets/a1/cost.tex}{Capacity, số epoch/best, thời gian mỗi epoch và peak allocated VRAM.}
+\DataTable{assets/a1/cost.tex}{Số tham số, số epoch/best, thời gian mỗi epoch và peak allocated VRAM.}
 \PortraitFigure{assets/a1/comparison_quality.png}{Validation và test accuracy của tám cấu hình A1, cùng split và augmentation.}
 Trong các regime đã thử, full pretrained đạt validation accuracy cao nhất
 cho cả ResNet-50 và DeiT-Small/16. Trên test seed 42, hai model lần lượt đạt
@@ -141,11 +146,11 @@ split, đây là độ biến thiên mô tả, không phải khoảng tin cậy 
 Kết quả đại diện giữ seed 42, không chọn seed tốt nhất theo test.
 
 \section{Ma trận nhầm lẫn, lỗi và ảnh trùng}
-\PlateFigure[.37]{assets/a1/confusion_resnet.png}{ResNet-50 full, seed 42.}{assets/a1/confusion_deit.png}{DeiT-Small/16 full, seed 42.}{A1: 10 lớp liên quan nhiều ảnh sai; phần trăm theo toàn bộ support của lớp, cùng thang 0--100\%, không chuẩn hóa lại trên nhóm hiển thị.}{a1-confusion}
+\PlateFigure[.37]{assets/a1/confusion_resnet.png}{ResNet-50 full, seed 42.}{assets/a1/confusion_deit.png}{DeiT-Small/16 full, seed 42.}{A1: mỗi mô hình chọn riêng 10 lớp có tổng lỗi hàng và cột lớn nhất sau khi loại đường chéo khỏi ma trận $43\times43$. Phần trăm tính theo tổng support của lớp thật trên toàn bộ test, không chuẩn hóa lại trên nhóm hiển thị. Hai panel cùng thang 0--100\% nhưng không nhất thiết có cùng tập lớp.}{a1-confusion}
 
-Hình~\ref{fig:a1-confusion} có hàng là lớp thật, cột là dự đoán. Phần trăm dùng toàn bộ support lớp
-thật, không chuẩn hóa lại trên 10 lớp; tổng hàng hiển thị có thể dưới
-100\%. Ô làm tròn số nguyên. Ma trận đầy đủ $43\times43$ có trong
+Hình~\ref{fig:a1-confusion} có hàng là lớp thật, cột là dự đoán;
+tổng hàng hiển thị có thể dưới 100\%. Ô làm tròn số nguyên.
+Ma trận đầy đủ $43\times43$ có trong
 notebook; Phụ lục liệt kê precision/recall/F1 của toàn bộ 43 lớp.
 \DataTable{assets/a1/errors.tex}{Cặp lớp nhầm nhiều nhất của tám cấu hình chính; ID đi cùng tên lớp.}
 ResNet full nhầm 30/60 Pedestrians (ID 27) thành Road work (ID 25),
@@ -163,7 +168,7 @@ Roundabout &90&0.933&0.923&0.844&0.916\\
 Ice/snow &150&0.987&0.961&0.960&0.938\\\bottomrule
 \end{tabular}\label{table:a1-5}
 \end{table}
-\PlateFigure[.32]{assets/a1/errors_resnet.png}{ResNet-50 full}{assets/a1/errors_deit.png}{DeiT-Small/16 full}{Mẫu lỗi test A1 seed 42; mỗi panel $2	imes5$ ảnh ghi nhãn thật/dự đoán, không đại diện tần suất lỗi toàn tập.}{a1-errors}
+\PlateFigure[.32]{assets/a1/errors_resnet.png}{ResNet-50 full}{assets/a1/errors_deit.png}{DeiT-Small/16 full}{Mẫu lỗi test A1 seed 42; mỗi panel $2\times 5$ ảnh ghi nhãn thật/dự đoán, không đại diện tần suất lỗi toàn tập.}{a1-errors}
 
 Hình~\ref{fig:a1-errors} minh họa mờ, thiếu sáng và ký hiệu gần nhau. Đây là yếu tố nhìn
 thấy trong ảnh, chưa chứng minh nguyên nhân lỗi. Nhiều frame có thể
@@ -182,6 +187,6 @@ Head-only tiết kiệm memory nhưng accuracy thấp, partial phụ thuộc unf
 augmentation có lợi trong ablation seed 42.
 
 Giới hạn gồm mất cân bằng, ảnh trùng/gần giống, frame cùng track, ba seed
-chỉ cho full, partial không matched capacity và ngân sách/LR khác giữa
+chỉ cho full, partial không có cùng số tham số trainable và ngân sách/LR khác giữa
 scratch--pretrained. Trạng thái weights đầu vào cũng ảnh hưởng tái lập;
 epoch dừng hiện tại không phản ánh toàn bộ ngân sách học của checkpoint.

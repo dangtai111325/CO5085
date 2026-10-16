@@ -4,12 +4,12 @@ Tài liệu bàn giao biên tập, không được chèn vào PDF học thuật.
 
 ## Phạm vi và dung lượng
 
-- PDF trước: 160 trang. PDF bàn giao: 99 trang, giảm 61 trang (38.125%).
-- Bố cục: 4 trang bìa/tóm tắt/mục lục; 52 trang Chương 1–7; 2 trang tài liệu tham khảo; 41 trang phụ lục.
+- PDF trước: 160 trang. PDF bàn giao: 100 trang, giảm 60 trang (37.5%).
+- Bố cục: 4 trang bìa/tóm tắt/mục lục; 54 trang Chương 1–7; 2 trang tài liệu tham khảo; 40 trang phụ lục.
 - Giữ A4 dọc, body 12 pt, Times New Roman; công thức Cambria Math; thụt đầu dòng 1 cm và lề hiện có.
 - Giữ một báo cáo tổng; thông tin nhóm được đồng bộ giữa bìa, metadata PDF, README và public HTML. Không chạy train/inference, chỉnh notebook/output, dataset hoặc checkpoint.
 - Giảng viên: Lê Thành Sách. Nhóm thực hiện: Đặng Nguyễn Tấn Tài (2570357) và Lương Minh Duy (2570083), lớp CH01.
-- `A2.kaggle.ipynb` là nguồn kết quả A2; cấu hình thực chạy batch/eval 8, accumulation 3, effective batch 24, patience 2, min_delta 0.001.
+- `A2.ipynb` là nguồn kết quả A2; cấu hình thực chạy batch/eval 8, accumulation 3, effective batch 24, patience 2, min_delta 0.001.
 - Bản TikZ hiện có được giữ làm cơ sở; hình khối/kênh/cổng/head vẫn theo implementation. Hình dùng mực đen và nền trắng.
 
 ## Changelog theo file và nội dung
@@ -51,10 +51,10 @@ Tài liệu bàn giao biên tập, không được chèn vào PDF học thuật.
 - Không còn tiêu đề con đánh số đơn lẻ; chỉ giữ cặp 6.4.1/6.4.2 có nội dung thực.
 - XeLaTeX/BibTeX chạy đủ lượt: không undefined citation/reference, duplicate label, Overfull, float quá cao hoặc missing Unicode glyph.
 - Tất cả trang portrait; font PDF chỉ Times New Roman và Cambria Math; không có trang trắng.
-- Đã render và kiểm tra toàn bộ 99 trang, đồng thời kiểm tra ở độ phân giải cao các sơ đồ, ma trận, gallery lớp và ảnh bbox. PDF có 70 nhóm hình, 45 bảng và 12 mục tài liệu tham khảo; số thứ tự và liên kết được biên dịch lại.
+- Đã render và kiểm tra toàn bộ 100 trang, đồng thời kiểm tra ở độ phân giải cao các sơ đồ, ma trận, gallery lớp và ảnh bbox. PDF có 70 nhóm hình, 45 bảng và 13 mục tài liệu tham khảo; số thứ tự và liên kết được biên dịch lại.
 - Kết quả kiểm chứng máy đọc và SHA256 của PDF nằm trong `assets/report_audit.json`; giá trị kiểm tra trước/sau và các trường hợp loại trừ nằm trong `assets/number_format_audit.json`.
 - PNG gốc không sửa/cắt. Hình cần đổi format số được dựng độc lập từ nguồn đã xác nhận, lưu provenance và mã dựng hình.
-- Giữ PR hai plot/trang và hai ma trận A2 riêng trang, vì giảm thêm làm chữ/legend quá nhỏ. Phần phụ lục chiếm 41 trang để bảo toàn các kết quả người dùng yêu cầu giữ.
+- Giữ PR hai plot/trang và hai ma trận A2 riêng trang, vì giảm thêm làm chữ/legend quá nhỏ. Phần phụ lục chiếm 40 trang để bảo toàn các kết quả người dùng yêu cầu giữ.
 - Không có ngoại lệ decimal/thousands chưa xử lý trong các hình được sử dụng: các hình native còn lại đã có dấu chấm cho số lẻ; các EDA/preprocessing cần sửa được render lại từ nguồn. Các PNG không dùng vẫn giữ byte gốc.
 - Một số Underfull hbox của URL/bibliography hoặc chuỗi thuật ngữ còn được LaTeX báo, nhưng không tràn/cắt chữ; đã kiểm tra trực quan.
 
@@ -74,5 +74,5 @@ Các hình mới là tài nguyên báo cáo; notebook không phụ thuộc vào 
 
 - Hai mã chia tập 64 ký tự ở Fashion-MNIST và GTSRB được đối chiếu đúng với `split_hash` trong metadata dataset, giữ nguyên tại `assets/split_identifiers.json`. PDF mô tả quy tắc chia tập và chỉ dẫn tới metadata ở A.10, không in các chuỗi mã dài.
 - Tài liệu tham khảo GTSRB dùng tên liên kết “GTSRB Public Archive (ERDA)”; đích URL archive giữ nguyên.
-- Rà toàn bộ 99 trang và nguồn LaTeX: không có ký tự thay thế U+FFFD, ký tự điều khiển bất thường, chuỗi hex dài hiển thị, tham chiếu `??`/`[?]` hoặc lỗi missing glyph. Ký hiệu toán co giãn được kiểm tra bằng bản render, không kết luận lỗi font chỉ từ các alias khi trích xuất text.
+- Rà toàn bộ 100 trang và nguồn LaTeX: không có ký tự thay thế U+FFFD, ký tự điều khiển bất thường, chuỗi hex dài hiển thị, tham chiếu `??`/`[?]` hoặc lỗi missing glyph. Ký hiệu toán co giãn được kiểm tra bằng bản render, không kết luận lỗi font chỉ từ các alias khi trích xuất text.
 - Render trước/sau để đối chiếu bố cục; số liệu bảng và ảnh kết quả giữ nguyên byte. Notebook không sửa hoặc chạy lại.

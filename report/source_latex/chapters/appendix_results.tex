@@ -74,12 +74,13 @@ dùng IoU $\geq 0.5$, confidence $\geq 0.30$; các chỉ số class-wise đượ
 \Needspace{.92\textheight}
 \section{Trường hợp sai A2}
 \DetectionTriplet{failure_1}{VOC2012 test \texttt{2012\_2008\_004581}}{app-failure-1}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
-\DetectionTriplet{failure_2}{VOC2012 test \texttt{2012\_2011\_000666}}{app-failure-2}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
 \DetectionTriplet{failure_3}{VOC2012 test \texttt{2012\_2011\_000839}}{app-failure-3}{Predictions dùng score $\geq0.30$, tối đa 15 boxes; difficult GT nét đứt. Các số chẩn đoán trong tiêu đề dùng mọi detection vượt ngưỡng.}
+Trường hợp \texttt{2012\_2011\_000666} được đối chiếu tại
+Hình~\ref{fig:a2-failure-kiosk}, mục~\ref{sec:a2-errors}.
 
 \section{Nguồn số liệu và hướng dẫn tái lập}
 Số liệu lấy từ output E1.ipynb, E2.ipynb, E3.ipynb, A1.ipynb và
-A2.kaggle.ipynb trong source\_code. Manifest assets ghi notebook/cell/output;
+A2.ipynb trong source\_code. Manifest assets ghi notebook/cell/output;
 report\_figures.json ghi các hình tĩnh dựng từ bảng/dữ liệu nguồn đã kiểm chứng.
 Hình độc lập được ghép bằng LaTeX, không cắt từ raster ghép; TikZ theo code.
 Mã kiểm chứng cách chia tập Fashion-MNIST/GTSRB được lưu tại
@@ -88,7 +89,7 @@ Mã kiểm chứng cách chia tập Fashion-MNIST/GTSRB được lưu tại
 E1--E3/A1: chuẩn bị dữ liệu theo README datasets, chọn Python 3.14 CUDA,
 Restart Kernel/Run All/Save; các file độc lập. Patience/min-delta là
 4/$10^{-4}$ cho E1--E3 và 2/$10^{-3}$ cho A1.
-A2.kaggle.ipynb dùng dataset \texttt{a2-voc2012} tại đường dẫn trong code,
+A2.ipynb dùng dataset \texttt{a2-voc2012} tại đường dẫn trong code,
 accelerator T4 x2 và Internet khi cần weights/thư viện. Run All train hai
 worker, rồi test/benchmark lần lượt; batch 8, accumulation 3, effective 24,
 tối đa 30 epoch, patience 2/min-delta 0.001. Metadata ghi Python 3.13.15;
@@ -98,8 +99,8 @@ Save notebook và tải \texttt{/kaggle/working/report/A2} cùng
 
 Dùng CHECKPOINT\_ROOT trống để khởi tạo theo seed; latest.pt có sẵn thay đổi
 weights đầu vào theo quy tắc Chương 1. Seed không bảo đảm bitwise qua GPU,
-thư viện hay AMP. A2.ipynb là bản local; các số A2 trong báo cáo lấy riêng
-từ A2.kaggle.ipynb và protocol Chương~\ref{chap:a2}.
+thư viện hay AMP. Số liệu A2 lấy từ output A2.ipynb chạy trên Kaggle,
+theo protocol Chương~\ref{chap:a2}.
 
 Báo cáo biên dịch bằng XeLaTeX và BibTeX từ report/source\_latex/main.tex;
 TikZ định nghĩa trong architectures.tex, ảnh kết quả nằm ở assets.

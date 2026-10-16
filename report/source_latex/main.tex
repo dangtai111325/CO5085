@@ -1,6 +1,7 @@
 \documentclass[12pt,a4paper,oneside]{report}
 \input{preamble}
 \begin{document}
+\hypersetup{pageanchor=false}
 \begin{titlepage}
 \centering
 {\large\bfseries ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH\\[3 pt]
@@ -34,6 +35,7 @@ Lương Minh Duy & 2570083
 {\large\bfseries Thành phố Hồ Chí Minh, 10/2026\par}
 \end{titlepage}
 \pagenumbering{roman}
+\hypersetup{pageanchor=true}
 \chapter*{Tóm tắt}
 \addcontentsline{toc}{chapter}{Tóm tắt}
 Báo cáo khảo sát năm nhóm thực nghiệm qua 36 lượt huấn luyện: bốn mô hình E1,
@@ -65,7 +67,7 @@ một/hai giai đoạn và phân tích FPN/Focal Loss.
 \begin{table}[H]\centering\caption{Đối chiếu nội dung kỹ thuật với đề E1--E3, A1 và A2.}
 \small\begin{tabularx}{\linewidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\toprule
 Bài & Yêu cầu & Nội dung thực nghiệm\\\midrule
-E1 & Softmax, MLP, CNN; loop tự viết; accuracy, capacity, curves, lỗi
+E1 & Softmax, MLP, CNN; loop tự viết; accuracy, số tham số, curves, lỗi
 & 4 mô hình, 2 CNN; bảng metric/chi phí, ma trận và ảnh sai.\\
 E2 & MSA thủ công/PyTorch; $\geq 2$ tokenizer; so sánh từng cặp
 & 2 cách cài đặt $\times$ 3 tokenizer, kiểm tra forward/gradient, H=2/4/8.\\
@@ -165,8 +167,8 @@ batch; hình khối gợi kích thước không gian/channels, không cùng tỷ
 \input{chapters/a2}
 \chapter{Kết luận}
 E1--E3 cho thấy biểu diễn ảnh ảnh hưởng cả chất lượng và chi phí.
-CNN-B có đánh đổi accuracy--capacity thuận lợi so với CNN-A; CNN-stem
-cải thiện MSA nhưng tăng capacity. MSA thủ công khớp phép toán PyTorch;
+CNN-B có đánh đổi giữa accuracy và số tham số thuận lợi so với CNN-A; CNN-stem
+cải thiện MSA nhưng tăng số tham số. MSA thủ công khớp phép toán PyTorch;
 số head không có tác dụng đơn điệu. GRU Rows tốt nhất trong các cấu hình
 recurrent, song CNN-B hiệu quả hơn trên ảnh tĩnh.
 
@@ -182,7 +184,7 @@ tiêu chí. FPN/Focal Loss hỗ trợ detection nhưng chưa giải quyết hế
 nhỏ, nhầm lớp và dự đoán thừa.
 
 Các kết luận phụ thuộc split, seed, ngân sách và trạng thái weights đầu vào.
-Hướng chưa thực hiện gồm nhiều seed cho E1--E3/A2, matched-capacity ablation,
+Hướng chưa thực hiện gồm nhiều seed cho E1--E3/A2, đối chứng cùng số tham số,
 cô lập neck/anchors và kiểm tra độc lập theo track GTSRB.
 
 \noindent\textbf{Ghi nhận hỗ trợ của công cụ AI.}

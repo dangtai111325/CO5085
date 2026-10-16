@@ -4,25 +4,25 @@
   "table_numeric_values": 1764,
   "original_pngs_preserved": 168,
   "pdf": "report/CO5085_Report.pdf",
-  "pdf_sha256": "20df37ab5bc19d146749b06f28a62bae1cb513a4727bd739cd68bc17320b2948",
-  "pages": 99,
+  "pdf_sha256": "ea9a081b85e103ea8bfb86a00def998642b81f9225685c4208665a0d992faf50",
+  "pages": 100,
   "pages_before": 160,
   "figure_groups": 70,
   "tables": 45,
-  "bibliography_entries": 12,
-  "portrait_pages": 99,
+  "bibliography_entries": 13,
+  "portrait_pages": 100,
   "blank_pages": 0,
   "fonts": [
-    "/ENXBMJ+TimesNewRomanPSMT",
-    "/MMKZWH+CambriaMath",
-    "/MRPZWI+TimesNewRomanPS-ItalicMT",
-    "/PWGCUH+TimesNewRomanPS-BoldMT"
+    "/DWNTRA+TimesNewRomanPS-BoldMT",
+    "/OJFNKL+TimesNewRomanPS-ItalicMT",
+    "/UACRXE+CambriaMath",
+    "/VGPCXC+TimesNewRomanPSMT"
   ],
-  "visual_review": "All 99 final pages rendered and reviewed; selected diagrams, matrices, class galleries, and bbox triplets checked at higher resolution.",
+  "visual_review": "All 100 pages rendered and inspected; 95 pages match the incoming PDF pixel for pixel. Changed pages 13, 21, 22, 30 and 100 checked at higher resolution; mathematical summation verified visually.",
   "compile_errors": [],
   "unresolved_references": [],
   "numeric_format_exceptions_in_used_figures": [],
-  "scope": "Participant and instructor metadata synchronized across report, README and public HTML; notebooks, output cells, datasets and checkpoints unchanged.",
+  "scope": "Report verification and corrections to diagram notation/data flow, PDF page anchors and A2 source references; matching documentation, public links and renderer paths synchronized. Notebook bytes, table values and PNG assets preserved.",
   "original_pngs_unchanged": true,
   "semantic_guard": "Intervals [0,1] and [2,5], versions, image IDs, and TikZ coordinates preserved.",
   "character_review": {
@@ -75,5 +75,338 @@
     "html_result_tables_preserved": true,
     "relative_links_valid": true,
     "single_combined_report": true
+  },
+  "review_validation": {
+    "items": [
+      {
+        "item": "3.1",
+        "status": "passed",
+        "pdf_pages": [
+          11
+        ],
+        "change": "Removed three stray plus signs and rewrote Shirt recall paragraph; Table 2.3 reference resolves."
+      },
+      {
+        "item": "3.2",
+        "status": "passed",
+        "pdf_pages": [
+          11,
+          19,
+          25,
+          40
+        ],
+        "change": "All four captions display 2 × 5; no tab-corrupted times command."
+      },
+      {
+        "item": "3.3",
+        "status": "passed",
+        "pdf_pages": [
+          42,
+          43,
+          44
+        ],
+        "change": "A2 figures 6.1, 6.2, 6.3 occur in source/content order; bbox pair fixed locally."
+      },
+      {
+        "item": "3.4",
+        "status": "passed",
+        "pdf_pages": [
+          38
+        ],
+        "change": "A1 caption defines independent per-model top-10 ranking, off-diagonal row+column errors and full-test denominators."
+      },
+      {
+        "item": "3.5",
+        "status": "passed",
+        "pdf_pages": [
+          54
+        ],
+        "change": "Table 6.9 distinguishes VOC all-point AP50, COCO-style AP50:95, R/F and F1 confidence."
+      },
+      {
+        "item": "3.6",
+        "status": "passed",
+        "pdf_pages": [
+          41,
+          43,
+          44
+        ],
+        "change": "Target fields versus truncated metadata distinguished; prepared CSV annotation source explicit."
+      },
+      {
+        "item": "3.7",
+        "status": "passed",
+        "pdf_pages": [
+          53
+        ],
+        "change": "A2 cost display rounded as requested; exact integer parameter counts taken from capacity table."
+      },
+      {
+        "item": "3.8",
+        "status": "passed",
+        "pdf_pages": [
+          59,
+          60
+        ],
+        "change": "12 bibliography titles protected; citation keys and reference identities unchanged."
+      },
+      {
+        "item": "4.3",
+        "status": "passed",
+        "pdf_pages": [
+          56,
+          99
+        ],
+        "change": "Existing failure_2 triplet moved once to Figure 6.10, followed by four evidence-based sentences; appendix cross-reference resolves."
+      },
+      {
+        "item": "6.6 paper scope",
+        "status": "passed",
+        "pdf_pages": [
+          48,
+          49
+        ],
+        "change": "Explicit reproduced, modified and not-reproduced distinctions; no new experiment."
+      },
+      {
+        "item": "6 structure and prose",
+        "status": "passed",
+        "change": "Removed named mixed-language terms from prose, trimmed repeated checkpoint statements, retained valid 6.4.1/6.4.2 pair, checked all headings and local page breaks."
+      }
+    ],
+    "all_items_passed": true,
+    "input_pages": 99,
+    "output_pages": 100,
+    "figures": 70,
+    "tables": 45,
+    "bibliography_entries": 12,
+    "png_assets_unchanged": 182,
+    "other_table_assets_unchanged": 39,
+    "display_rounding": [
+      {
+        "metric": "Peak allocated VRAM (MiB)",
+        "original": "12,818.4980",
+        "display": "12,818.5",
+        "decimal_places": 1
+      },
+      {
+        "metric": "Peak allocated VRAM (MiB)",
+        "original": "12,939.5137",
+        "display": "12,939.5",
+        "decimal_places": 1
+      },
+      {
+        "metric": "Train + validation (phút)",
+        "original": "465.0069",
+        "display": "465.01",
+        "decimal_places": 2
+      },
+      {
+        "metric": "Train + validation (phút)",
+        "original": "430.2281",
+        "display": "430.23",
+        "decimal_places": 2
+      },
+      {
+        "metric": "Median latency batch 1 (ms)",
+        "original": "39.8742",
+        "display": "39.87",
+        "decimal_places": 2
+      },
+      {
+        "metric": "Median latency batch 1 (ms)",
+        "original": "44.0897",
+        "display": "44.09",
+        "decimal_places": 2
+      },
+      {
+        "metric": "P95 latency batch 1 (ms)",
+        "original": "47.3764",
+        "display": "47.38",
+        "decimal_places": 2
+      },
+      {
+        "metric": "P95 latency batch 1 (ms)",
+        "original": "45.7869",
+        "display": "45.79",
+        "decimal_places": 2
+      },
+      {
+        "metric": "FPS batch 1",
+        "original": "25.0789",
+        "display": "25.08",
+        "decimal_places": 2
+      },
+      {
+        "metric": "FPS batch 1",
+        "original": "22.6810",
+        "display": "22.68",
+        "decimal_places": 2
+      },
+      {
+        "metric": "Throughput batch 8 (ảnh/s)",
+        "original": "17.6673",
+        "display": "17.67",
+        "decimal_places": 2
+      },
+      {
+        "metric": "Throughput batch 8 (ảnh/s)",
+        "original": "15.1885",
+        "display": "15.19",
+        "decimal_places": 2
+      },
+      {
+        "metric": "Batch benchmark",
+        "original": "8",
+        "display": "8",
+        "decimal_places": 0
+      },
+      {
+        "metric": "Batch benchmark",
+        "original": "8",
+        "display": "8",
+        "decimal_places": 0
+      },
+      {
+        "metric": "Pipeline test (ảnh/s)",
+        "original": "13.8253",
+        "display": "13.83",
+        "decimal_places": 2
+      },
+      {
+        "metric": "Pipeline test (ảnh/s)",
+        "original": "14.4813",
+        "display": "14.48",
+        "decimal_places": 2
+      }
+    ],
+    "raw_notebook_values_unchanged": true,
+    "existing_notebook_deletion_preserved": true,
+    "main_A2_figure_order": [
+      [
+        "6.1",
+        42
+      ],
+      [
+        "6.2",
+        43
+      ],
+      [
+        "6.3",
+        44
+      ],
+      [
+        "6.4",
+        46
+      ],
+      [
+        "6.5",
+        48
+      ],
+      [
+        "6.6",
+        50
+      ],
+      [
+        "6.7",
+        51
+      ],
+      [
+        "6.8",
+        52
+      ],
+      [
+        "6.9",
+        55
+      ],
+      [
+        "6.10",
+        56
+      ]
+    ],
+    "blank_pages": 0,
+    "compile_errors": [],
+    "unresolved_references": [],
+    "artificial_experiments": false
+  },
+  "gtsrb_license_validation": {
+    "checked_on": "2026-10-17",
+    "original_benchmark_url": "https://benchmark.ini.rub.de/gtsrb_dataset.html",
+    "original_benchmark_access": "Search-indexed page content available; direct fetch failed (502).",
+    "published_use_statement": "The data is free to use; authors request citation of Stallkamp et al., IJCNN 2011.",
+    "official_archive_url": "https://sid.erda.dk/public/archives/daaeac0d7ce1152aea9b61d9f1e19370/published-archive.html",
+    "specific_license_and_redistribution_terms": "Not verified; no SPDX, MIT or CC license assigned to the images.",
+    "pdf_pages": 100,
+    "changed_beyond_citation_numbers": [
+      26,
+      59,
+      60
+    ],
+    "visually_checked_pages": [
+      26,
+      59,
+      60
+    ],
+    "compile_issues": [],
+    "protected_notebooks_and_assets_unchanged": true
+  },
+  "final_validation": {
+    "checked_on": "2026-10-17",
+    "pages": 100,
+    "portrait_pages": 100,
+    "figure_groups": 70,
+    "tables": 45,
+    "bibliography_entries": 13,
+    "latex_errors": [],
+    "undefined_references": [],
+    "missing_glyphs": [],
+    "overfull_boxes": [],
+    "duplicate_anchors": [],
+    "pdf_driver_warnings": [],
+    "underfull_hboxes": "Non-fatal line-spacing warnings visually checked; no clipped or overlapping text.",
+    "pdf_named_destinations_checked": 295,
+    "internal_named_links_checked": 88,
+    "page_1_destination_physical_page": 5,
+    "figure_and_table_order": "Consecutive within each chapter and appendix.",
+    "blank_pages": 0,
+    "rendered_pages": 100,
+    "pixel_identical_pages": 95,
+    "changed_rendered_pages": [
+      13,
+      21,
+      22,
+      30,
+      100
+    ],
+    "visually_checked_at_higher_resolution": [
+      6,
+      8,
+      12,
+      13,
+      21,
+      22,
+      30,
+      46,
+      48,
+      100
+    ],
+    "diagrams_corrected": [
+      "Attention head output O_h distinguished from attention matrix A_h; GELU represented as activation.",
+      "GRU input/hidden projections, reset after hidden projection including bias, and hidden-state update match ManualGRUCell.",
+      "E3 initial-state arrow has clear left-to-right spacing.",
+      "DeiT FFN includes both projections: 384 to 1536 to 384."
+    ],
+    "notebooks_preserved": 5,
+    "png_assets_preserved": 182,
+    "table_source_files_preserved": 40,
+    "all_reported_results_preserved": true,
+    "previous_review_fixes_verified": true,
+    "A2_source_notebook": "source_code/A2.ipynb",
+    "A2_source_sha256": "eb69653f672930ef7dfe9a4ed5ce5b5d116b73082a990ac12b1cc1fd76f38204",
+    "A2_matches_recorded_source_bytes": true,
+    "broken_project_documentation_links": [],
+    "renderer_syntax_valid": true,
+    "figures_regenerated": false,
+    "git_commit_or_push_performed": false
   }
 }
